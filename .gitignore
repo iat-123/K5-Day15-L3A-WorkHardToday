@@ -42,3 +42,6 @@ data/app.db-*
 data/inventory.local.csv
 .playwright-mcp/
 data/uploads/
+
+# Local agent swarm queues (never commit)
+.swarm/
