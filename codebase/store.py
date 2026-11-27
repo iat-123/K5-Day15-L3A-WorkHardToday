@@ -1,52 +1,295 @@
-"""Lưu lô và bài nháp trong SQLite (data/app.db — không commit). Mỗi hàm tự mở/đóng kết nối nên dùng được từ nhiều luồng."""
+"""Lưu dữ liệu shop trong PostgreSQL (schema mặc định `shop`, đổi qua biến môi trường `VPOST_DB_SCHEMA`).
+
+Hợp đồng công khai cho các module khác (kể cả `moderation_store.py`):
+- `store.connect()` — context manager mở kết nối `psycopg` tới `DATABASE_URL` bên trong một giao dịch duy nhất
+  (tự `COMMIT` khi thành công, tự `ROLLBACK` khi có ngoại lệ, đóng kết nối khi thoát), `row_factory=dict_row`
+  (mỗi dòng là `dict` truy cập theo tên cột), và `search_path` đặt về schema đang dùng (`shop` hoặc
+  `VPOST_DB_SCHEMA`) — không bao giờ chạm schema `public` của ứng dụng Next.js.
+- `store._conn` — alias của `store.connect` để giữ tương thích ngược.
+- `store.tx_locked(key)` — context manager mở giao dịch và giữ khoá tư vấn theo giao dịch
+  (`pg_advisory_xact_lock(hashtextextended('<schema>:<key>', 0))`) thay cho `BEGIN IMMEDIATE` của SQLite.
+- `store._ts()` — trả chuỗi thời gian ISO-8601 cục bộ (`timespec='seconds'`), giữ nguyên hành vi cũ.
+- `store.schema_name()` — tên schema PostgreSQL đã kiểm tra hợp lệ (`shop` mặc định hoặc `VPOST_DB_SCHEMA`).
+- `store.check_connection()` — kiểm tra kết nối nhanh, trả `(True, None)` hoặc `(False, error_message)`.
+"""
 import json
 import os
-import sqlite3
+import re
 import threading
+from contextlib import contextmanager
 from datetime import datetime
 
-from rules import DATA, parse_images
+import psycopg
+from psycopg import sql
+from psycopg.rows import dict_row
 
-DB = os.environ.get("APP_DB", os.path.join(DATA, "app.db"))
+from rules import ROOT, parse_images
+
+DEFAULT_SCHEMA = "shop"
+CONNECT_TIMEOUT = 5
+_SCHEMA_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+# Giữ `_lock` để tương thích tạm với các caller cũ (vd moderation_store chưa chuyển); store.py dùng giao dịch + tx_locked.
 _lock = threading.Lock()
+DatabaseError = psycopg.Error
+IntegrityError = psycopg.IntegrityError
+OperationalError = psycopg.OperationalError
+
 JSON_COLS = ("data", "reasons", "warnings", "colors", "sizes")
-
-SCHEMA = """
-create table if not exists batches(
-  id integer primary key, filename text, default_page text, created_at text);
-create table if not exists rows(
-  id integer primary key, batch_id integer, idx integer, data text,
-  status text default 'pending',          -- pending · written · flagged · rejected · scheduled · error
-  reasons text default '[]', warnings text default '[]', post text default '', edited text default '',
-  page_id text default '', colors text default '[]', sizes text default '[]', attempts integer default 0,
-  tokens_in integer default 0, tokens_out integer default 0,
-  slot text default '', schedule_mode text default '', fb_post_id text default '', updated_at text);
-create index if not exists rows_batch on rows(batch_id);
--- VPOST: file sản phẩm đã tải (1 dòng / mã) và bài đăng theo mô hình post_batch / post_job của giao diện
-create table if not exists catalog(code text primary key, idx integer, data text);
-create table if not exists post_batch(id text primary key, product_code text, color text, format text, created_at text);
-create table if not exists post_job(
-  id text primary key, batch_id text, product_code text, color text, format text, channel_id text,
-  caption text, media text default '[]', status text, scheduled_at text, fb_post_id text, published_url text,
-  published_at text, error_code text, user_message text default '', attempt_count integer default 0,
-  created_at text, updated_at text);
-create index if not exists job_batch on post_job(batch_id);
--- Page Facebook nối qua OAuth. shortcut: token lưu thường trong SQLite trên máy (data/app.db, không commit) — mã hoá khi deploy thật
-create table if not exists fb_page(page_id text primary key, name text, page_token text, connected_at text);
-create table if not exists fb_user(id integer primary key check (id = 1), user_token text, saved_at text);
-create table if not exists channel_status(channel_id text primary key, status text);
-"""
+INT_BOOL_COMMENT_COLS = frozenset(("is_from_page", "is_hidden", "can_comment"))
 
 
-def _conn():
-    c = sqlite3.connect(DB, timeout=30)
-    c.row_factory = sqlite3.Row
-    return c
+def _load_dotenv(path=os.path.join(ROOT, ".env")):
+    """Nạp `.env` vào `os.environ` bằng setdefault (không ghi đè biến môi trường đã có)."""
+    if not os.path.exists(path):
+        return
+    with open(path, encoding="utf-8-sig") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+_load_dotenv()
+
+
+def schema_name():
+    """Tên schema đang dùng (mặc định `shop`, có thể ghi đè qua `VPOST_DB_SCHEMA`)."""
+    name = (os.environ.get("VPOST_DB_SCHEMA") or DEFAULT_SCHEMA).strip() or DEFAULT_SCHEMA
+    if not _SCHEMA_RE.fullmatch(name):
+        raise ValueError("VPOST_DB_SCHEMA không hợp lệ: %r" % (name,))
+    return name
+
+
+def _dsn():
+    dsn = (os.environ.get("DATABASE_URL") or "").strip()
+    if not dsn:
+        raise RuntimeError(
+            "Thiếu biến môi trường DATABASE_URL (vd postgresql://vpost:vpost@localhost:5433/vpost)."
+        )
+    return dsn
+
+
+SCHEMA_STATEMENTS = (
+    """
+    create table if not exists batches(
+      id integer generated by default as identity primary key,
+      filename text,
+      default_page text,
+      created_at text
+    )
+    """,
+    """
+    create table if not exists rows(
+      id integer generated by default as identity primary key,
+      batch_id integer,
+      idx integer,
+      data text,
+      status text default 'pending',
+      reasons text default '[]',
+      warnings text default '[]',
+      post text default '',
+      edited text default '',
+      page_id text default '',
+      colors text default '[]',
+      sizes text default '[]',
+      attempts integer default 0,
+      tokens_in integer default 0,
+      tokens_out integer default 0,
+      slot text default '',
+      schedule_mode text default '',
+      fb_post_id text default '',
+      updated_at text
+    )
+    """,
+    "create index if not exists rows_batch on rows(batch_id)",
+    """
+    create table if not exists catalog(
+      code text primary key,
+      idx integer,
+      data text
+    )
+    """,
+    """
+    create table if not exists post_batch(
+      id text primary key,
+      product_code text,
+      color text,
+      format text,
+      created_at text
+    )
+    """,
+    """
+    create table if not exists post_job(
+      id text primary key,
+      batch_id text,
+      product_code text,
+      color text,
+      format text,
+      channel_id text,
+      caption text,
+      media text default '[]',
+      status text,
+      scheduled_at text,
+      fb_post_id text,
+      published_url text,
+      published_at text,
+      error_code text,
+      user_message text default '',
+      attempt_count integer default 0,
+      created_at text,
+      updated_at text
+    )
+    """,
+    "create index if not exists job_batch on post_job(batch_id)",
+    """
+    create table if not exists fb_page(
+      page_id text primary key,
+      name text,
+      page_token text,
+      connected_at text
+    )
+    """,
+    """
+    create table if not exists fb_user(
+      id integer primary key check (id = 1),
+      user_token text,
+      saved_at text
+    )
+    """,
+    """
+    create table if not exists channel_status(
+      channel_id text primary key,
+      status text
+    )
+    """,
+    """
+    create table if not exists fb_comment(
+      id text not null,
+      tenant_id text not null,
+      channel_id text default '',
+      page_id text default '',
+      post_job_id text default '',
+      fb_post_id text default '',
+      product_code text default '',
+      parent_id text default '',
+      from_id text default '',
+      from_name text default '',
+      is_from_page integer default 0,
+      message text default '',
+      permalink_url text default '',
+      is_hidden integer default 0,
+      can_comment integer default 1,
+      created_time text default '',
+      status text default 'unreplied',
+      synced_at text default '',
+      updated_at text default '',
+      primary key (tenant_id, id)
+    )
+    """,
+    """
+    create index if not exists fb_comment_inbox
+      on fb_comment(tenant_id, is_from_page, status, created_time desc)
+    """,
+    """
+    create index if not exists fb_comment_parent
+      on fb_comment(tenant_id, parent_id)
+    """,
+    """
+    create table if not exists comment_draft(
+      seq bigint generated always as identity,
+      id text primary key,
+      tenant_id text not null,
+      comment_id text not null,
+      status text default 'draft',
+      ai_text text default '',
+      edited_text text default '',
+      reasons text default '[]',
+      warnings text default '[]',
+      model text default '',
+      tokens_in integer default 0,
+      tokens_out integer default 0,
+      fb_reply_id text default '',
+      error_code text default '',
+      user_message text default '',
+      created_at text default '',
+      updated_at text default '',
+      sent_at text default ''
+    )
+    """,
+    """
+    create index if not exists comment_draft_comment
+      on comment_draft(tenant_id, comment_id, created_at desc, seq desc)
+    """,
+    """
+    create unique index if not exists comment_draft_one_active
+      on comment_draft(tenant_id, comment_id)
+      where status in ('sending', 'sent')
+    """,
+    """
+    create table if not exists comment_sync(
+      tenant_id text not null,
+      fb_post_id text not null,
+      last_synced_at text default '',
+      last_error text default '',
+      primary key (tenant_id, fb_post_id)
+    )
+    """,
+)
+
+
+@contextmanager
+def connect():
+    """Mở kết nối psycopg trong một giao dịch duy nhất (commit khi thành công, rollback khi lỗi).
+
+    Các dòng trả về dạng dict (`dict_row`), `search_path` đặt chặt vào schema của shop (`shop` hoặc `VPOST_DB_SCHEMA`).
+    """
+    schema = schema_name()
+    dsn = _dsn()
+    with psycopg.connect(
+        dsn,
+        connect_timeout=CONNECT_TIMEOUT,
+        row_factory=dict_row,
+        options="-c search_path=%s" % schema,
+    ) as conn:
+        with conn.transaction():
+            yield conn
+
+
+_conn = connect
+
+
+@contextmanager
+def tx_locked(key):
+    """Mở giao dịch có khoá tư vấn `pg_advisory_xact_lock` theo (schema, key) để tuần tự hoá đoạn găng."""
+    schema = schema_name()
+    lock_key = "%s:%s" % (schema, key)
+    with connect() as conn:
+        conn.execute("select pg_advisory_xact_lock(hashtextextended(%s, 0))", (lock_key,))
+        yield conn
+
+
+def check_connection():
+    """Kiểm tra nhanh kết nối tới `DATABASE_URL`; trả `(True, None)` hoặc `(False, error_message)`."""
+    try:
+        dsn = _dsn()
+        with psycopg.connect(dsn, connect_timeout=CONNECT_TIMEOUT) as conn:
+            conn.execute("select 1")
+        return True, None
+    except Exception as e:
+        return False, "%s: %s" % (type(e).__name__, e)
 
 
 def init():
-    with _lock, _conn() as c:
-        c.executescript(SCHEMA)
+    """Khởi tạo schema `shop` (hoặc `VPOST_DB_SCHEMA`) cùng toàn bộ bảng/chỉ mục theo kiểu idempotent."""
+    schema = schema_name()
+    with tx_locked("store:init") as c:
+        c.execute(sql.SQL("create schema if not exists {}").format(sql.Identifier(schema)))
+        c.execute(sql.SQL("set local search_path to {}").format(sql.Identifier(schema)))
+        for stmt in SCHEMA_STATEMENTS:
+            c.execute(stmt)
 
 
 def _row(r):
@@ -64,22 +307,40 @@ def _ts():
 
 
 def create_batch(filename, default_page, rows):
-    with _lock, _conn() as c:
-        bid = c.execute("insert into batches(filename, default_page, created_at) values(?,?,?)",
-                        (filename, default_page, _ts())).lastrowid
-        c.executemany("insert into rows(batch_id, idx, data, updated_at) values(?,?,?,?)",
-                      [(bid, i + 1, json.dumps(r, ensure_ascii=False), _ts()) for i, r in enumerate(rows)])
+    with connect() as c:
+        bid = c.execute(
+            "insert into batches(filename, default_page, created_at) values(%s,%s,%s) returning id",
+            (filename, default_page, _ts()),
+        ).fetchone()["id"]
+        if rows:
+            with c.cursor() as cur:
+                cur.executemany(
+                    "insert into rows(batch_id, idx, data, updated_at) values(%s,%s,%s,%s)",
+                    [(bid, i + 1, json.dumps(r, ensure_ascii=False), _ts()) for i, r in enumerate(rows)],
+                )
     return bid
 
 
 def save_result(row_id, res, tokens=(0, 0)):
-    with _lock, _conn() as c:
-        c.execute("""update rows set status=?, reasons=?, warnings=?, post=?, edited='', page_id=?, colors=?, sizes=?,
-                     attempts=?, tokens_in=tokens_in+?, tokens_out=tokens_out+?, updated_at=? where id=?""",
-                  ("written" if res["decision"] == "write" else "flagged", json.dumps(res["reasons"], ensure_ascii=False),
-                   json.dumps(res["warnings"], ensure_ascii=False), res["post"], res["page_id"],
-                   json.dumps(res["colors"], ensure_ascii=False), json.dumps(res["sizes"], ensure_ascii=False),
-                   res["attempts"], tokens[0], tokens[1], _ts(), row_id))
+    with connect() as c:
+        c.execute(
+            """update rows set status=%s, reasons=%s, warnings=%s, post=%s, edited='', page_id=%s, colors=%s, sizes=%s,
+               attempts=%s, tokens_in=tokens_in+%s, tokens_out=tokens_out+%s, updated_at=%s where id=%s""",
+            (
+                "written" if res["decision"] == "write" else "flagged",
+                json.dumps(res["reasons"], ensure_ascii=False),
+                json.dumps(res["warnings"], ensure_ascii=False),
+                res["post"],
+                res["page_id"],
+                json.dumps(res["colors"], ensure_ascii=False),
+                json.dumps(res["sizes"], ensure_ascii=False),
+                res["attempts"],
+                tokens[0],
+                tokens[1],
+                _ts(),
+                row_id,
+            ),
+        )
 
 
 def update(row_id, **fields):
@@ -87,22 +348,23 @@ def update(row_id, **fields):
         if k in fields:
             fields[k] = json.dumps(fields[k], ensure_ascii=False)
     fields["updated_at"] = _ts()
-    with _lock, _conn() as c:
-        c.execute("update rows set %s where id=?" % ", ".join("%s=?" % k for k in fields), (*fields.values(), row_id))
+    assignments = sql.SQL(", ").join(sql.SQL("{}=%s").format(sql.Identifier(k)) for k in fields)
+    with connect() as c:
+        c.execute(sql.SQL("update rows set {} where id=%s").format(assignments), (*fields.values(), row_id))
 
 
 def get_row(row_id):
-    with _conn() as c:
-        r = c.execute("select * from rows where id=?", (row_id,)).fetchone()
+    with connect() as c:
+        r = c.execute("select * from rows where id=%s", (row_id,)).fetchone()
     return _row(r) if r else None
 
 
 def get_batch(batch_id):
-    with _conn() as c:
-        b = c.execute("select * from batches where id=?", (batch_id,)).fetchone()
+    with connect() as c:
+        b = c.execute("select * from batches where id=%s", (batch_id,)).fetchone()
         if not b:
             return None
-        rows = [_row(r) for r in c.execute("select * from rows where batch_id=? order by idx", (batch_id,))]
+        rows = [_row(r) for r in c.execute("select * from rows where batch_id=%s order by idx, id", (batch_id,))]
     return dict(b, rows=rows, counts=_counts(rows))
 
 
@@ -117,51 +379,73 @@ def _counts(rows):
 
 
 def list_batches():
-    with _conn() as c:
+    with connect() as c:
         bs = [dict(b) for b in c.execute("select * from batches order by id desc limit 50")]
         for b in bs:
-            b["counts"] = _counts([_row(r) for r in c.execute("select * from rows where batch_id=?", (b["id"],))])
+            b["counts"] = _counts(
+                [_row(r) for r in c.execute("select * from rows where batch_id=%s order by idx, id", (b["id"],))]
+            )
     return bs
 
 
 def taken_slots(page_id):
-    with _conn() as c:
-        return {r[0] for r in c.execute("select slot from rows where status='scheduled' and page_id=?", (page_id,))}
+    with connect() as c:
+        return {
+            r["slot"]
+            for r in c.execute("select slot from rows where status='scheduled' and page_id=%s", (page_id,))
+        }
 
 
 def scheduled_between(start_iso, end_iso):
-    with _conn() as c:
-        return [_row(r) for r in c.execute(
-            "select * from rows where status='scheduled' and slot>=? and slot<? order by slot", (start_iso, end_iso))]
+    with connect() as c:
+        return [
+            _row(r)
+            for r in c.execute(
+                "select * from rows where status='scheduled' and slot>=%s and slot<%s order by slot, id",
+                (start_iso, end_iso),
+            )
+        ]
 
 
 # ---------------- VPOST: catalog + post_batch + post_job ----------------
 def replace_catalog(rows):
     """Thay toàn bộ catalog bằng file mới (mỗi mã một dòng)."""
-    with _lock, _conn() as c:
+    with tx_locked("catalog") as c:
         c.execute("delete from catalog")
-        c.executemany("insert into catalog(code, idx, data) values(?,?,?)",
-                      [(r["ma_sp"], i, json.dumps(r, ensure_ascii=False)) for i, r in enumerate(rows)])
+        if rows:
+            with c.cursor() as cur:
+                cur.executemany(
+                    "insert into catalog(code, idx, data) values(%s,%s,%s)",
+                    [(r["ma_sp"], i, json.dumps(r, ensure_ascii=False)) for i, r in enumerate(rows)],
+                )
 
 
 def catalog_rows():
-    with _conn() as c:
-        return [json.loads(r[0]) for r in c.execute("select data from catalog order by idx")]
+    with connect() as c:
+        return [json.loads(r["data"]) for r in c.execute("select data from catalog order by idx, code")]
 
 
 def catalog_row(code):
-    with _conn() as c:
-        r = c.execute("select data from catalog where code=?", (code,)).fetchone()
-    return json.loads(r[0]) if r else None
+    with connect() as c:
+        r = c.execute("select data from catalog where code=%s", (code,)).fetchone()
+    return json.loads(r["data"]) if r else None
 
 
 def create_post_batch(batch, jobs):
-    with _lock, _conn() as c:
-        c.execute("insert into post_batch(id, product_code, color, format, created_at) "
-                  "values(:id, :product_code, :color, :format, :created_at)", batch)
+    with connect() as c:
+        c.execute(
+            "insert into post_batch(id, product_code, color, format, created_at) "
+            "values(%(id)s, %(product_code)s, %(color)s, %(format)s, %(created_at)s)",
+            batch,
+        )
         for j in jobs:
             row = dict(j, media=json.dumps(j["media"], ensure_ascii=False))
-            c.execute("insert into post_job(%s) values(%s)" % (", ".join(row), ", ".join(":" + k for k in row)), row)
+            cols = list(row.keys())
+            stmt = sql.SQL("insert into post_job({}) values({})").format(
+                sql.SQL(", ").join(sql.Identifier(k) for k in cols),
+                sql.SQL(", ").join(sql.Placeholder(k) for k in cols),
+            )
+            c.execute(stmt, row)
 
 
 def _job(r):
@@ -170,73 +454,574 @@ def _job(r):
     return d
 
 
-def post_jobs(where="1=1", params=(), order="created_at desc"):
-    with _conn() as c:
-        return [_job(r) for r in c.execute("select * from post_job where %s order by %s" % (where, order), params)]
+def post_jobs(where="1=1", params=(), order="created_at desc, id desc"):
+    query = "select * from post_job where %s order by %s" % (where, order)
+    with connect() as c:
+        cur = c.execute(query, params) if params else c.execute(query)
+        return [_job(r) for r in cur]
 
 
 def post_job(job_id):
-    rows = post_jobs("id=?", (job_id,))
+    rows = post_jobs("id=%s", (job_id,))
     return rows[0] if rows else None
 
 
 def post_batch(batch_id):
-    with _conn() as c:
-        r = c.execute("select * from post_batch where id=?", (batch_id,)).fetchone()
+    with connect() as c:
+        r = c.execute("select * from post_batch where id=%s", (batch_id,)).fetchone()
     return dict(r) if r else None
 
 
 def update_post_job(job_id, updated_at, **fields):
     fields["updated_at"] = updated_at
-    with _lock, _conn() as c:
-        c.execute("update post_job set %s where id=?" % ", ".join("%s=?" % k for k in fields), (*fields.values(), job_id))
+    assignments = sql.SQL(", ").join(sql.SQL("{}=%s").format(sql.Identifier(k)) for k in fields)
+    with connect() as c:
+        c.execute(sql.SQL("update post_job set {} where id=%s").format(assignments), (*fields.values(), job_id))
 
 
 # ---------------- VPOST: Page Facebook đã nối + trạng thái kênh ----------------
 def save_fb_pages(pages, user_token, ts):
     """Thêm/cập nhật Page có token; trả (mới, cập nhật). Page không có token thì bên gọi tự đếm là bỏ qua."""
     new = upd = 0
-    with _lock, _conn() as c:
+    with tx_locked("fb_pages") as c:
         for p in pages:
-            exists = c.execute("select 1 from fb_page where page_id=?", (p["id"],)).fetchone()
-            c.execute("insert into fb_page(page_id, name, page_token, connected_at) values(?,?,?,?) "
-                      "on conflict(page_id) do update set name=excluded.name, page_token=excluded.page_token",
-                      (p["id"], p["name"], p["access_token"], ts))
-            upd, new = (upd + 1, new) if exists else (upd, new + 1)
-        c.execute("insert into fb_user(id, user_token, saved_at) values(1,?,?) "
-                  "on conflict(id) do update set user_token=excluded.user_token, saved_at=excluded.saved_at",
-                  (user_token, ts))
+            r = c.execute(
+                "insert into fb_page(page_id, name, page_token, connected_at) values(%s,%s,%s,%s) "
+                "on conflict(page_id) do update set name=excluded.name, page_token=excluded.page_token "
+                "returning (xmax = 0) as inserted",
+                (p["id"], p["name"], p["access_token"], ts),
+            ).fetchone()
+            if r["inserted"]:
+                new += 1
+            else:
+                upd += 1
+        c.execute(
+            "insert into fb_user(id, user_token, saved_at) values(1,%s,%s) "
+            "on conflict(id) do update set user_token=excluded.user_token, saved_at=excluded.saved_at",
+            (user_token, ts),
+        )
     return new, upd
 
 
 def fb_pages():
-    with _conn() as c:
-        return [dict(r) for r in c.execute("select * from fb_page order by connected_at, name")]
+    with connect() as c:
+        return [dict(r) for r in c.execute("select * from fb_page order by connected_at, name, page_id")]
 
 
 def fb_page(page_id):
-    with _conn() as c:
-        r = c.execute("select * from fb_page where page_id=?", (page_id,)).fetchone()
+    with connect() as c:
+        r = c.execute("select * from fb_page where page_id=%s", (page_id,)).fetchone()
     return dict(r) if r else None
 
 
 def fb_user_token():
-    with _conn() as c:
+    with connect() as c:
         r = c.execute("select user_token from fb_user where id=1").fetchone()
-    return r[0] if r else None
+    return r["user_token"] if r else None
 
 
 def delete_fb_page(page_id):
-    with _lock, _conn() as c:
-        c.execute("delete from fb_page where page_id=?", (page_id,))
+    with connect() as c:
+        c.execute("delete from fb_page where page_id=%s", (page_id,))
 
 
 def channel_statuses():
-    with _conn() as c:
-        return {r[0]: r[1] for r in c.execute("select channel_id, status from channel_status")}
+    with connect() as c:
+        return {r["channel_id"]: r["status"] for r in c.execute("select channel_id, status from channel_status")}
 
 
 def set_channel_status(channel_id, status):
-    with _lock, _conn() as c:
-        c.execute("insert into channel_status(channel_id, status) values(?,?) "
-                  "on conflict(channel_id) do update set status=excluded.status", (channel_id, status))
+    with connect() as c:
+        c.execute(
+            "insert into channel_status(channel_id, status) values(%s,%s) "
+            "on conflict(channel_id) do update set status=excluded.status",
+            (channel_id, status),
+        )
+
+
+# ---------------- VPOST: bình luận Facebook + nháp trả lời + trạng thái đồng bộ ----------------
+def _draft(r):
+    d = dict(r)
+    d.pop("seq", None)
+    for k in ("reasons", "warnings"):
+        d[k] = json.loads(d.get(k) or "[]")
+    return d
+
+
+def get_comment_sync(tenant_id, fb_post_id):
+    with connect() as c:
+        r = c.execute(
+            "select * from comment_sync where tenant_id=%s and fb_post_id=%s",
+            (tenant_id, fb_post_id),
+        ).fetchone()
+    return dict(r) if r else None
+
+
+def set_comment_sync_ok(tenant_id, fb_post_id, synced_at):
+    with connect() as c:
+        c.execute(
+            "insert into comment_sync(tenant_id, fb_post_id, last_synced_at, last_error) values(%s,%s,%s,'') "
+            "on conflict(tenant_id, fb_post_id) do update set last_synced_at=excluded.last_synced_at, last_error=''",
+            (tenant_id, fb_post_id, synced_at),
+        )
+
+
+def set_comment_sync_error(tenant_id, fb_post_id, error_text):
+    with connect() as c:
+        c.execute(
+            "insert into comment_sync(tenant_id, fb_post_id, last_synced_at, last_error) values(%s,%s,'',%s) "
+            "on conflict(tenant_id, fb_post_id) do update set last_error=excluded.last_error",
+            (tenant_id, fb_post_id, error_text),
+        )
+
+
+def _upsert_fb_comment_in_tx(c, tenant_id, item):
+    row = dict(item, tenant_id=tenant_id)
+    r = c.execute(
+        """insert into fb_comment(
+             id, tenant_id, channel_id, page_id, post_job_id, fb_post_id, product_code,
+             parent_id, from_id, from_name, is_from_page, message, permalink_url,
+             is_hidden, can_comment, created_time, status, synced_at, updated_at
+           ) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+           on conflict(tenant_id, id) do update set
+             channel_id=excluded.channel_id,
+             page_id=excluded.page_id,
+             post_job_id=excluded.post_job_id,
+             fb_post_id=excluded.fb_post_id,
+             product_code=excluded.product_code,
+             parent_id=excluded.parent_id,
+             from_id=excluded.from_id,
+             from_name=excluded.from_name,
+             is_from_page=excluded.is_from_page,
+             message=excluded.message,
+             permalink_url=excluded.permalink_url,
+             is_hidden=excluded.is_hidden,
+             can_comment=excluded.can_comment,
+             created_time=excluded.created_time,
+             synced_at=excluded.synced_at,
+             updated_at=excluded.updated_at
+           returning (xmax = 0) as inserted""",
+        (
+            row["id"], tenant_id, row["channel_id"], row["page_id"], row["post_job_id"], row["fb_post_id"],
+            row["product_code"], row["parent_id"], row["from_id"], row["from_name"], int(row["is_from_page"]),
+            row["message"], row["permalink_url"], int(row["is_hidden"]), int(row["can_comment"]),
+            row["created_time"], row.get("status") or "unreplied", row["synced_at"], row["updated_at"],
+        ),
+    ).fetchone()
+    return bool(r["inserted"])
+
+
+def upsert_fb_comment(tenant_id, item):
+    """Thêm mới hoặc cập nhật bình luận theo tenant_id. Trả True nếu mới, False nếu đã có (cập nhật)."""
+    with connect() as c:
+        return _upsert_fb_comment_in_tx(c, tenant_id, item)
+
+
+def reconcile_replied_comments(tenant_id, fb_post_id, updated_at):
+    """Đánh dấu 'replied' cho bình luận khách chưa trả lời nếu đã có trả lời từ Page.
+
+    Trả lời do VPOST gửi được gắn với đúng comment_id qua comment_draft.fb_reply_id nên không tự đóng
+    các bình luận anh em cùng luồng hay làm đổi trạng thái bình luận cha khác với trước khi đồng bộ.
+    """
+    with connect() as c:
+        c.execute(
+            """update fb_comment set status='replied', updated_at=%s
+               where tenant_id=%s and fb_post_id=%s and is_from_page=0 and status='unreplied'
+                 and (
+                   exists (
+                     select 1 from comment_draft d
+                     where d.tenant_id=fb_comment.tenant_id and d.comment_id=fb_comment.id and d.status='sent'
+                   )
+                   or
+                   (parent_id='' and exists (
+                     select 1 from fb_comment p
+                     where p.tenant_id=fb_comment.tenant_id and p.is_from_page=1 and p.parent_id=fb_comment.id
+                       and not exists (
+                         select 1 from comment_draft d
+                         where d.tenant_id=p.tenant_id and d.status='sent'
+                           and d.fb_reply_id=p.id and d.fb_reply_id!='' and d.comment_id!=fb_comment.id
+                       )
+                   ))
+                   or
+                   (parent_id!='' and exists (
+                     select 1 from fb_comment p
+                     where p.tenant_id=fb_comment.tenant_id and p.is_from_page=1
+                       and p.parent_id=fb_comment.parent_id and p.created_time>=fb_comment.created_time
+                       and not exists (
+                         select 1 from comment_draft d
+                         where d.tenant_id=p.tenant_id and d.status='sent'
+                           and d.fb_reply_id=p.id and d.fb_reply_id!='' and d.comment_id!=fb_comment.id
+                       )
+                   ))
+                 )""",
+            (updated_at, tenant_id, fb_post_id),
+        )
+
+
+def get_comment(tenant_id, comment_id):
+    """Đọc một bình luận theo (tenant_id, comment_id), gồm cả bình luận của Page (cho luồng kiểm duyệt)."""
+    if not comment_id:
+        return None
+    with connect() as c:
+        r = c.execute(
+            "select * from fb_comment where tenant_id=%s and id=%s",
+            (tenant_id, comment_id),
+        ).fetchone()
+    return dict(r) if r else None
+
+
+def list_comments_by_ids(tenant_id, ids):
+    """Đọc danh sách bình luận theo (tenant_id, ids), giữ nguyên thứ tự đầu vào và bỏ id không tồn tại/khác tenant."""
+    clean = list(dict.fromkeys(str(x) for x in (ids or ()) if x))
+    if not clean:
+        return []
+    with connect() as c:
+        rows = c.execute(
+            "select * from fb_comment where tenant_id=%s and id = any(%s)",
+            (tenant_id, clean),
+        ).fetchall()
+    by_id = {r["id"]: dict(r) for r in rows}
+    return [by_id[cid] for cid in clean if cid in by_id]
+
+
+def get_fb_comment(tenant_id, comment_id, customer_only=True):
+    sql_q = "select * from fb_comment where id=%s and tenant_id=%s"
+    if customer_only:
+        sql_q += " and is_from_page=0"
+    with connect() as c:
+        r = c.execute(sql_q, (comment_id, tenant_id)).fetchone()
+    return dict(r) if r else None
+
+
+def list_fb_comments(tenant_id, channel_id=None, post_job_id=None, include_deleted=False):
+    """Danh sách bình luận khách (is_from_page=0), mới nhất trước, luôn lọc theo tenant_id (mặc định bỏ status='deleted')."""
+    where, params = ["tenant_id=%s", "is_from_page=0"], [tenant_id]
+    if not include_deleted:
+        where.append("status!='deleted'")
+    if channel_id:
+        where.append("channel_id=%s")
+        params.append(channel_id)
+    if post_job_id:
+        where.append("post_job_id=%s")
+        params.append(post_job_id)
+    with connect() as c:
+        rows = c.execute(
+            "select * from fb_comment where %s order by created_time desc, id desc" % " and ".join(where),
+            tuple(params),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def page_replies_for_threads(tenant_id, thread_ids):
+    """Trả dict parent_id → [bình luận của Page theo thứ tự cũ→mới]."""
+    ids = list(dict.fromkeys(x for x in thread_ids if x))
+    if not ids:
+        return {}
+    with connect() as c:
+        rows = c.execute(
+            "select * from fb_comment where tenant_id=%s and is_from_page=1 and parent_id = any(%s) "
+            "order by created_time asc, id asc",
+            (tenant_id, ids),
+        ).fetchall()
+    out = {}
+    for r in rows:
+        d = dict(r)
+        out.setdefault(d["parent_id"], []).append(d)
+    return out
+
+
+def sent_reply_owners(tenant_id, reply_ids):
+    """Trả dict fb_reply_id → comment_id cho các bình luận trả lời đã gửi qua VPOST."""
+    ids = list(dict.fromkeys(x for x in reply_ids if x))
+    if not ids:
+        return {}
+    with connect() as c:
+        rows = c.execute(
+            "select fb_reply_id, comment_id from comment_draft "
+            "where tenant_id=%s and status='sent' and fb_reply_id = any(%s)",
+            (tenant_id, ids),
+        ).fetchall()
+    return {r["fb_reply_id"]: r["comment_id"] for r in rows}
+
+
+def update_fb_comment(tenant_id, comment_id, **fields):
+    if not fields:
+        return
+    clean = {
+        k: (int(v) if k in INT_BOOL_COMMENT_COLS and isinstance(v, bool) else v)
+        for k, v in fields.items()
+    }
+    assignments = sql.SQL(", ").join(sql.SQL("{}=%s").format(sql.Identifier(k)) for k in clean)
+    with connect() as c:
+        c.execute(
+            sql.SQL("update fb_comment set {} where id=%s and tenant_id=%s").format(assignments),
+            (*clean.values(), comment_id, tenant_id),
+        )
+
+
+def has_page_reply_or_sent_draft(tenant_id, comment):
+    """Kiểm tra bình luận khách đã có trả lời từ Page hoặc bản nháp đã gửi hay chưa."""
+    with connect() as c:
+        sent = c.execute(
+            "select 1 from comment_draft where tenant_id=%s and comment_id=%s and status='sent' limit 1",
+            (tenant_id, comment["id"]),
+        ).fetchone()
+        if sent:
+            return True
+        if not comment.get("parent_id"):
+            rep = c.execute(
+                """select 1 from fb_comment p
+                   where p.tenant_id=%s and p.is_from_page=1 and p.parent_id=%s
+                     and not exists (
+                       select 1 from comment_draft d
+                       where d.tenant_id=p.tenant_id and d.status='sent'
+                         and d.fb_reply_id=p.id and d.fb_reply_id!='' and d.comment_id!=%s
+                     )
+                   limit 1""",
+                (tenant_id, comment["id"], comment["id"]),
+            ).fetchone()
+        else:
+            rep = c.execute(
+                """select 1 from fb_comment p
+                   where p.tenant_id=%s and p.is_from_page=1 and p.parent_id=%s and p.created_time>=%s
+                     and not exists (
+                       select 1 from comment_draft d
+                       where d.tenant_id=p.tenant_id and d.status='sent'
+                         and d.fb_reply_id=p.id and d.fb_reply_id!='' and d.comment_id!=%s
+                     )
+                   limit 1""",
+                (tenant_id, comment["parent_id"], comment["created_time"], comment["id"]),
+            ).fetchone()
+    return bool(rep)
+
+
+def create_comment_draft(tenant_id, draft):
+    row = dict(draft, tenant_id=tenant_id)
+    for k in ("reasons", "warnings"):
+        row[k] = json.dumps(row.get(k) or [], ensure_ascii=False)
+    with connect() as c:
+        c.execute(
+            """insert into comment_draft(
+                 id, tenant_id, comment_id, status, ai_text, edited_text, reasons, warnings,
+                 model, tokens_in, tokens_out, fb_reply_id, error_code, user_message,
+                 created_at, updated_at, sent_at
+               ) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+            (
+                row["id"], tenant_id, row["comment_id"], row.get("status") or "draft",
+                row.get("ai_text") or "", row.get("edited_text") or "", row["reasons"], row["warnings"],
+                row.get("model") or "", int(row.get("tokens_in") or 0), int(row.get("tokens_out") or 0),
+                row.get("fb_reply_id") or "", row.get("error_code") or "", row.get("user_message") or "",
+                row.get("created_at") or "", row.get("updated_at") or "", row.get("sent_at") or "",
+            ),
+        )
+
+
+def _comment_lock_key(tenant_id, comment_id):
+    return "comment:%s:%s" % (tenant_id, comment_id)
+
+
+def create_ai_comment_draft(tenant_id, comment_id, draft):
+    """Lưu nháp AI nguyên tử trong khoá tư vấn/giao dịch; trả (True, None) hoặc (False, 'NOT_FOUND'|'CONFLICT')."""
+    row = dict(draft, tenant_id=tenant_id, comment_id=comment_id)
+    for k in ("reasons", "warnings"):
+        row[k] = json.dumps(row.get(k) or [], ensure_ascii=False)
+    with tx_locked(_comment_lock_key(tenant_id, comment_id)) as c:
+        c_row = c.execute(
+            "select status from fb_comment where id=%s and tenant_id=%s and is_from_page=0",
+            (comment_id, tenant_id),
+        ).fetchone()
+        if not c_row or c_row["status"] == "deleted":
+            return False, "NOT_FOUND"
+        if c_row["status"] == "replied":
+            return False, "CONFLICT"
+        busy = c.execute(
+            "select 1 from comment_draft where tenant_id=%s and comment_id=%s and status in ('sending','sent') limit 1",
+            (tenant_id, comment_id),
+        ).fetchone()
+        if busy:
+            return False, "CONFLICT"
+        c.execute(
+            """insert into comment_draft(
+                 id, tenant_id, comment_id, status, ai_text, edited_text, reasons, warnings,
+                 model, tokens_in, tokens_out, fb_reply_id, error_code, user_message,
+                 created_at, updated_at, sent_at
+               ) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+            (
+                row["id"], tenant_id, comment_id, row.get("status") or "draft",
+                row.get("ai_text") or "", row.get("edited_text") or "", row["reasons"], row["warnings"],
+                row.get("model") or "", int(row.get("tokens_in") or 0), int(row.get("tokens_out") or 0),
+                row.get("fb_reply_id") or "", row.get("error_code") or "", row.get("user_message") or "",
+                row.get("created_at") or "", row.get("updated_at") or "", row.get("sent_at") or "",
+            ),
+        )
+        return True, None
+
+
+def latest_comment_draft(tenant_id, comment_id):
+    with connect() as c:
+        r = c.execute(
+            "select * from comment_draft where tenant_id=%s and comment_id=%s order by created_at desc, seq desc limit 1",
+            (tenant_id, comment_id),
+        ).fetchone()
+    return _draft(r) if r else None
+
+
+def latest_comment_drafts(tenant_id, comment_ids):
+    ids = list(dict.fromkeys(x for x in comment_ids if x))
+    if not ids:
+        return {}
+    with connect() as c:
+        rows = c.execute(
+            "select * from comment_draft where tenant_id=%s and comment_id = any(%s) "
+            "order by created_at desc, seq desc",
+            (tenant_id, ids),
+        ).fetchall()
+    out = {}
+    for r in rows:
+        d = _draft(r)
+        if d["comment_id"] not in out:
+            out[d["comment_id"]] = d
+    return out
+
+
+def has_sending_or_sent_draft(tenant_id, comment_id):
+    with connect() as c:
+        r = c.execute(
+            "select 1 from comment_draft where tenant_id=%s and comment_id=%s and status in ('sending','sent') limit 1",
+            (tenant_id, comment_id),
+        ).fetchone()
+    return bool(r)
+
+
+def update_comment_draft(tenant_id, draft_id, **fields):
+    if not fields:
+        return
+    for k in ("reasons", "warnings"):
+        if k in fields:
+            fields[k] = json.dumps(fields[k], ensure_ascii=False)
+    assignments = sql.SQL(", ").join(sql.SQL("{}=%s").format(sql.Identifier(k)) for k in fields)
+    with connect() as c:
+        c.execute(
+            sql.SQL("update comment_draft set {} where id=%s and tenant_id=%s").format(assignments),
+            (*fields.values(), draft_id, tenant_id),
+        )
+
+
+def patch_comment_draft(tenant_id, comment_id, new_draft_id, text, ts, *, valid_text=True, warnings=None):
+    """Lưu chỉnh sửa nháp nguyên tử dưới khoá tư vấn/giao dịch; không bao giờ ghi đè nháp 'sending'/'sent'."""
+    warn_json = json.dumps(list(warnings), ensure_ascii=False) if warnings is not None else None
+    try:
+        with tx_locked(_comment_lock_key(tenant_id, comment_id)) as c:
+            c_row = c.execute(
+                "select status from fb_comment where id=%s and tenant_id=%s and is_from_page=0",
+                (comment_id, tenant_id),
+            ).fetchone()
+            if not c_row or c_row["status"] == "deleted":
+                return None, "NOT_FOUND"
+            busy = c.execute(
+                "select 1 from comment_draft where tenant_id=%s and comment_id=%s and status in ('sending','sent') limit 1",
+                (tenant_id, comment_id),
+            ).fetchone()
+            if busy:
+                return None, "CONFLICT"
+            latest = c.execute(
+                "select id, status from comment_draft where tenant_id=%s and comment_id=%s "
+                "order by created_at desc, seq desc limit 1",
+                (tenant_id, comment_id),
+            ).fetchone()
+            if latest:
+                if latest["status"] in ("sending", "sent"):
+                    return None, "CONFLICT"
+                upd = {"edited_text": text, "updated_at": ts}
+                if warn_json is not None:
+                    upd["warnings"] = warn_json
+                if latest["status"] == "failed":
+                    upd.update(status="draft", reasons="[]", error_code="", user_message="")
+                elif latest["status"] == "flagged" and valid_text:
+                    upd.update(status="draft", reasons="[]", error_code="", user_message="")
+                assignments = sql.SQL(", ").join(sql.SQL("{}=%s").format(sql.Identifier(k)) for k in upd)
+                cur = c.execute(
+                    sql.SQL(
+                        "update comment_draft set {} where id=%s and tenant_id=%s and status not in ('sending','sent')"
+                    ).format(assignments),
+                    (*upd.values(), latest["id"], tenant_id),
+                )
+                if cur.rowcount == 0:
+                    return None, "CONFLICT"
+                return latest["id"], None
+            c.execute(
+                """insert into comment_draft(
+                     id, tenant_id, comment_id, status, ai_text, edited_text, reasons, warnings,
+                     model, tokens_in, tokens_out, fb_reply_id, error_code, user_message,
+                     created_at, updated_at, sent_at
+                   ) values(%s,%s,%s,'draft','',%s,'[]',%s,'',0,0,'','','',%s,%s,'')""",
+                (new_draft_id, tenant_id, comment_id, text, warn_json or "[]", ts, ts),
+            )
+            return new_draft_id, None
+    except psycopg.IntegrityError:
+        return None, "CONFLICT"
+
+
+def claim_comment_reply(tenant_id, comment_id, new_draft_id, text, ts):
+    """Kiểm tra điều kiện gửi và chuyển nháp sang 'sending' nguyên tử trong khoá tư vấn/giao dịch. Trả (draft_id, error_code|None)."""
+    try:
+        with tx_locked(_comment_lock_key(tenant_id, comment_id)) as c:
+            c_row = c.execute(
+                "select status, can_comment from fb_comment where id=%s and tenant_id=%s and is_from_page=0",
+                (comment_id, tenant_id),
+            ).fetchone()
+            if not c_row or c_row["status"] == "deleted":
+                return None, "NOT_FOUND"
+            if not c_row["can_comment"]:
+                return None, "CANNOT_COMMENT"
+            if c_row["status"] == "replied":
+                return None, "CONFLICT"
+            busy = c.execute(
+                "select 1 from comment_draft where tenant_id=%s and comment_id=%s and status in ('sending','sent') limit 1",
+                (tenant_id, comment_id),
+            ).fetchone()
+            if busy:
+                return None, "CONFLICT"
+            latest = c.execute(
+                "select id from comment_draft where tenant_id=%s and comment_id=%s order by created_at desc, seq desc limit 1",
+                (tenant_id, comment_id),
+            ).fetchone()
+            if latest:
+                did = latest["id"]
+                cur = c.execute(
+                    "update comment_draft set status='sending', edited_text=%s, reasons='[]', "
+                    "error_code='', user_message='', updated_at=%s "
+                    "where id=%s and tenant_id=%s and status not in ('sending','sent')",
+                    (text, ts, did, tenant_id),
+                )
+                if cur.rowcount == 0:
+                    return None, "CONFLICT"
+                return did, None
+            c.execute(
+                """insert into comment_draft(
+                     id, tenant_id, comment_id, status, ai_text, edited_text, reasons, warnings,
+                     model, tokens_in, tokens_out, fb_reply_id, error_code, user_message,
+                     created_at, updated_at, sent_at
+                   ) values(%s,%s,%s,'sending','',%s,'[]','[]','',0,0,'','','',%s,%s,'')""",
+                (new_draft_id, tenant_id, comment_id, text, ts, ts),
+            )
+            return new_draft_id, None
+    except psycopg.IntegrityError:
+        return None, "CONFLICT"
+
+
+def complete_comment_reply(tenant_id, draft_id, comment_id, fb_reply_id, sent_ts, page_reply_item=None):
+    """Hoàn tất gửi trả lời trong một giao dịch duy nhất: nháp → 'sent', bình luận → 'replied', lưu trả lời của Page."""
+    with tx_locked(_comment_lock_key(tenant_id, comment_id)) as c:
+        c.execute(
+            "update comment_draft set status='sent', fb_reply_id=%s, error_code='', "
+            "user_message='Đã gửi trả lời lên Facebook', sent_at=%s, updated_at=%s "
+            "where id=%s and tenant_id=%s",
+            (fb_reply_id or "", sent_ts, sent_ts, draft_id, tenant_id),
+        )
+        c.execute(
+            "update fb_comment set status='replied', updated_at=%s where id=%s and tenant_id=%s",
+            (sent_ts, comment_id, tenant_id),
+        )
+        if page_reply_item:
+            _upsert_fb_comment_in_tx(c, tenant_id, page_reply_item)

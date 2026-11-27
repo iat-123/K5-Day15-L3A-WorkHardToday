@@ -8,4 +8,5 @@ python-multipart
 openpyxl
 openai
 httpx
+psycopg[binary]>=3.2,<4
 pytest

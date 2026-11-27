@@ -15,6 +15,8 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from starlette.exceptions import HTTPException as StarletteHTTPException  # noqa: E402
 
 import agent  # noqa: E402
+import moderation_api  # noqa: E402
+import moderation_store  # noqa: E402
 import rules  # noqa: E402
 import schedule  # noqa: E402
 import store  # noqa: E402
@@ -29,7 +31,14 @@ MODEL = call_model      # test thay bằng model giả
 SYNC = False            # test: xử lý ngay trong request
 pool = ThreadPoolExecutor(max_workers=4)
 app = FastAPI(title="VPOST")
-store.init()
+try:
+    store.init()
+except Exception as e:
+    raise RuntimeError(
+        "Không thể kết nối hoặc khởi tạo cơ sở dữ liệu PostgreSQL (DATABASE_URL): %s" % e
+    ) from e
+moderation_store.init_moderation()
+app.include_router(moderation_api.router)
 app.include_router(vpost_api.router)
 if not store.catalog_rows():  # máy mới: nạp sẵn file demo để giao diện có dữ liệu
     vpost_api.load_catalog(rules.read_table(open(os.path.join(rules.DATA, "demo_products.xlsx"), "rb").read(), "demo.xlsx"))
