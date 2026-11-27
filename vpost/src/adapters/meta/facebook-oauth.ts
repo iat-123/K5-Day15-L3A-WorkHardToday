@@ -35,11 +35,13 @@ import { DEFAULT_GRAPH_VERSION, makeGraphClient, type GraphClient } from "./grap
  * step names and Page ids.
  */
 
-/** Exactly what this product needs: list Pages, post, read the Page's posts. */
+/** Exactly what this product needs: list Pages, post, read posts/comments, and reply. */
 export const FACEBOOK_CONNECT_SCOPES = [
   "pages_show_list",
   "pages_manage_posts",
   "pages_read_engagement",
+  "pages_read_user_content",
+  "pages_manage_engagement",
 ] as const;
 
 const AUTH_DIALOG_BASE = "https://www.facebook.com";

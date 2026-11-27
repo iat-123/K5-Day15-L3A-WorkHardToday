@@ -13,6 +13,7 @@ import { buildBaseAuthConfig, loadAuthEnv } from "./auth.config";
 import { PASSWORD_PROVIDER_ID, PasswordSignInError } from "./password-errors";
 import { importChannelsFromSignIn } from "./signin-channel-import";
 import { decideSignIn } from "./signin-gate";
+import { importPagesToVpostBackend, VpostBackendImportError } from "./vpost-backend-import";
 
 /**
  * Full Auth.js v5 instance: base config + the providers.
@@ -188,13 +189,41 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
       ...base.events,
       async signIn({ account }) {
         if (account?.provider !== "facebook") return;
-        const token = typeof account.access_token === "string" ? account.access_token : "";
+        const token = typeof account.access_token === "string" ? account.access_token.trim() : "";
         if (token.length === 0) {
           getContainer().logger.warn("Facebook sign-in carried no access token", {
+            code: "TOKEN_EXPIRED",
             error_code: "TOKEN_EXPIRED",
             provider: "facebook",
             step: "import_on_signin",
           });
+          return;
+        }
+        const vpostApiUrl = process.env.VPOST_API_URL?.trim();
+        if (vpostApiUrl) {
+          const container = getContainer();
+          try {
+            await importPagesToVpostBackend({
+              apiUrl: vpostApiUrl,
+              tenantId: process.env.VPOST_TENANT_ID,
+              userAccessToken: token,
+              logger: container.logger,
+            });
+          } catch (error) {
+            const code = VpostBackendImportError.is(error)
+              ? error.code
+              : AppError.from(error, "INTERNAL").code;
+            container.logger.error(
+              "Could not import Pages to VPOST backend from the sign-in token — sign-in still allowed",
+              {
+                provider: "facebook",
+                step: "import_on_signin",
+                code,
+                error_code: code,
+                alert: "OPERATOR_ATTENTION",
+              },
+            );
+          }
           return;
         }
         const facebookUserId =
