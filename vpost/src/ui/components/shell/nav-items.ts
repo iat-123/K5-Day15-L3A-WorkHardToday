@@ -52,7 +52,13 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       { href: "/bulk", label: "Chạy hàng loạt" },
     ],
   },
-  { title: "Theo dõi", items: [{ href: "/posts", label: "Bài đăng" }] },
+  {
+    title: "Theo dõi",
+    items: [
+      { href: "/posts", label: "Bài đăng" },
+      { href: "/comments", label: "Bình luận" },
+    ],
+  },
   {
     title: "Dữ liệu",
     items: [

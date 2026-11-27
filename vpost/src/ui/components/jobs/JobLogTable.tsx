@@ -9,6 +9,10 @@ import {
   channelSentenceName,
 } from "@/ui/components/channels/channel-option-labels";
 import { ChannelNameCell } from "@/ui/components/channels/ChannelNameCell";
+import {
+  DEFAULT_COMMENT_FILTER,
+  buildCommentsUrl,
+} from "@/ui/components/comments/comment-filters";
 import { JobStatusBadge } from "@/ui/components/post/PostStatusBadge";
 import { ColorChip } from "@/ui/components/posts/ColorChip";
 import { FoldToggle } from "@/ui/components/posts/FoldToggle";
@@ -233,6 +237,7 @@ function JobLogRows({
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
               {/* Direct Facebook Link */}
               {!isFolded && <PublishedLink job={job} />}
+              {!isFolded && <CommentsLink job={job} />}
 
               {/* Batch link */}
               <Link
@@ -281,6 +286,7 @@ function JobLogRows({
                         {formatDateTime(member.updatedAt)}
                       </span>
                       <PublishedLink job={member} />
+                      <CommentsLink job={member} />
                     </div>
 
                     {member.canRetry && (
@@ -317,6 +323,20 @@ function PublishedLink({ job }: { job: PostJobLogEntry }) {
       <span>Mở trên Facebook</span>
       <ExternalLink className="size-3" />
     </a>
+  );
+}
+
+function CommentsLink({ job }: { job: PostJobLogEntry }) {
+  if (job.status !== "published" || !job.publishedPostId?.trim()) return null;
+
+  return (
+    <Link
+      href={buildCommentsUrl({ ...DEFAULT_COMMENT_FILTER, postJobId: job.postJobId })}
+      className="inline-flex items-center gap-1 rounded-md border border-border/80 bg-muted/40 px-2 py-0.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+      title="Xem bình luận của bài đăng này"
+    >
+      <span>Xem bình luận</span>
+    </Link>
   );
 }
 

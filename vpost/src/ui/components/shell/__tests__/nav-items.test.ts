@@ -59,7 +59,7 @@ describe("isNavItemActive", () => {
 });
 
 describe("NAV_SECTIONS", () => {
-  it("has the wave-1 IA plus onboarding and appearance: 5 visible groups, 12 destinations, platform gated", () => {
+  it("has the wave-1 IA plus onboarding and appearance: 5 visible groups, 13 destinations, platform gated", () => {
     const sections = visibleNavSections({ hasPlatformRole: true });
     expect(sections.map((s) => s.title)).toEqual([
       "Bàn làm việc",
@@ -74,6 +74,7 @@ describe("NAV_SECTIONS", () => {
       "/compose",
       "/bulk",
       "/posts",
+      "/comments",
       "/products",
       "/sync",
       // Onboarding phase 1: teaching VPOST the shape of a customer's own
