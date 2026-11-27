@@ -46,11 +46,15 @@ const nextConfig: NextConfig = {
       permanent: false,
     }));
   },
-  // VPOST (hackathon): mọi /api/* đi sang backend Python thay cho route Next (cần Postgres/Redis).
+  // VPOST (hackathon): /api/* đi sang backend Python thay cho route Next.
+  // Trừ danh tính + tenant (đăng nhập, phiên, thành viên): Next giữ, dữ liệu ở Postgres.
   // beforeFiles để thắng cả route có sẵn trong src/app/api. Bỏ biến VPOST_API_URL = dùng lại backend VPOST.
   async rewrites() {
     const api = process.env.VPOST_API_URL;
-    return api ? { beforeFiles: [{ source: "/api/:path*", destination: `${api}/api/:path*` }] } : [];
+    if (!api) return [];
+    const nextOwned = ["auth", "me", "tenants", "members", "invites", "join", "access-requests", "platform"];
+    const source = `/api/:path((?!(?:${nextOwned.join("|")})(?:/|$)).*)`;
+    return { beforeFiles: [{ source, destination: `${api}/api/:path` }] };
   },
 };
 
