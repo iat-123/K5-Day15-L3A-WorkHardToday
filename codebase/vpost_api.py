@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, File, Query, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Query, Request, UploadFile
 from fastapi import HTTPException
 from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
@@ -26,8 +26,19 @@ import store
 import tools
 from ai import MODEL_NAME, MODEL_PROVIDER, call_model
 
-router = APIRouter(prefix="/api")
-TENANT_ID = "00000000-0000-4000-8000-000000000001"   # một công ty demo; giao diện cần id dạng UUID
+# Một shop = một tenant. Phiên + tenant do Next (Postgres) giữ; VPOST_TENANT_ID = id tenant đó.
+TENANT_ID = os.environ.get("VPOST_TENANT_ID", "").strip() or "00000000-0000-4000-8000-000000000001"
+TENANT_COOKIE = "vpost_active_tenant"   # Next đặt, rewrite /api chuyển tiếp nguyên cookie
+
+
+def _same_tenant(request: Request):
+    """Tenant khác đang chọn trên giao diện thì không được đọc dữ liệu shop này. Không có cookie = gọi thẳng/test."""
+    active = request.cookies.get(TENANT_COOKIE)
+    if active and active != TENANT_ID:
+        raise ApiError(403, "FORBIDDEN", "Công ty đang chọn không có quyền với dữ liệu shop này.")
+
+
+router = APIRouter(prefix="/api", dependencies=[Depends(_same_tenant)])
 FB_CHANNEL = "fb-test"
 MODEL = call_model                                    # test thay bằng model giả
 TONES = {"thoi-trang-he": "trẻ trung, hợp mùa hè", "sang-trong": "sang trọng, tinh tế",
