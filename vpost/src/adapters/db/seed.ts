@@ -264,7 +264,7 @@ export async function seed(db: Database, logger: Logger): Promise<SeedResult> {
           name: DEMO_TENANT_NAME,
           status: "active",
           slug,
-          // MYSP's own tenant: no AI spend ceiling (doc 10 §8.9).
+          // VPOST's own tenant: no AI spend ceiling (doc 10 §8.9).
           plan: "internal",
         });
         log.info("Seed: demo tenant created", { name: DEMO_TENANT_NAME, plan: "internal" });
@@ -301,7 +301,7 @@ export async function seed(db: Database, logger: Logger): Promise<SeedResult> {
 }
 
 async function main(): Promise<void> {
-  const logger = makeConsoleLogger({ service: "mysp-seed" });
+  const logger = makeConsoleLogger({ service: "vpost-seed" });
   const url = process.env.DATABASE_URL;
 
   if (!url) {

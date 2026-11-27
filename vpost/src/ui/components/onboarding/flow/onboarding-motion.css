@@ -35,7 +35,7 @@
 
 /**
  * The spec's five duration names, MAPPED ONTO THIS PROJECT'S SCALE rather than
- * copied as numbers. `src/ui/theme/mysp.css` is generated and `pnpm theme:check`
+ * copied as numbers. `src/ui/theme/vpost.css` is generated and `pnpm theme:check`
  * guards it; a hardcoded 180ms would drift away from it silently the day the
  * theme moves.
  *
@@ -67,8 +67,8 @@
  *
  * A custom property's value is substituted on the element it is DECLARED on,
  * using that element's own properties — descendants inherit the finished value
- * and never re-resolve it. `src/ui/theme/mysp.css` declares `--duration-*`
- * inside `@scope ([data-astryx-theme="mysp"])`, i.e. on the `<Theme>` wrapper.
+ * and never re-resolve it. `src/ui/theme/vpost.css` declares `--duration-*`
+ * inside `@scope ([data-astryx-theme="vpost"])`, i.e. on the `<Theme>` wrapper.
  * `@astryxdesign/core` ALSO declares them, on `:root`, at the library's own
  * slower values (`--duration-fast-max: 230ms`, `--duration-slow-min: 730ms`).
  *
@@ -122,7 +122,7 @@
 
   /*
    * THE SIX EMOJI WELLS (animation spec section 5.1; prototype
-   * `mysp-onboarding-animation.html`, `.e-yellow` … `.e-purple`).
+   * `vpost-onboarding-animation.html`, `.e-yellow` … `.e-purple`).
    *
    * A DELIBERATE EXCEPTION TO THE "NO LITERAL COLOURS" RULE, narrowly scoped
    * and written down rather than smuggled in — the same standing the brand
@@ -181,7 +181,7 @@
    * "follow the USER AGENT", not "follow the app's `.dark` class". Every
    * descendant inherits that, so `light-dark()` resolved against the operating
    * system's preference and ignored the theme the operator actually chose.
-   * `mysp-theme.ts` had already written this trap down for a different token —
+   * `vpost-theme.ts` had already written this trap down for a different token —
    * "a [light, dark] tuple would compile to light-dark(), which follows
    * color-scheme and would ignore the class" — and it applies here verbatim.
    *

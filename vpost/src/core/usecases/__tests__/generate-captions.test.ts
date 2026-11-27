@@ -4,7 +4,7 @@ import { makeFakeLogger } from "@/core/ai/testing";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   type CatalogFieldMap,
 } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
@@ -353,10 +353,10 @@ describe("generateCaptions — tenant field map", () => {
     await makeGenerateCaptions({
       contentEngine: engine,
       logger: makeFakeLogger(),
-      catalogConfig: configRepo(MYSP_FIELD_MAP),
+      catalogConfig: configRepo(VPOST_FIELD_MAP),
     })(makeInput());
 
-    expect(engine.requests[0].fieldMap).toEqual(MYSP_FIELD_MAP);
+    expect(engine.requests[0].fieldMap).toEqual(VPOST_FIELD_MAP);
   });
 
   it("stops the whole run when the STORED map is unusable — no silent preset", async () => {

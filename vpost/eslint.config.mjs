@@ -147,13 +147,13 @@ const eslintConfig = defineConfig([
     // their own .next/ and linting them OOMs eslint.)
     ".claude/**",
     ".claude/worktrees/**",
-    // `astryx theme build` output (src/ui/theme/mysp-theme.ts is the source and
+    // `astryx theme build` output (src/ui/theme/vpost-theme.ts is the source and
     // IS linted). Generated files cannot be fixed in place — the next build
     // would overwrite the fix — and the triple-slash reference in the emitted
     // .d.ts is how the CLI ships its variant augmentations.
-    "src/ui/theme/mysp.js",
-    "src/ui/theme/mysp.d.ts",
-    "src/ui/theme/mysp.variants.d.ts",
+    "src/ui/theme/vpost.js",
+    "src/ui/theme/vpost.d.ts",
+    "src/ui/theme/vpost.variants.d.ts",
   ]),
 
   // Unused code is dead weight; `_` prefix is the explicit opt-out.

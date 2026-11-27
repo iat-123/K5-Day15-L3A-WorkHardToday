@@ -11,7 +11,7 @@
  * `connect` route, is HttpOnly, and carries a CLOSED value — never a URL.
  */
 
-export const OAUTH_RETURN_COOKIE = "mysp_oauth_return";
+export const OAUTH_RETURN_COOKIE = "vpost_oauth_return";
 
 /** The only accepted value. Anything else is treated as absent. */
 export type OauthReturn = "onboarding";

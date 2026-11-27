@@ -37,7 +37,7 @@ export type OperatorRole = (typeof OPERATOR_ROLES)[number];
 export const ACCESS_ADMIN_ROLES: readonly OperatorRole[] = ["owner", "admin"];
 
 /**
- * MYSP-staff privileges, held by the PERSON (docs/09 §3.5). Lives here (not in
+ * VPOST-staff privileges, held by the PERSON (docs/09 §3.5). Lives here (not in
  * core/domain/account) because the SESSION carries it, and the app layer that
  * builds sessions may only import `shared` and `core/domain/errors`.
  */
@@ -194,7 +194,7 @@ export function operatorSessionEmail(input: {
  * not enough to harvest addresses out of shipped logs (technical standard #6 —
  * structured logs, but never a personal-data dump).
  *
- * `nguyen@mysp.vn` -> `n***n@mysp.vn`; anything shorter keeps no local part at
+ * `nguyen@vpost.vn` -> `n***n@vpost.vn`; anything shorter keeps no local part at
  * all. Non-strings become null rather than the string "undefined".
  */
 export function maskEmail(value: unknown): string | null {

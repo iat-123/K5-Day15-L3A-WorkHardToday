@@ -32,7 +32,7 @@ import {
 } from "@/ui/schemas/password-auth.schema";
 // The BUILT theme, same import AppFrame uses — see the note there for why the
 // artifact and not the source module.
-import { myspTheme } from "@/ui/theme/mysp";
+import { vpostTheme } from "@/ui/theme/vpost";
 
 /**
  * `/signin` — the split sign-in screen (E10).
@@ -133,7 +133,7 @@ export function SignInScreen({
         locale={ASTRYX_LOCALE}
         messages={{ [ASTRYX_LOCALE]: ASTRYX_VI }}
       >
-        <Theme theme={myspTheme}>
+        <Theme theme={vpostTheme}>
           <Grid
             columns={{ minWidth: 460, max: 2, repeat: "fit" }}
             gap={0}

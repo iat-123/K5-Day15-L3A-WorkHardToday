@@ -5,7 +5,7 @@
 #   ./scripts/live-sync-smoke.sh --fixtures   # same harness, sample-data instead of Google
 #   KEEP_DB=1 ./scripts/live-sync-smoke.sh    # leave the container up for inspection
 #
-# The container is named mysp-live-pg on an unusual port so it can never collide
+# The container is named vpost-live-pg on an unusual port so it can never collide
 # with the compose stack (or with anything the developer is already running).
 # Credentials are read by the Node process from .env via `tsx --env-file`; this
 # script never reads, copies or echoes them.
@@ -13,10 +13,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-CONTAINER=mysp-live-pg
+CONTAINER=vpost-live-pg
 PORT=${LIVE_PG_PORT:-55437}
 PG_IMAGE=postgres:16-alpine   # same major as docker-compose.yml
-DB_URL="postgresql://mysp:mysp@127.0.0.1:${PORT}/mysp_live"
+DB_URL="postgresql://vpost:vpost@127.0.0.1:${PORT}/vpost_live"
 
 MODE=live
 case "${1:-}" in
@@ -36,14 +36,14 @@ trap cleanup EXIT
 docker rm -f "${CONTAINER}" >/dev/null 2>&1 || true
 echo "starting ${CONTAINER} (${PG_IMAGE}) on port ${PORT}"
 docker run -d --name "${CONTAINER}" \
-  -e POSTGRES_USER=mysp -e POSTGRES_PASSWORD=mysp -e POSTGRES_DB=mysp_live \
+  -e POSTGRES_USER=vpost -e POSTGRES_PASSWORD=vpost -e POSTGRES_DB=vpost_live \
   -p "${PORT}:5432" "${PG_IMAGE}" >/dev/null
 
 for _ in $(seq 1 60); do
-  if docker exec "${CONTAINER}" pg_isready -U mysp -d mysp_live >/dev/null 2>&1; then break; fi
+  if docker exec "${CONTAINER}" pg_isready -U vpost -d vpost_live >/dev/null 2>&1; then break; fi
   sleep 1
 done
-docker exec "${CONTAINER}" pg_isready -U mysp -d mysp_live
+docker exec "${CONTAINER}" pg_isready -U vpost -d vpost_live
 
 export DATABASE_URL="${DB_URL}"
 export NODE_ENV=development

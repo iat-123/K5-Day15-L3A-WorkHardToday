@@ -24,20 +24,20 @@ afterEach(() => {
 
 describe("resolveRedirectOrigin", () => {
   it("ignores the request Host and answers the deployment's public origin", () => {
-    vi.stubEnv("AUTH_URL", "https://mysp-stg.vannt.asia");
+    vi.stubEnv("AUTH_URL", "https://vpost-stg.vannt.asia");
     const log = logger();
 
     const origin = resolveRedirectOrigin(REQUEST_FROM_INSIDE_THE_CONTAINER, log, "ROUTE");
 
-    expect(origin).toBe("https://mysp-stg.vannt.asia");
+    expect(origin).toBe("https://vpost-stg.vannt.asia");
     expect(log.warn).not.toHaveBeenCalled();
   });
 
   it("keeps only the origin when AUTH_URL carries a path", () => {
-    vi.stubEnv("AUTH_URL", "https://mysp-stg.vannt.asia/some/path");
+    vi.stubEnv("AUTH_URL", "https://vpost-stg.vannt.asia/some/path");
 
     expect(resolveRedirectOrigin(REQUEST_FROM_INSIDE_THE_CONTAINER, logger(), "ROUTE")).toBe(
-      "https://mysp-stg.vannt.asia",
+      "https://vpost-stg.vannt.asia",
     );
   });
 

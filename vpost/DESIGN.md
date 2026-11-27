@@ -1,5 +1,5 @@
 ---
-name: MYSP
+name: VPOST
 description: Sổ mẫu vải của xưởng — nền vải mộc, mực nâu ấm, chàm hành động, thẻ mẫu bậc thang
 colors:
   indigo-dye: "oklch(0.45 0.105 262)"
@@ -130,15 +130,15 @@ components:
     padding: "1.5rem"
 ---
 
-# Design System: MYSP
+# Design System: VPOST
 
 ## Overview
 
 **Creative North Star: "Sổ mẫu vải" (The Swatch Book)**
 
-MYSP là cuốn sổ mẫu vải của xưởng: mỗi màu là một thẻ vải, mỗi mã sản phẩm một trang mẫu. Nền là **vải mộc** (unbleached muslin) chứ không phải trắng văn phòng; chữ là **mực nâu đen ấm** chứ không phải đen lạnh; hành động duy nhất nhuộm **chàm** (indigo). Thế giới này từ chối admin-SaaS "card trắng + accent tím rải đều" — thay vào đó là bề mặt dệt: dải số liệu khâu bằng chỉ hairline, thẻ mẫu có mấu bậc thang thò ra khỏi tay áo, nhãn dệt mono cho mọi mã và số. (Direction contract seed `e06531fb`, ghi trong `src/app/layout.tsx`; giá trị thật ở `src/app/globals.css` + `src/ui/theme/mysp-theme.ts`.)
+VPOST là cuốn sổ mẫu vải của xưởng: mỗi màu là một thẻ vải, mỗi mã sản phẩm một trang mẫu. Nền là **vải mộc** (unbleached muslin) chứ không phải trắng văn phòng; chữ là **mực nâu đen ấm** chứ không phải đen lạnh; hành động duy nhất nhuộm **chàm** (indigo). Thế giới này từ chối admin-SaaS "card trắng + accent tím rải đều" — thay vào đó là bề mặt dệt: dải số liệu khâu bằng chỉ hairline, thẻ mẫu có mấu bậc thang thò ra khỏi tay áo, nhãn dệt mono cho mọi mã và số. (Direction contract seed `e06531fb`, ghi trong `src/app/layout.tsx`; giá trị thật ở `src/app/globals.css` + `src/ui/theme/vpost-theme.ts`.)
 
-Câu chuyện vận hành không đổi: người vận hành mở sổ, thấy việc hôm nay, rút thẻ soạn bài, duyệt caption, và luôn trả lời được "vì sao bài này không lên". Toàn bộ palette là oklch semantic — tint (`/10`) và shade nội suy được; light/dark cùng ngữ nghĩa, chỉ đổi giá trị (dark là vải nhuộm sẫm, chàm được nâng sáng). Astryx components ăn theo cùng một mực qua theme "mysp" (`defineTheme` remap tầng text về `var(--foreground)`/`var(--muted-foreground)` **và cả tầng accent** — `--color-accent`/`--color-icon-accent` → `var(--primary)`, `--color-on-accent` → `var(--primary-foreground)`, `--color-accent-muted` → `var(--accent)` — nên nút primary của Astryx và nút primary của Tailwind là CÙNG một màu hành động; xem The One Indigo Rule). Chữ Astryx tự in ra (placeholder ⌘K, "Bắt buộc", "Đóng") chạy qua catalog tiếng Việt ở `src/ui/i18n/astryx-vi.ts`.
+Câu chuyện vận hành không đổi: người vận hành mở sổ, thấy việc hôm nay, rút thẻ soạn bài, duyệt caption, và luôn trả lời được "vì sao bài này không lên". Toàn bộ palette là oklch semantic — tint (`/10`) và shade nội suy được; light/dark cùng ngữ nghĩa, chỉ đổi giá trị (dark là vải nhuộm sẫm, chàm được nâng sáng). Astryx components ăn theo cùng một mực qua theme "vpost" (`defineTheme` remap tầng text về `var(--foreground)`/`var(--muted-foreground)` **và cả tầng accent** — `--color-accent`/`--color-icon-accent` → `var(--primary)`, `--color-on-accent` → `var(--primary-foreground)`, `--color-accent-muted` → `var(--accent)` — nên nút primary của Astryx và nút primary của Tailwind là CÙNG một màu hành động; xem The One Indigo Rule). Chữ Astryx tự in ra (placeholder ⌘K, "Bắt buộc", "Đóng") chạy qua catalog tiếng Việt ở `src/ui/i18n/astryx-vi.ts`.
 
 **Key Characteristics:**
 - Nền vải mộc ba lớp tonal (muslin → sunken cloth → swatch card) + viền chỉ mực, không bóng trang trí
@@ -176,7 +176,7 @@ Bảng màu là thuốc nhuộm tự nhiên trên vải mộc: chàm cho hành �
 
 ### Named Rules
 **The Ink Hairline Rule.** Viền không bao giờ là xám trung tính — luôn là Warm Ink ở 12–16% alpha (dark: trắng 12–16%). Xám nguội tách card khỏi vải ấm.
-**The One Indigo Rule.** Chàm là màu hành động duy nhất. Màu trạng thái (madder/turmeric/leaf/fact) mô tả sự thật, không bao giờ đánh dấu hành động. Luật này áp cho CẢ hai bộ component: `--color-accent` của theme mysp trỏ về `var(--primary)`, nên `<Button variant="primary">` của Astryx và `<Button>` của `ui/button` không thể lệch màu (bản neutral để accent là near-black `#262626` — đó là lý do "Lấy danh sách Page" từng đen cạnh "Tạo nhóm" chàm). StatusDot/ProgressBar tone `accent` và Banner `info` tự khai lại `--color-accent` trên element của chúng nên không bị kéo theo.
+**The One Indigo Rule.** Chàm là màu hành động duy nhất. Màu trạng thái (madder/turmeric/leaf/fact) mô tả sự thật, không bao giờ đánh dấu hành động. Luật này áp cho CẢ hai bộ component: `--color-accent` của theme vpost trỏ về `var(--primary)`, nên `<Button variant="primary">` của Astryx và `<Button>` của `ui/button` không thể lệch màu (bản neutral để accent là near-black `#262626` — đó là lý do "Lấy danh sách Page" từng đen cạnh "Tạo nhóm" chàm). StatusDot/ProgressBar tone `accent` và Banner `info` tự khai lại `--color-accent` trên element của chúng nên không bị kéo theo.
 **The 10% Tint Rule.** Nền trạng thái là màu gốc ở 10–15% opacity + viền 30–40% + chữ bản `-deep`; ba màu nhuộm trạng thái (madder/turmeric/leaf) phải phân biệt được ngay ở mức pha loãng này (đã đo trên vải mộc: cách nhau 0.043–0.064 sRGB, gấp ~6 lần ngưỡng "nhìn thành một màu"). Fact Blue không tham gia trò tint — ở 10% nó lẫn với leaf và chàm, nên pill info là nền trơn + hairline.
 **The Named Status Rule.** Trạng thái luôn có tên chữ đi kèm — badge mang chữ, hàng lỗi mang lý do, nút mờ mang câu giải thích ngay cạnh. Màu không bao giờ là kênh thông tin duy nhất.
 
@@ -271,7 +271,7 @@ Nhãn dệt mono trên heading và ô tape ("BƯỚC 1 — SẢN PHẨM", "ĐANG
 ## Do's and Don'ts
 
 ### Do:
-- **Do** lấy mọi màu/radius từ token semantic (`bg-primary`, `text-muted-foreground`, `rounded-lg`) — lớp giá trị nằm duy nhất ở `globals.css`; Astryx token đổi mực qua `defineTheme` trong `mysp-theme.ts` (build lại bằng `pnpm exec astryx theme build`), không bao giờ override `--color-*` trong `:root` trần.
+- **Do** lấy mọi màu/radius từ token semantic (`bg-primary`, `text-muted-foreground`, `rounded-lg`) — lớp giá trị nằm duy nhất ở `globals.css`; Astryx token đổi mực qua `defineTheme` trong `vpost-theme.ts` (build lại bằng `pnpm exec astryx theme build`), không bao giờ override `--color-*` trong `:root` trần.
 - **Do** viết màu mới bằng oklch và định nghĩa đủ cặp light/dark cùng ngữ nghĩa; kiểm khoảng cách với chàm và các màu nhuộm hiện có ở cả mức đặc lẫn tint.
 - **Do** cho mọi trạng thái nghiệp vụ một lối ra chữ: tint + viền + chữ deep, kèm câu "vì sao" tiếng Việt ngay tại chỗ hỏng (lỗi cục bộ theo nguồn, nguồn khác vẫn hiển thị).
 - **Do** dùng mono `tabular-nums` cho mã/số/đếm, nhãn dệt mono cho nhãn khối, và chỉ nói số đã đọc được ("3+ lô", không tổng bịa).

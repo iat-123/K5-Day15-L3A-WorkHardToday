@@ -15,7 +15,7 @@
 |---|---|---|
 | Q1 | Một người thuộc mấy công ty? | **1 người ≤ N công ty** |
 | Q2 | Người mới vào công ty bằng gì? | **Link mời** có hạn, gắn vai trò; không whitelist env |
-| Q3 | Admin MYSP làm gì với dữ liệu tenant khách? | **Quản trị vỏ ngoài + support mode có audit từng lần vào** |
+| Q3 | Admin VPOST làm gì với dữ liệu tenant khách? | **Quản trị vỏ ngoài + support mode có audit từng lần vào** |
 | Q4 | Ai tạo được công ty? | **Self-service**, kèm biên chống abuse (mục 3.7) |
 | Q5 | Server biết request thuộc tenant nào? | **Cookie chỉ là selector; membership trong DB là authorization** — route tenant-scoped không bao giờ nhận `tenantId` từ client |
 
@@ -59,7 +59,7 @@ membership         -- authorization: người ↔ công ty ↔ vai trò
 ### 3.3 Phân giải tenant mỗi request
 
 ```
-Cookie `mysp_active_tenant` (httpOnly, SameSite=Lax) — CHỈ LÀ GỢI Ý
+Cookie `vpost_active_tenant` (httpOnly, SameSite=Lax) — CHỈ LÀ GỢI Ý
   ↓
 getOperatorSession() [Node] → identity → account
   ↓
@@ -109,7 +109,7 @@ POST /api/platform/tenant-sessions { tenantId, purpose }
 
 ### 3.7 Self-service — biên chống abuse
 
-`tenant.created_by_account_id` + rate limit: mỗi account tối đa **3 tenant**, tối đa 1 tenant/giờ (hằng cấu hình được). `tenant.status='suspended'` chặn toàn bộ thành viên (tầng S thấy ngay). **`tenant.plan`** (`'internal'` | `'standard'`, mở rộng sau — quyết định PM 19/08, doc 10 §8.9): mọi giới hạn tiêu dùng (trần AI/ngày, quota) treo theo plan; tenant MYSP là `internal` không trần. Billing/thanh toán ngoài phạm vi nhưng invariant plan đặt từ M1.1.
+`tenant.created_by_account_id` + rate limit: mỗi account tối đa **3 tenant**, tối đa 1 tenant/giờ (hằng cấu hình được). `tenant.status='suspended'` chặn toàn bộ thành viên (tầng S thấy ngay). **`tenant.plan`** (`'internal'` | `'standard'`, mở rộng sau — quyết định PM 19/08, doc 10 §8.9): mọi giới hạn tiêu dùng (trần AI/ngày, quota) treo theo plan; tenant VPOST là `internal` không trần. Billing/thanh toán ngoài phạm vi nhưng invariant plan đặt từ M1.1.
 
 ### 3.8 State machine của actor
 
@@ -129,7 +129,7 @@ Mọi màn UI và mọi route phải xác định mình phục vụ state nào; 
 
 ### Phần 1 — Hợp đồng + nền móng + vá B-8 *(≈ 8,5–9,5 ngày — cập nhật sau M1.0)*
 
-- [x] **M0** Threat model + hợp đồng phân quyền → **`docs/10-hop-dong-phan-quyen.md`** — gate reviewer-qa PASS, PM duyệt 19/08/2026 (12 quyết định mục 8, điều chỉnh 8.9: trần theo gói, MYSP không trần) — *commit 2a06319* ✅
+- [x] **M0** Threat model + hợp đồng phân quyền → **`docs/10-hop-dong-phan-quyen.md`** — gate reviewer-qa PASS, PM duyệt 19/08/2026 (12 quyết định mục 8, điều chỉnh 8.9: trần theo gói, VPOST không trần) — *commit 2a06319* ✅
 - [x] **M1.0** Inventory tenant propagation → **`docs/11-kiem-ke-tenant-propagation.md`** — 96 chữ ký port, 78 call site `forTenant`, 38 schema route, **87 file test/1.378 test case**; chốt M1.3 = 4 ngày tách đôi a/b — *19/08/2026* ✅
 - [x] **M1.1** Schema `account`/`identity`/`membership`/`invite` + sửa 4 bảng cũ; backfill trong migration `0013` (case-fold đủ 9 chỗ, blocked thắng xuyên tenant); seed `dev@localhost`. Gate PASS lần 2 — *commit 981cd91, 19/08* ✅. **Trước khi deploy prod chạy 3 câu SQL kiểm** (docs/11 §2 bổ sung): identity không lower · membership dưới account suspended · `app_user` trùng `(tenant, lower(email))` — câu thứ 3 vỡ là migration rollback nguyên tử, dọn rồi deploy lại. **Nghĩa vụ M1.2:** tra `session_email` TRƯỚC rồi vá placeholder `legacy-app-user:*`, không upsert theo `(provider, sub)` —
 - [x] **M1.2** Phiên mang tenant (identity→account→membership), `requireTenant()` branded `TenantId` + cache 3 tầng, cookie active-tenant, `/api/me` + `/api/me/active-tenant`, decide nối account, **chống chiếm quyền qua sub tái cấp (2 tầng, 1 luật chung)**. Gate PASS lần 2 — *commit 4c9adfc, 19/08* ✅. Vé mang sang: N4 (đường không-cookie bỏ cache — đo trước M1.3b), N5 (2 nhánh test tenant-suspended), N6 (`/api/me` thêm cờ `isBootstrapAdmin` cho M1.4), dọn identity cũ ở /access —
@@ -145,7 +145,7 @@ Mọi màn UI và mọi route phải xác định mình phục vụ state nào; 
 - [x] **M2.3** Màn "Thành viên" + quản lý link mời (switcher đã lên từ M2.1): thang từ role TƯƠI trong tx, **advisory lock per-tenant** (gate bắt được ca 2 owner hạ nhau → 0 owner, đã vá + 2 test tất định), `LAST_OWNER` 409, gỡ = removed + xoá draft + revive được — *commit 6a93ace, 20/08* ✅
 - [x] **M2.4** Nghỉ hưu luồng chờ-duyệt: người lạ provision account ngay → state NoMembership tự tạo/join; guard chống chiếm account M1.2 còn nguyên (verdict `rejected` tách khỏi `unknown`, audit đủ 17 ca test cũ); `decide` → 410 `RETIRED`; `/access` thành "Lịch sử duyệt" — *commit 6a93ace, 20/08* ✅. Khoảng trống ban kẻ xấu = suspend tay cho tới M3.1
 
-### Phần 3 — Quản trị MYSP *(≈ 3,5 ngày)*
+### Phần 3 — Quản trị VPOST *(≈ 3,5 ngày)*
 
 - [x] **M3.1** `requirePlatformAdmin` đọc tươi mỗi call; bootstrap→DB (promote 1 lần race-safe, **N9 đóng** — suspend chặn được cả bootstrap admin; env chỉ còn cứu hộ); migration 0015 audit_log.tenant_id nullable cho sự kiện `platform.*` (gate bắt ca ghim DEMO_TENANT_ID làm platform chết vĩnh viễn trên DB sạch — đã vá) — *commit 66af1a5, 20/08* ✅
 - [x] **M3.2** Màn `/platform` + API: tạo tenant cho khách kèm invite owner sinh sẵn, suspend/activate có lý do bắt buộc, constructor branded thứ 4 có rule import; **link mời build từ AUTH_URL** (hết bug scheme sau Caddy — PM hỏi trúng); nav lọc theo platformRole (đóng vé N3) — *commit 66af1a5, 20/08* ✅
@@ -191,7 +191,7 @@ Grep "tenantId từ request" = 0          → chỉ là điều kiện phụ, kh
 |---|---|---|---|
 | 1 — Hợp đồng + nền móng | M0 → M1.5 | 8,5–9,5 ngày | ✅ **HOÀN TẤT 20/08/2026** — B-8 đóng, matrix 12/12 trên dev thật |
 | 2 — Onboarding | M2.1 → M2.4 | 3,5 ngày | ✅ **HOÀN TẤT 20/08/2026** — hết whitelist env, mời bằng link, thành viên quản trong app |
-| 3 — Quản trị MYSP | M3.1 → M3.3 | 3,5 ngày | ✅ **HOÀN TẤT 20/08/2026** |
+| 3 — Quản trị VPOST | M3.1 → M3.3 | 3,5 ngày | ✅ **HOÀN TẤT 20/08/2026** |
 
 > **TOÀN LỘ TRÌNH 15/15 MILESTONE HOÀN TẤT 20/08/2026** — từ "mọi route tin tenantId client gửi" đến: cách ly tenant cưỡng chế bằng branded type + membership DB, onboarding tự phục vụ bằng link mời, và mặt phẳng quản trị nền tảng với support mode có audit. Vé còn mở ghi tại từng milestone; đáng chú ý nhất trước khi phát link mời cho khách ngoài: **Caddy access log ở edge vẫn ghi `/join/<token>`**.
 

@@ -28,7 +28,7 @@ const KEY_BYTES = 32;
 const IV_BYTES = 12;
 const TAG_BYTES = 16;
 /** Domain separation: a ciphertext from another feature will not open here. */
-const AAD = Buffer.from("mysp:tenant_integration.config:v1", "utf8");
+const AAD = Buffer.from("vpost:tenant_integration.config:v1", "utf8");
 
 export interface SecretBox {
   /** Plaintext -> `enc:v1:...`. Throws on an empty or already-sealed value. */

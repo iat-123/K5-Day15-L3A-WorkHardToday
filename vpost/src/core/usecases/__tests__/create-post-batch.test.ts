@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MYSP_FIELD_MAP, type StockPolicy } from "@/core/domain/catalog-field-map";
+import { VPOST_FIELD_MAP, type StockPolicy } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
 import {
   deriveBatchStatus,
@@ -58,7 +58,7 @@ const MEDIA: PostMediaInput[] = [
   { driveFileId: "d2", fileName: "MGKVX6310-Tím (2).jpg", kind: "image" },
 ];
 
-const MEDIA_BASE_URL = "https://mysp.example.com";
+const MEDIA_BASE_URL = "https://vpost.example.com";
 
 /** Deterministic stand-in for the HMAC signer wired in composition. */
 function fakeSigner(nowMs = CLOCK.nowMs()) {
@@ -80,7 +80,7 @@ function makeCatalogConfig(policy: StockPolicy | Error): CatalogConfigRepo {
   return {
     findCatalogConfig: async () => null,
     findCatalogSource: async () => null,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     findStockPolicy: async () => {
       if (policy instanceof Error) throw policy;
       return policy;
@@ -651,7 +651,7 @@ describe("createPostBatch — fan-out (business rule 6)", () => {
       expect(job.media).toHaveLength(2);
       for (const item of job.media) {
         expect(item.url).toMatch(
-          /^https:\/\/mysp\.example\.com\/api\/media\/[^?]+\?tenant=[^&]+&expires=\d+&sig=\w+$/,
+          /^https:\/\/vpost\.example\.com\/api\/media\/[^?]+\?tenant=[^&]+&expires=\d+&sig=\w+$/,
         );
         expect(item.driveFileId).not.toBe("");
       }

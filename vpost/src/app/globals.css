@@ -11,13 +11,13 @@
 
 @import "@astryxdesign/core/reset.css";
 @import "@astryxdesign/core/astryx.css";
-/* The neutral theme, re-inked (src/ui/theme/mysp-theme.ts). NOT
+/* The neutral theme, re-inked (src/ui/theme/vpost-theme.ts). NOT
    @astryxdesign/theme-neutral/theme.css any more: that file is scoped to
    `[data-astryx-theme="neutral"]`, and <Theme> writes the name of whatever
    theme it was given — so the moment AppFrame stopped passing `neutralTheme`,
    the neutral stylesheet stopped matching anything. Regenerate with
-   `pnpm exec astryx theme build src/ui/theme/mysp-theme.ts`. */
-@import "../ui/theme/mysp.css";
+   `pnpm exec astryx theme build src/ui/theme/vpost-theme.ts`. */
+@import "../ui/theme/vpost.css";
 /* Platform-admin colour presets (M3.4). Each block re-values the ground, every
    surface above it, the ink and the action colour — never a lightness and
    never a status hue — scoped to `[data-theme-preset]` on <html>. It sits up here
@@ -155,7 +155,7 @@
   --chart-4: oklch(0.76 0.12 75);
   --chart-5: oklch(0.54 0.15 30);
   /* The roundest the design system allows. Astryx caps its radius multiplier at
-     2 (`astryx docs theme`), and `mysp-theme.ts` sets it there; 1rem is the
+     2 (`astryx docs theme`), and `vpost-theme.ts` sets it there; 1rem is the
      value that puts an interactive control on the same 16px on this side, so a
      shadcn button and an Astryx button never sit side by side with different
      corners. Everything above derives from it, so this is the ONE number to

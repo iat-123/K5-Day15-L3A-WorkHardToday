@@ -1,5 +1,5 @@
 /**
- * The colour presets an MYSP platform admin may put on the whole app.
+ * The colour presets an VPOST platform admin may put on the whole app.
  *
  * A preset repaints the WHOLE surface — ground, cards, sunken panels, hairlines
  * and ink — not just the action colour. What it never touches is LIGHTNESS.

@@ -22,8 +22,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const ENV = {
   GOOGLE_CLIENT_ID: "client-id",
   GOOGLE_CLIENT_SECRET: "client-secret",
-  AUTH_ALLOWED_DOMAINS: "mysp.vn",
-  AUTH_BOOTSTRAP_ADMINS: "boss@mysp.vn",
+  AUTH_ALLOWED_DOMAINS: "vpost.vn",
+  AUTH_BOOTSTRAP_ADMINS: "boss@vpost.vn",
   AUTH_FACEBOOK_ALLOWED_USER_IDS: "992710700450296",
   SESSION_SECRET: "x".repeat(40),
 };
@@ -64,7 +64,7 @@ function harness(options: { account?: AccountKind; failing?: boolean } = {}) {
 const googleUser = {
   provider: "google",
   providerAccountId: "sub-1",
-  email: "worker@mysp.vn",
+  email: "worker@vpost.vn",
   emailVerified: true,
   displayName: "Worker",
 };
@@ -95,7 +95,7 @@ describe("first sign-in — provisioning replaces the approval queue", () => {
     expect(provisionAccount).toHaveBeenCalledWith({
       provider: "google",
       providerAccountId: "sub-1",
-      email: "worker@mysp.vn",
+      email: "worker@vpost.vn",
       displayName: "Worker",
     });
   });
@@ -144,7 +144,7 @@ const passwordUser = {
 
 describe("password provider", () => {
   it("reaches the registry even though the address is OUTSIDE AUTH_ALLOWED_DOMAINS", async () => {
-    // Same env as every other test here: AUTH_ALLOWED_DOMAINS = "mysp.vn".
+    // Same env as every other test here: AUTH_ALLOWED_DOMAINS = "vpost.vn".
     const { deps, signInAccount } = harness({ account: "member" });
     const decideSignIn = await loadGate();
 
@@ -170,7 +170,7 @@ describe("password provider", () => {
   });
 
   it("never gets the bootstrap escape hatch, even at a bootstrap address", async () => {
-    // AUTH_BOOTSTRAP_ADMINS = boss@mysp.vn. If a password sign-in could claim
+    // AUTH_BOOTSTRAP_ADMINS = boss@vpost.vn. If a password sign-in could claim
     // that grant, the emergency door would be something anyone can create by
     // filling in a sign-up form.
     const { deps, signInAccount } = harness({ account: "suspended" });
@@ -179,8 +179,8 @@ describe("password provider", () => {
     await expect(
       decideSignIn(deps, {
         ...passwordUser,
-        providerAccountId: "boss@mysp.vn",
-        email: "boss@mysp.vn",
+        providerAccountId: "boss@vpost.vn",
+        email: "boss@vpost.vn",
       }),
     ).resolves.toBe(false);
     expect(signInAccount).toHaveBeenCalled();
@@ -271,7 +271,7 @@ describe("AUTH_BOOTSTRAP_ADMINS is still the escape hatch", () => {
     const { deps, provisionAccount } = harness({ account: "unknown" });
     const decideSignIn = await loadGate();
 
-    await expect(decideSignIn(deps, { ...googleUser, email: "boss@mysp.vn" })).resolves.toBe(true);
+    await expect(decideSignIn(deps, { ...googleUser, email: "boss@vpost.vn" })).resolves.toBe(true);
     expect(provisionAccount).toHaveBeenCalledTimes(1);
   });
 
@@ -280,7 +280,7 @@ describe("AUTH_BOOTSTRAP_ADMINS is still the escape hatch", () => {
     const { deps, provisionAccount, lines } = harness({ account: "suspended" });
     const decideSignIn = await loadGate();
 
-    await expect(decideSignIn(deps, { ...googleUser, email: "boss@mysp.vn" })).resolves.toBe(false);
+    await expect(decideSignIn(deps, { ...googleUser, email: "boss@vpost.vn" })).resolves.toBe(false);
     expect(provisionAccount).not.toHaveBeenCalled();
     expect(lines.some((line) => line.context?.account_verdict === "suspended")).toBe(true);
   });
@@ -289,7 +289,7 @@ describe("AUTH_BOOTSTRAP_ADMINS is still the escape hatch", () => {
     const { deps, lines } = harness({ failing: true });
     const decideSignIn = await loadGate();
 
-    await expect(decideSignIn(deps, { ...googleUser, email: "boss@mysp.vn" })).resolves.toBe(true);
+    await expect(decideSignIn(deps, { ...googleUser, email: "boss@vpost.vn" })).resolves.toBe(true);
     expect(lines.some((line) => line.level === "error")).toBe(true);
   });
 

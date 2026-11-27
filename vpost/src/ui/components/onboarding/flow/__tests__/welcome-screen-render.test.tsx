@@ -37,7 +37,7 @@ describe("WelcomeScreen", () => {
     // part to fall back to — the greeting has to stand without a name at all.
     const html = renderToStaticMarkup(<WelcomeScreen name={null} onStart={noop} />);
     expect(html).toContain("Chào");
-    expect(html).toContain("Chào mừng tới MYSP");
+    expect(html).toContain("Chào mừng tới VPOST");
     expect(html.match(/<h1/g)).toHaveLength(1);
   });
 

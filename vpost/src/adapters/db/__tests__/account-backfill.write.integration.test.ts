@@ -651,7 +651,7 @@ describe.skipIf(!url)("M1.1 backfill — access_request/app_user -> account/iden
     });
   });
 
-  it("puts MYSP's own tenant on the internal plan", async () => {
+  it("puts VPOST's own tenant on the internal plan", async () => {
     await inRolledBackTx(handle.db, async (tx) => {
       await runBackfill(tx);
       const rows = await tx

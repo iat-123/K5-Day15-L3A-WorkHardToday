@@ -38,7 +38,7 @@ const putRequest = (body: unknown) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "root@mysp.vn", accountId: "acc-root" });
+  getOperatorSession.mockResolvedValue({ email: "root@vpost.vn", accountId: "acc-root" });
   requirePlatformAdmin.mockResolvedValue({ accountId: "acc-root", platformRole: "super_admin" });
   get.mockResolvedValue({ presetId: "cham", isDefault: true });
   set.mockResolvedValue({ presetId: "reu", already: false });
@@ -150,7 +150,7 @@ describe("writing", () => {
     expect(set).toHaveBeenCalledWith({
       presetId: "reu",
       actorAccountId: "acc-root",
-      actorEmail: "root@mysp.vn",
+      actorEmail: "root@vpost.vn",
     });
     await expect(response.json()).resolves.toEqual({ presetId: "reu", already: false });
   });

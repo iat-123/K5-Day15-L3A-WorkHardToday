@@ -66,7 +66,7 @@ export function JoinInviteForm({
             <TextInput
               label="Link mời"
               description="Dán nguyên link bạn nhận được, hoặc riêng mã mời trong link đó."
-              placeholder="https://mysp.vn/join/…"
+              placeholder="https://vpost.vn/join/…"
               isDisabled={isPending}
               value={field.value}
               onChange={field.onChange}

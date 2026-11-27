@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
 } from "@/core/domain/catalog-field-map";
 
 import type { CatalogTextConfig } from "@/core/domain/catalog-text-config";
@@ -55,7 +55,7 @@ function makeHarness(
   const catalogConfig: CatalogConfigRepo = {
     findCatalogConfig: async () => options.previous ?? null,
     findStockPolicy: async () => DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     findCatalogSource: async () => options.previous ?? null,
     saveCatalogSource: async (input) => {
       if (options.saveError) throw options.saveError;
@@ -246,11 +246,11 @@ describe("updateCatalogSource — edge cases first", () => {
       driveFolder: FOLDER_ID,
       spreadsheet: SHEET_ID,
       sheetName: "Mẫu 2026",
-      actorEmail: "ai-do@mysp.local",
+      actorEmail: "ai-do@vpost.local",
     });
     expect(harness.saved[0]).toMatchObject({
       actorUserId: null,
-      actorEmail: "ai-do@mysp.local",
+      actorEmail: "ai-do@vpost.local",
     });
   });
 });
@@ -305,12 +305,12 @@ describe("updateCatalogSource — happy path", () => {
       driveFolder: FOLDER_ID,
       spreadsheet: SHEET_ID,
       sheetName: "Mẫu 2026",
-      actorEmail: "  Operator@MYSP.local ",
+      actorEmail: "  Operator@VPOST.local ",
     });
     expect(harness.saved[0]).toMatchObject({
       tenantId: TENANT,
       actorUserId: "11111111-1111-1111-1111-111111111111",
-      actorEmail: "operator@mysp.local",
+      actorEmail: "operator@vpost.local",
     });
   });
 
@@ -364,7 +364,7 @@ describe("updateCatalogSource — happy path", () => {
         driveFolder: FOLDER_ID,
         spreadsheet: SHEET_ID,
         sheetName: "Mẫu 2026",
-        actorEmail: "operator@mysp.local",
+        actorEmail: "operator@vpost.local",
       }),
     ).resolves.toMatchObject({ driveFolderId: FOLDER_ID });
     expect(harness.saved[0]?.actorUserId).toBeNull();

@@ -291,7 +291,7 @@ bỏ kèm log warn* chứ không được thay bằng mặc định.
 
 ### 5.3. `adapters/queue/redis-job-progress.ts`
 
-- Key: `mysp:progress:{tenantId}:{postJobId}`, giá trị JSON, `SET ... EX 3600`.
+- Key: `vpost:progress:{tenantId}:{postJobId}`, giá trị JSON, `SET ... EX 3600`.
 - **Mọi lệnh Redis phải có timeout (1,5 giây).** Bổ sung 19/08/2026 sau khi chạy thật
   bắt được lỗi: trỏ `REDIS_URL` vào một server chết thì `getBatchStatus` **treo vĩnh
   viễn** chứ không suy giảm. Kết nối được dùng chung với BullMQ, mà BullMQ bắt buộc

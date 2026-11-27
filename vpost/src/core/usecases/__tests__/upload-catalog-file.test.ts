@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_STOCK_POLICY, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { DEFAULT_STOCK_POLICY, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
 import type { CatalogFileStore } from "@/core/ports/catalog-file-store";
@@ -74,7 +74,7 @@ function harness(options: HarnessOptions = {}) {
     findCatalogConfig: async () => options.current ?? null,
     findCatalogSource: async () => options.current ?? null,
     findStockPolicy: async () => DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     saveCatalogSource: async (input) => {
       if (options.saveError) throw options.saveError;
       saved.push(input);
@@ -383,7 +383,7 @@ describe("uploadCatalogFile — what the operator sees", () => {
         findCatalogConfig: async () => null,
         findCatalogSource: async () => null,
         findStockPolicy: async () => DEFAULT_STOCK_POLICY,
-        findFieldMap: async () => MYSP_FIELD_MAP,
+        findFieldMap: async () => VPOST_FIELD_MAP,
         saveCatalogSource: async () => ({ previous: null }),
       },
       clock: { now: () => new Date(), nowMs: () => 0 },

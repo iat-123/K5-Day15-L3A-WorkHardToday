@@ -6,7 +6,7 @@ import { timestamps } from "./_columns";
 export const accountStatusEnum = pgEnum("account_status", ["active", "suspended"]);
 
 /**
- * MYSP-staff privileges, held by the PERSON and not by any tenant (docs/09 §3.5).
+ * VPOST-staff privileges, held by the PERSON and not by any tenant (docs/09 §3.5).
  * Null is the normal case: a customer operator has no platform role at all.
  * `support` may enter a tenant through a support session (read only, doc 10 §8.1);
  * `super_admin` may also create/suspend tenants and grant platform roles.

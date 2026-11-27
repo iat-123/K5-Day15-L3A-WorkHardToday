@@ -17,7 +17,7 @@
  * is decided by where Next happens to put the tag. `:root[data-theme-preset=…]`
  * beats `:root` on specificity alone, `:root.dark[data-theme-preset=…]` beats
  * both, and the whole thing is a static stylesheet the browser already has
- * before first paint — so there is no flash to fix (the trap `mysp-theme.ts`
+ * before first paint — so there is no flash to fix (the trap `vpost-theme.ts`
  * documents for runtime themes).
  */
 

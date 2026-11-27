@@ -15,7 +15,7 @@ let root: string;
 let store: MediaBlobStore;
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), "mysp-blob-"));
+  root = await mkdtemp(join(tmpdir(), "vpost-blob-"));
   store = makeLocalBlobStore({ root });
 });
 

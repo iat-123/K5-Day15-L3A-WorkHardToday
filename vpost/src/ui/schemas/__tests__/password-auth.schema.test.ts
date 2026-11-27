@@ -120,7 +120,7 @@ describe("passwordHint — everything missing, in ONE sentence", () => {
   });
 
   it("says so, once, for a password that passes the policy", () => {
-    expect(passwordHint("Mysp2026!")).toEqual({
+    expect(passwordHint("Vpost2026!")).toEqual({
       message: "Mật khẩu đã đạt đủ yêu cầu.",
       isReady: true,
     });
@@ -149,19 +149,19 @@ describe("passwordHint — everything missing, in ONE sentence", () => {
 
 describe("confirmPasswordProblem / newPasswordProblem", () => {
   it("stays silent while the confirmation box is untouched", () => {
-    expect(confirmPasswordProblem("Mysp2026!", "")).toBeNull();
+    expect(confirmPasswordProblem("Vpost2026!", "")).toBeNull();
   });
 
   it("reports a mismatch, and only a mismatch", () => {
-    expect(confirmPasswordProblem("Mysp2026!", "Mysp2026")).toBe("Hai ô mật khẩu chưa khớp.");
-    expect(confirmPasswordProblem("Mysp2026!", "Mysp2026!")).toBeNull();
+    expect(confirmPasswordProblem("Vpost2026!", "Vpost2026")).toBe("Hai ô mật khẩu chưa khớp.");
+    expect(confirmPasswordProblem("Vpost2026!", "Vpost2026!")).toBeNull();
   });
 
   it("refuses an empty, a weak, an unconfirmed and a mismatched new password", () => {
     expect(newPasswordProblem("", "")).toBe("Chưa nhập mật khẩu mới.");
     expect(newPasswordProblem("abcdefgh", "abcdefgh")).toContain("chưa đạt đủ yêu cầu");
-    expect(newPasswordProblem("Mysp2026!", "")).toBe("Chưa nhập lại mật khẩu mới.");
-    expect(newPasswordProblem("Mysp2026!", "Mysp2025!")).toBe("Hai ô mật khẩu chưa khớp.");
+    expect(newPasswordProblem("Vpost2026!", "")).toBe("Chưa nhập lại mật khẩu mới.");
+    expect(newPasswordProblem("Vpost2026!", "Vpost2025!")).toBe("Hai ô mật khẩu chưa khớp.");
   });
 
   it("names the ceiling instead of the generic sentence when the value is too long", () => {
@@ -171,7 +171,7 @@ describe("confirmPasswordProblem / newPasswordProblem", () => {
   });
 
   it("lets a matching, strong pair through", () => {
-    expect(newPasswordProblem("Mysp2026!", "Mysp2026!")).toBeNull();
+    expect(newPasswordProblem("Vpost2026!", "Vpost2026!")).toBeNull();
   });
 });
 
@@ -222,7 +222,7 @@ describe("resetPasswordBlockReason — who the admin can reset", () => {
   });
 
   it("allows an account that has one — the server still decides", () => {
-    expect(resetPasswordBlockReason({ email: "van@mysp.vn" })).toBeNull();
+    expect(resetPasswordBlockReason({ email: "van@vpost.vn" })).toBeNull();
   });
 });
 
@@ -236,22 +236,22 @@ describe("emailShapeProblem — the address is checked with the server's own sch
   it("refuses anything that is not one address", () => {
     expect(emailShapeProblem("van")).toContain("không hợp lệ");
     expect(emailShapeProblem("van@")).toContain("không hợp lệ");
-    expect(emailShapeProblem("@mysp.vn")).toContain("không hợp lệ");
-    expect(emailShapeProblem("van@@mysp.vn")).toContain("không hợp lệ");
-    expect(emailShapeProblem("van mysp@mysp.vn")).toContain("không hợp lệ");
+    expect(emailShapeProblem("@vpost.vn")).toContain("không hợp lệ");
+    expect(emailShapeProblem("van@@vpost.vn")).toContain("không hợp lệ");
+    expect(emailShapeProblem("van vpost@vpost.vn")).toContain("không hợp lệ");
   });
 
   it("refuses an address past the RFC ceiling", () => {
-    expect(emailShapeProblem(`${"a".repeat(320)}@mysp.vn`)).toContain("tối đa 320");
+    expect(emailShapeProblem(`${"a".repeat(320)}@vpost.vn`)).toContain("tối đa 320");
   });
 
   it("accepts what the server accepts — no stricter, no looser", () => {
     // The server's schema does not require a dot in the domain, so neither may
     // this: refusing `van@localhost` here would refuse a request the server
     // would have taken.
-    expect(emailShapeProblem("van@mysp.vn")).toBeNull();
-    expect(emailShapeProblem("  Van@MYSP.vn  ")).toBeNull();
+    expect(emailShapeProblem("van@vpost.vn")).toBeNull();
+    expect(emailShapeProblem("  Van@VPOST.vn  ")).toBeNull();
     expect(emailShapeProblem("van@localhost")).toBeNull();
-    expect(emailShapeProblem("van+bulk@mysp.vn")).toBeNull();
+    expect(emailShapeProblem("van+bulk@vpost.vn")).toBeNull();
   });
 });

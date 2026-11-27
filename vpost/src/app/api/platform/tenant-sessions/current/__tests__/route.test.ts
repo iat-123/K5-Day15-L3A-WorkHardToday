@@ -38,7 +38,7 @@ const request = (cookie?: string) => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "staff@mysp.vn", accountId: "acc-staff" });
+  getOperatorSession.mockResolvedValue({ email: "staff@vpost.vn", accountId: "acc-staff" });
   close.mockResolvedValue({ revoked: true, already: false });
 });
 
@@ -60,7 +60,7 @@ describe("DELETE /api/platform/tenant-sessions/current", () => {
     expect(close).toHaveBeenCalledWith({
       sessionId: SESSION_ID,
       accountId: "acc-staff",
-      actorEmail: "staff@mysp.vn",
+      actorEmail: "staff@vpost.vn",
     });
     const cookie = response.headers.get("set-cookie") ?? "";
     expect(cookie).toContain(`${SUPPORT_SESSION_COOKIE}=;`);

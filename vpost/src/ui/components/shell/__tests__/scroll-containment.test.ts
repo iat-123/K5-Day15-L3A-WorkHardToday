@@ -50,16 +50,16 @@ function classStrings(code: string): string[] {
  */
 describe("the shared Layout scroll box is positioned by the theme", () => {
   it("declares it in the theme source", () => {
-    const theme = stripComments(readSource("../../../theme/mysp-theme.ts"));
+    const theme = stripComments(readSource("../../../theme/vpost-theme.ts"));
 
     expect(theme).toMatch(/"layout-content":\s*\{/);
     expect(theme).toMatch(/position:\s*"relative"/);
   });
 
   it("and SHIPS it — the built stylesheet is what the browser reads", () => {
-    // `mysp.css` is generated and committed, so the source alone proves nothing
+    // `vpost.css` is generated and committed, so the source alone proves nothing
     // until it has been rebuilt. `pnpm theme:check` guards the other direction.
-    const css = readSource("../../../theme/mysp.css");
+    const css = readSource("../../../theme/vpost.css");
     const rule = css.match(/\.astryx-layout-content\s*\{[^}]*\}/);
 
     expect(rule, "the built theme has no .astryx-layout-content rule").not.toBeNull();

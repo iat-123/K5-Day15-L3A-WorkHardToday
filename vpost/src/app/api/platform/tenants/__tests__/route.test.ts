@@ -35,7 +35,7 @@ vi.mock("@/app/_auth/session", () => ({
 
 // Canonical origin ≠ request host on purpose: the assertion below pins that
 // the invite URL follows AUTH_URL, never the incoming request.
-vi.stubEnv("AUTH_URL", "https://mysp.example");
+vi.stubEnv("AUTH_URL", "https://vpost.example");
 
 const { GET, POST } = await import("../route");
 
@@ -75,7 +75,7 @@ const postRequest = (body: unknown) =>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "root@mysp.vn", accountId: "acc-root" });
+  getOperatorSession.mockResolvedValue({ email: "root@vpost.vn", accountId: "acc-root" });
   requirePlatformAdmin.mockResolvedValue({ accountId: "acc-root", platformRole: "super_admin" });
   listTenants.mockResolvedValue({
     items: [LIST_ITEM],
@@ -134,13 +134,13 @@ describe("/api/platform/tenants — provisioning", () => {
     const body = await response.json();
     expect(body.tenant).toMatchObject({ id: TENANT, status: "active" });
     // From AUTH_URL, not from the request's `http://localhost`.
-    expect(body.ownerInviteUrl).toBe(`https://mysp.example/join/${TOKEN}`);
+    expect(body.ownerInviteUrl).toBe(`https://vpost.example/join/${TOKEN}`);
     expect(createTenant).toHaveBeenCalledWith({
       name: "Khách A",
       slug: null,
       plan: null,
       actorAccountId: "acc-root",
-      actorEmail: "root@mysp.vn",
+      actorEmail: "root@vpost.vn",
     });
   });
 

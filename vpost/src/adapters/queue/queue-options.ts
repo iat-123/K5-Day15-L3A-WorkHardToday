@@ -7,7 +7,7 @@ import { AppError } from "@/core/domain/errors";
 import type { EnqueueOptions } from "@/core/ports/job-queue";
 
 /** Single queue for now; per-channel queues arrive with E7 fan-out. */
-export const QUEUE_NAME = "mysp-jobs";
+export const QUEUE_NAME = "vpost-jobs";
 
 export const DEFAULT_ATTEMPTS = 3;
 export const DEFAULT_BACKOFF_MS = 1_000;

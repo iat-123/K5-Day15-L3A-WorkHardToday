@@ -76,7 +76,7 @@ export const AuthConfigSchema = z.object({
    *
    * A domain names an OPEN-ENDED set of people ("anyone with a company
    * address"), so it can say who may not sign in, but it must never hand out
-   * access or the power to approve others: with `mysp.vn` here, every employee
+   * access or the power to approve others: with `vpost.vn` here, every employee
    * would be an unblockable super-admin. Whoever passes this filter still has to
    * be approved in `access_request` like anyone else, and can still be blocked.
    * Individual grants live in AUTH_BOOTSTRAP_ADMINS / AUTH_FACEBOOK_ALLOWED_USER_IDS.
@@ -291,7 +291,7 @@ export const MediaConfigSchema = z.object({
     32,
     "MEDIA_SIGNING_SECRET must be at least 32 chars",
   ),
-  /** Public origin Meta fetches signed media URLs from (e.g. https://mysp.example.com). */
+  /** Public origin Meta fetches signed media URLs from (e.g. https://vpost.example.com). */
   MEDIA_PUBLIC_BASE_URL: nonEmpty("MEDIA_PUBLIC_BASE_URL").refine(
     (value) => value.startsWith("https://") || value.startsWith("http://"),
     "MEDIA_PUBLIC_BASE_URL must be an http(s) origin",
@@ -350,7 +350,7 @@ export const MinioConfigSchema = z.object({
     ),
   MINIO_ACCESS_KEY: z.string().trim().min(1),
   MINIO_SECRET_KEY: z.string().trim().min(1),
-  MINIO_BUCKET: z.string().trim().min(1).default("mysp-media"),
+  MINIO_BUCKET: z.string().trim().min(1).default("vpost-media"),
   /**
    * Describes ONLY the internal hop (MINIO_INTERNAL_ENDPOINT), never the
    * public one — `MINIO_PUBLIC_ENDPOINT` carries its own scheme, and TLS for

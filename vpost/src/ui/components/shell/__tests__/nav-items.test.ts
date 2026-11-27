@@ -76,7 +76,7 @@ describe("NAV_SECTIONS", () => {
       "/posts",
       "/products",
       "/sync",
-      // Onboarding phase 1: teaching MYSP the shape of a customer's own
+      // Onboarding phase 1: teaching VPOST the shape of a customer's own
       // spreadsheet is a "Dữ liệu" job, and it is a destination of its own
       // rather than a tab of /sync — a salesperson opens it during a call.
       "/data-mapping",

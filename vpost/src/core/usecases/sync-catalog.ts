@@ -8,7 +8,7 @@ import {
   DEFAULT_STOCK_POLICY,
   FIELD_LABELS,
   mappedColumns,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   validateFieldMapStructure,
   validateStockPolicy,
   type CatalogFieldMap,
@@ -198,7 +198,7 @@ export function makeSyncCatalog(deps: SyncCatalogDeps) {
 
     // Absent map/policy = the internal preset, so a tenant configured before
     // onboarding existed syncs exactly as it did before (backward compatible).
-    const fieldMap: CatalogFieldMap = config.fieldMap ?? MYSP_FIELD_MAP;
+    const fieldMap: CatalogFieldMap = config.fieldMap ?? VPOST_FIELD_MAP;
     const stockPolicy: StockPolicy = config.stockPolicy ?? DEFAULT_STOCK_POLICY;
     const mediaProfile: MediaProfile = config.mediaProfile ?? DEFAULT_MEDIA_PROFILE;
     // Absent = the Google tab, so a tenant configured before phase 3 reads
@@ -220,10 +220,10 @@ export function makeSyncCatalog(deps: SyncCatalogDeps) {
       drive_folder_id: config.driveFolderId,
       spreadsheet_id: config.spreadsheetId,
       sheet_name: config.sheetName,
-      field_map_preset: config.fieldMap ? "tenant" : "mysp_default",
+      field_map_preset: config.fieldMap ? "tenant" : "vpost_default",
       stock_policy_mode: stockPolicy.mode,
       media_profile_kind: mediaProfile.kind,
-      media_profile_preset: config.mediaProfile ? "tenant" : "mysp_default",
+      media_profile_preset: config.mediaProfile ? "tenant" : "vpost_default",
     });
 
     if (stockPolicy.mode === "disabled") {

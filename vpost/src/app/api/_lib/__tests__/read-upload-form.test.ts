@@ -12,7 +12,7 @@ const TENANT = testTenantId("00000000-0000-0000-0000-000000000001");
 function multipart(build: (form: FormData) => void): Request {
   const form = new FormData();
   build(form);
-  return new Request("https://mysp.example.com/api/posts/uploads", { method: "POST", body: form });
+  return new Request("https://vpost.example.com/api/posts/uploads", { method: "POST", body: form });
 }
 
 function photo(name: string, bytes = 8): File {
@@ -29,7 +29,7 @@ function valid(patch: (form: FormData) => void = () => {}): Request {
 
 describe("readUploadForm — transport rejections", () => {
   it("refuses a body that is not multipart", async () => {
-    const request = new Request("https://mysp.example.com/api/posts/uploads", {
+    const request = new Request("https://vpost.example.com/api/posts/uploads", {
       method: "POST",
       body: JSON.stringify({ tenantId: TENANT }),
       headers: { "content-type": "application/json" },

@@ -13,7 +13,7 @@ Hai vai trong mỗi tenant (shop thời trang):
 - **Chủ shop / quản lý**: cấu hình kênh Facebook, kết nối Drive/Sheet, mời thành viên, quản lý tenant. Cũng là người quyết định mua khi sản phẩm bán ra ngoài.
 - **Nhân viên vận hành** (bán hàng/marketing, không rành kỹ thuật): soạn bài theo lô, duyệt caption AI từng kênh, theo dõi trạng thái đăng và cảnh báo tồn kho — công việc lặp lại hằng ngày.
 
-Ngoài tenant còn vai **platform admin/support** của MYSP: quản trị vỏ ngoài, support mode có audit (docs/09).
+Ngoài tenant còn vai **platform admin/support** của VPOST: quản trị vỏ ngoài, support mode có audit (docs/09).
 
 Hoàn cảnh sử dụng chính: **desktop tại văn phòng**, màn hình lớn, soạn theo lô. Mobile chỉ cần xem được, không phải kênh vận hành chính.
 
@@ -47,7 +47,7 @@ Cơ chế khó sao chép: vận hành trực tiếp trên dữ liệu shop đang
 
 ## Brand Commitments
 
-"MYSP" là **tên tạm**, không phải ràng buộc nhận diện — sẽ đổi khi thương mại hoá. Chưa có logo, bảng màu hay guideline thương hiệu ràng buộc. Giọng điệu sản phẩm hiện hành: UI tiếng Việt, thông điệp cho người vận hành rõ ràng, không đổ lỗi, trả lời được "vì sao".
+"VPOST" là **tên tạm**, không phải ràng buộc nhận diện — sẽ đổi khi thương mại hoá. Chưa có logo, bảng màu hay guideline thương hiệu ràng buộc. Giọng điệu sản phẩm hiện hành: UI tiếng Việt, thông điệp cho người vận hành rõ ràng, không đổ lỗi, trả lời được "vì sao".
 
 ## Evidence on Hand
 

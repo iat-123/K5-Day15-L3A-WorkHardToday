@@ -8,8 +8,8 @@ import {
   makeFieldMap,
   mappedColumns,
   matchStockText,
-  MYSP_FIELD_MAP,
-  MYSP_PRICE_COLUMNS,
+  VPOST_FIELD_MAP,
+  VPOST_PRICE_COLUMNS,
   normalizeColumnName,
   suggestFieldMap,
   validateFieldMap,
@@ -41,7 +41,7 @@ describe("normalizeColumnName / comparisonKey — edge cases first", () => {
 });
 
 describe("makeFieldMap", () => {
-  it("fills missing fields with null instead of inheriting the MYSP preset", () => {
+  it("fills missing fields with null instead of inheriting the VPOST preset", () => {
     const map = makeFieldMap({ code: "SKU" });
     expect(map.code).toBe("SKU");
     expect(map.name).toBeNull();
@@ -96,17 +96,17 @@ describe("suggestFieldMap — edge cases first", () => {
 });
 
 describe("suggestFieldMap — real data (sample-data snapshot)", () => {
-  it("rebuilds the MYSP preset from the real header row", () => {
+  it("rebuilds the VPOST preset from the real header row", () => {
     const suggestion = suggestFieldMap(REAL_COLUMNS);
     expect(suggestion.fieldMap).toMatchObject({
-      code: MYSP_FIELD_MAP.code,
-      name: MYSP_FIELD_MAP.name,
-      description: MYSP_FIELD_MAP.description,
-      category: MYSP_FIELD_MAP.category,
-      season: MYSP_FIELD_MAP.season,
-      stock: MYSP_FIELD_MAP.stock,
-      note: MYSP_FIELD_MAP.note,
-      colors: MYSP_FIELD_MAP.colors,
+      code: VPOST_FIELD_MAP.code,
+      name: VPOST_FIELD_MAP.name,
+      description: VPOST_FIELD_MAP.description,
+      category: VPOST_FIELD_MAP.category,
+      season: VPOST_FIELD_MAP.season,
+      stock: VPOST_FIELD_MAP.stock,
+      note: VPOST_FIELD_MAP.note,
+      colors: VPOST_FIELD_MAP.colors,
     });
   });
 
@@ -119,7 +119,7 @@ describe("suggestFieldMap — real data (sample-data snapshot)", () => {
 
   it("flags the four real price columns as unmapped money columns", () => {
     const suggestion = suggestFieldMap(REAL_COLUMNS);
-    for (const column of MYSP_PRICE_COLUMNS) {
+    for (const column of VPOST_PRICE_COLUMNS) {
       expect(suggestion.unmappedColumns).toContain(column);
       expect(suggestion.priceLikeColumns).toContain(column);
     }
@@ -244,12 +244,12 @@ describe("validateFieldMap — edge cases first", () => {
   });
 
   it("does not flood the report when the sheet has no header row at all", () => {
-    const issues = validateFieldMap(MYSP_FIELD_MAP, []);
+    const issues = validateFieldMap(VPOST_FIELD_MAP, []);
     expect(issues.filter((issue) => issue.code === "FIELD_MAP_COLUMN_NOT_FOUND")).toHaveLength(0);
   });
 
-  it("accepts the MYSP preset against the real header row", () => {
-    expect(validateFieldMap(MYSP_FIELD_MAP, REAL_COLUMNS)).toEqual([]);
+  it("accepts the VPOST preset against the real header row", () => {
+    expect(validateFieldMap(VPOST_FIELD_MAP, REAL_COLUMNS)).toEqual([]);
   });
 });
 

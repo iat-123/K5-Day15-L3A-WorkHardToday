@@ -148,9 +148,9 @@ describe("labels", () => {
   it("never renders an empty plan or an empty operator name", () => {
     expect(planLabel("pro")).toBe("Pro");
     expect(planLabel("   ")).toBe("Không rõ gói");
-    expect(accountDisplayName(undefined, "a@mysp.vn")).toBe("a@mysp.vn");
+    expect(accountDisplayName(undefined, "a@vpost.vn")).toBe("a@vpost.vn");
     expect(
-      accountDisplayName(MeResponseSchema.parse(LIVE_PAYLOAD), "a@mysp.vn"),
+      accountDisplayName(MeResponseSchema.parse(LIVE_PAYLOAD), "a@vpost.vn"),
     ).toBe("Nguyen Van A");
   });
 });

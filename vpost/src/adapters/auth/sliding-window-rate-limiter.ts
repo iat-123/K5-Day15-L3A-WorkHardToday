@@ -24,8 +24,8 @@ import type { RateLimiter, RateLimitDecision, RateLimitRule } from "@/core/ports
  * a self-inflicted outage, and the database lock-out still holds.
  */
 
-/** Prefix so a `KEYS mysp:*` never confuses these with queue or progress keys. */
-const KEY_PREFIX = "mysp:ratelimit";
+/** Prefix so a `KEYS vpost:*` never confuses these with queue or progress keys. */
+const KEY_PREFIX = "vpost:ratelimit";
 
 /**
  * Same reasoning as PROGRESS_COMMAND_TIMEOUT_MS: the connection may be the

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { readFixtureSheetSnapshot } from "@/adapters/google/fixture-catalog-source";
 
-import { makeFieldMap, MYSP_FIELD_MAP, type CatalogFieldMap } from "../catalog-field-map";
+import { makeFieldMap, VPOST_FIELD_MAP, type CatalogFieldMap } from "../catalog-field-map";
 import { parseSheetRow, SHEET_COLUMNS, toPromptInput } from "../product";
 
 /**
@@ -25,7 +25,7 @@ const CUSTOMER_MAP: CatalogFieldMap = makeFieldMap({
   colors: "Color",
 });
 
-const HEADER_BY_MYSP: Readonly<Record<string, string>> = {
+const HEADER_BY_VPOST: Readonly<Record<string, string>> = {
   [SHEET_COLUMNS.code]: "SKU",
   [SHEET_COLUMNS.name]: "Product name",
   [SHEET_COLUMNS.description]: "Chi tiết",
@@ -41,7 +41,7 @@ function customerRows() {
   return readFixtureSheetSnapshot().rows.map((row) => ({
     rowNumber: row.rowNumber,
     values: Object.fromEntries(
-      Object.entries(row.values).map(([column, value]) => [HEADER_BY_MYSP[column] ?? column, value]),
+      Object.entries(row.values).map(([column, value]) => [HEADER_BY_VPOST[column] ?? column, value]),
     ) as Record<string, string>,
   }));
 }
@@ -151,7 +151,7 @@ describe("parseSheetRow(fieldMap) — the five sample codes (docs/05 section 5)"
     if (!original) throw new Error(`sample-data has no row for ${code}`);
 
     const viaCustomer = parseSheetRow(renamed.rowNumber, renamed.values, CUSTOMER_MAP);
-    const viaPreset = parseSheetRow(original.rowNumber, original.values, MYSP_FIELD_MAP);
+    const viaPreset = parseSheetRow(original.rowNumber, original.values, VPOST_FIELD_MAP);
     const viaDefault = parseSheetRow(original.rowNumber, original.values);
 
     expect(viaCustomer.ok).toBe(true);
@@ -163,7 +163,7 @@ describe("parseSheetRow(fieldMap) — the five sample codes (docs/05 section 5)"
   });
 });
 
-describe("parseSheetRow — the default stays the MYSP preset", () => {
+describe("parseSheetRow — the default stays the VPOST preset", () => {
   it("parses the real snapshot with no third argument at all", () => {
     const rows = readFixtureSheetSnapshot().rows;
     const parsed = rows.map((row) => parseSheetRow(row.rowNumber, row.values));

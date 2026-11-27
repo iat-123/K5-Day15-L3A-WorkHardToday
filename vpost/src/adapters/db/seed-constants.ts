@@ -16,7 +16,7 @@ export const DEMO_TENANT_ID = "00000000-0000-0000-0000-000000000001" as TenantId
 export const DEMO_TENANT_NAME = "Demo Tenant";
 /** URL handle (docs/09 §3.7). Unique across tenants — the seed skips it if taken. */
 export const DEMO_TENANT_SLUG = "demo";
-export const DEMO_USER_EMAIL = "demo@mysp.local";
+export const DEMO_USER_EMAIL = "demo@vpost.local";
 export const DEMO_USER_NAME = "Demo Operator";
 
 /**

@@ -327,7 +327,7 @@ async function main(): Promise<void> {
     heading("f) hẹn T+2h → hàng đợi ngủ tới T-30, bài vẫn queued");
     const fourth = await schedule(2 * 60 * 60_000);
     const delayed = await repo.findJobById(DEMO_TENANT_ID, fourth.postJobId);
-    const delayedEntries = await connection.zrange("bull:mysp-jobs:delayed", "0", "-1");
+    const delayedEntries = await connection.zrange("bull:vpost-jobs:delayed", "0", "-1");
     print({
       status: delayed?.status,
       queue_job_id: delayed?.queueJobId,

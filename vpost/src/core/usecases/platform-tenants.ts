@@ -18,7 +18,7 @@ import { CHANNEL_COUNTS, FOCUS_CHANNELS, SELLER_KINDS, TOOL_KINDS } from "./onbo
 
 /**
  * M3.2 — platform tenant administration. The business flow this exists for:
- * "khách ký hợp đồng → MYSP tạo tenant → gửi link owner cho chủ shop" — so
+ * "khách ký hợp đồng → VPOST tạo tenant → gửi link owner cho chủ shop" — so
  * creation mints NO membership (staff are not members of a customer's company)
  * and hands back a single-use OWNER invite instead (M2.2 infrastructure).
  *
@@ -171,7 +171,7 @@ export function makePlatformTenants(deps: PlatformTenantsDeps): PlatformTenants 
       /**
        * The OWNER invite — the handover artefact. Single-use, 7 days, created
        * by the super_admin (so the invite list of the new tenant names who at
-       * MYSP provisioned it).
+       * VPOST provisioned it).
        */
       const token = deps.newToken();
       if (token.length < 32) {

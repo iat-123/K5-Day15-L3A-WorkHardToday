@@ -16,7 +16,7 @@ import { SupportModeBanner } from "@/ui/components/shell/SupportModeBanner";
 // The BUILT theme (`astryx theme build` output), not the source module: a
 // runtime theme injects its tokens after hydration, so the first paint would
 // show the neutral ink and swap. Its CSS is imported once, in globals.css.
-import { myspTheme } from "@/ui/theme/mysp";
+import { vpostTheme } from "@/ui/theme/vpost";
 
 import "./handoff-motion.css";
 
@@ -76,7 +76,7 @@ export function AppFrame({
         locale={ASTRYX_LOCALE}
         messages={{ [ASTRYX_LOCALE]: ASTRYX_VI }}
       >
-        <Theme theme={myspTheme}>
+        <Theme theme={vpostTheme}>
           <AppShell
             contentPadding={0}
             topNav={<AppTopBar tenantName={tenantName} />}

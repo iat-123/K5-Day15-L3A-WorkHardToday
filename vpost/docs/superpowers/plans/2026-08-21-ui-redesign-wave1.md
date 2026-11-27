@@ -105,7 +105,7 @@ Trong khối `:root`, thay các giá trị (giữ nguyên tên biến và commen
 <body ...>
   {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
   <div hidden aria-hidden="true" data-direction-contract dangerouslySetInnerHTML={{ __html: `<!--
-THESIS: MYSP la so mau vai cua xuong: moi mau la mot the vai, moi ma san pham mot trang mau; tu choi admin-SaaS card trang + accent tim rai deu.
+THESIS: VPOST la so mau vai cua xuong: moi mau la mot the vai, moi ma san pham mot trang mau; tu choi admin-SaaS card trang + accent tim rai deu.
 OWN-WORLD: nen vai moc oklch(0.955 0.013 84), muc am, cham indigo hanh dong, the mau bao hoa canh bac thang, nhan det mono cho ma/so.
 STORY: nguoi van hanh mo so mau, thay viec hom nay, rut the soan bai, duyet caption, luon tra loi duoc "vi sao bai nay khong len".
 FIRST VIEWPORT: hang so lieu tren nhan det (bam duoc) + viec can chu y + chong the lo dang chay; mot hanh dong chinh "Soan bai moi".
@@ -284,7 +284,7 @@ export function legacyRedirectTarget(pathname: string, search: string): string |
 
 `PostsHub.tsx` (client): thanh tab đầu màn (Astryx `SegmentedControl` — chạy `pnpm exec astryx component SegmentedControl` để lấy props đúng) với 2 tab "Bài đã hẹn" / "Nhật ký đăng"; tab ghi vào URL `?tab=` qua `useRouter().replace` + đọc `useSearchParams`; thân render `<ScheduledScreen />` hoặc `<JobLogScreen />` nguyên trạng. Header màn: `h1` "Bài đăng" + mô tả 1 câu (gộp từ 2 màn cũ, KHÔNG bê nguyên đoạn mô tả dài của Scheduled — phần quy tắc chi tiết đã nằm trong màn con).
 
-`src/app/(app)/posts/page.tsx`: sao cấu trúc guard của `jobs/page.tsx` hiện tại (getOperatorSession, `dynamic = "force-dynamic"`, metadata "Bài đăng — MYSP", Suspense fallback dùng `JobLogSkeleton`), render `<PostsHub tab={tab} />` với `tab` đọc từ `searchParams` (mặc định `"scheduled"`, giá trị lạ → `"scheduled"`).
+`src/app/(app)/posts/page.tsx`: sao cấu trúc guard của `jobs/page.tsx` hiện tại (getOperatorSession, `dynamic = "force-dynamic"`, metadata "Bài đăng — VPOST", Suspense fallback dùng `JobLogSkeleton`), render `<PostsHub tab={tab} />` với `tab` đọc từ `searchParams` (mặc định `"scheduled"`, giá trị lạ → `"scheduled"`).
 
 - [ ] **Step 6: Redirect 2 page cũ** — thay toàn bộ thân `scheduled/page.tsx` và `jobs/page.tsx`:
 
@@ -389,7 +389,7 @@ Kiểm tay: `/access?status=approved` → `/members?tab=history&status=approved`
 **Interfaces:**
 - Consumes: `usePathname()` của Next.
 
-- [ ] **Step 1:** Khi `pathname.startsWith("/platform")`: cạnh `TenantSwitcher` render badge tĩnh (Astryx `Token` hoặc `Badge` — tra `pnpm exec astryx component Token`) chữ "Ngoài công ty — màn quản trị MYSP", tone info. Không ẩn switcher (đổi công ty từ đây vẫn hợp lệ).
+- [ ] **Step 1:** Khi `pathname.startsWith("/platform")`: cạnh `TenantSwitcher` render badge tĩnh (Astryx `Token` hoặc `Badge` — tra `pnpm exec astryx component Token`) chữ "Ngoài công ty — màn quản trị VPOST", tone info. Không ẩn switcher (đổi công ty từ đây vẫn hợp lệ).
 - [ ] **Step 2:** `pnpm typecheck && pnpm test`, kiểm tay `/platform` thấy badge, các màn khác không.
 - [ ] **Step 3: Commit** — `git add src/ui/components/shell && git commit -m "feat(shell): out-of-tenant indicator on /platform"`.
 

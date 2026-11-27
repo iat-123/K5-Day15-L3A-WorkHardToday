@@ -204,7 +204,7 @@ ON CONFLICT DO NOTHING;
 UPDATE "audit_log" SET "actor_kind" = 'user'
 WHERE "actor_user_id" IS NOT NULL AND "actor_kind" IS NULL;
 --> statement-breakpoint
--- 5. MYSP's own tenant runs on the `internal` plan — no AI spend ceiling
+-- 5. VPOST's own tenant runs on the `internal` plan — no AI spend ceiling
 -- (doc 10 §8.9). The slug is only taken if nobody else already holds it.
 UPDATE "tenant"
 SET "plan" = 'internal',

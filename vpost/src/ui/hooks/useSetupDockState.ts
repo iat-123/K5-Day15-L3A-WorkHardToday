@@ -23,7 +23,7 @@ import { useCallback, useSyncExternalStore } from "react";
 
 export type DockState = "expanded" | "collapsed";
 
-const PREFIX = "mysp.setup-dock.";
+const PREFIX = "vpost.setup-dock.";
 
 /** Subscribers of THIS tab — `storage` only fires in the OTHER ones. */
 const listeners = new Set<() => void>();

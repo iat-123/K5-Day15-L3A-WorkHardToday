@@ -25,8 +25,8 @@ TanStack Query · Astryx · Tailwind v4 · framer-motion · Vitest (`environment
   ảnh bắt đúng lúc chuyển bước.
 - **Chuyển bước là CROSSFADE, không trượt ngang** (spec §2.5, ảnh `05-…`). Bản năng sẽ
   dựng slideshow trượt ngang; đó là sai.
-- **Buffer giữ MỘT URL cho cả luồng; MYSP thì KHÔNG** (spec §0c). Cả sáu ảnh tham chiếu đều
-  chụp ở `publish.buffer.com/onboarding` — họ giữ vị trí trong state React. MYSP **cố ý**
+- **Buffer giữ MỘT URL cho cả luồng; VPOST thì KHÔNG** (spec §0c). Cả sáu ảnh tham chiếu đều
+  chụp ở `publish.buffer.com/onboarding` — họ giữ vị trí trong state React. VPOST **cố ý**
   đặt bước lên URL (`?step=`) để F5 không mất chỗ, nút Back lùi một bước, và gửi link chỉ
   được đúng bước. Clone phần **nhìn thấy được**, không clone phần điều hướng.
 - **Mọi giá trị thị giác lấy từ spec §2**, đo từ Buffer thật. Không ước lượng, không bịa.
@@ -60,7 +60,7 @@ TanStack Query · Astryx · Tailwind v4 · framer-motion · Vitest (`environment
 3. `pnpm typecheck`/`pnpm test` có thể đỏ vì file dở dang của họ. Chạy `git status` xác
    nhận rồi ghi rõ trong báo cáo, đừng nhận là lỗi mình, đừng sửa file của họ.
 4. **Dev server của worktree ở cổng 3010** (`DEV_FAKE_SESSION=1`). Cần cookie
-   `mysp_active_tenant=00000000-0000-0000-0000-000000000001` mới vào được onboarding, không
+   `vpost_active_tenant=00000000-0000-0000-0000-000000000001` mới vào được onboarding, không
    có thì ra màn chọn công ty. Cổng 3000 là cây chính, code khác. Đừng dựng thêm server,
    đừng giết, cấm `pkill`.
 5. **BẪY: `pnpm build` ghi đè `.next` của dev server và giết hydration ÂM THẦM.** Sau khi
@@ -247,7 +247,7 @@ và **giới hạn chống lạm dụng** đếm trong transaction của repo. T
 tuyệt đối không viết bản tạo tenant thứ hai.
 
 **Quyết định thiết kế — đọc kỹ, đây là chỗ dễ làm sai:**
-Buffer tạo tổ chức ngay lúc đăng ký. MYSP **cấp lười** — tạo ở lần đầu tài khoản vào app mà
+Buffer tạo tổ chức ngay lúc đăng ký. VPOST **cấp lười** — tạo ở lần đầu tài khoản vào app mà
 chưa thuộc tổ chức nào. Kết quả người dùng nhìn thấy là y hệt (không bao giờ gặp màn "tạo
 công ty"), nhưng không phải đụng vào tầng xác thực, và giữ nguyên mọi giới hạn chống lạm
 dụng đã có. Đăng ký rồi không bao giờ mở app thì không có tổ chức — điều đó không hại ai.
@@ -375,7 +375,7 @@ export function OnboardingFrame({
 Bố cục theo spec §3: mũi tên lùi + logo góc trái trên, `StepDots` giữa đỉnh (ẩn ở màn chào),
 nút đổi sáng/tối góc phải trên, nội dung căn giữa cả ngang lẫn dọc.
 
-**Nút đổi sáng/tối:** MYSP **đã có** cơ chế theme (`src/ui/theme/mysp-theme.ts`, màn
+**Nút đổi sáng/tối:** VPOST **đã có** cơ chế theme (`src/ui/theme/vpost-theme.ts`, màn
 `platform/appearance`). **Dùng lại cơ chế sẵn có**, cấm dựng bộ chuyển theme thứ hai.
 Đọc `src/ui/hooks/useAppearance.ts` trước.
 

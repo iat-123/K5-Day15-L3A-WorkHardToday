@@ -314,7 +314,7 @@ async function catalogScreenSmoke(container: Container): Promise<void> {
     spreadsheet:
       "https://docs.google.com/spreadsheets/d/1Qdhp9YS0mePn7G3focqAhqV3Mb1eymFqbX0EC1bFCVs/edit#gid=0",
     sheetName: "Mẫu 2026",
-    actorEmail: "demo@mysp.local",
+    actorEmail: "demo@vpost.local",
   });
   console.log(JSON.stringify(updated, null, 2));
   console.log(`unchanged after round trip: ${before?.driveFolderId === updated.driveFolderId}`);
@@ -334,7 +334,7 @@ async function catalogScreenSmoke(container: Container): Promise<void> {
     driveFolder: "0AAbbCCddEEffGGhhIIjjKK",
     spreadsheet: "1zzzYYYxxxWWWvvvUUUtttSSSrrrQQQpppOOO",
     sheetName: "Tab thử",
-    actorEmail: "demo@mysp.local",
+    actorEmail: "demo@vpost.local",
   });
   console.log(
     `after switch: ${JSON.stringify(await usecases.getCatalogSource({ tenantId: DEMO_TENANT_ID }))}`,
@@ -351,7 +351,7 @@ async function catalogScreenSmoke(container: Container): Promise<void> {
     driveFolder: "1bA48sjugz9BczcoR0-zOc-VNlIYikp4v",
     spreadsheet: "1Qdhp9YS0mePn7G3focqAhqV3Mb1eymFqbX0EC1bFCVs",
     sheetName: "Mẫu 2026",
-    actorEmail: "demo@mysp.local",
+    actorEmail: "demo@vpost.local",
   });
 
   try {

@@ -13,7 +13,7 @@
  * itself from the click handler.
  */
 
-export const NAV_COLLAPSED_COOKIE = "mysp-nav-collapsed";
+export const NAV_COLLAPSED_COOKIE = "vpost-nav-collapsed";
 
 /** A year: a personal preference, not a credential. Losing it costs one click. */
 const NAV_COLLAPSED_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;
@@ -24,7 +24,7 @@ const NAV_COLLAPSED_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;
  * (@astryxdesign/core@0.4.0 `dist/Resizable/useResizable.js:29,54-78`). Must
  * match the `autoSaveId` in AppSideNav.
  */
-export const NAV_WIDTH_STORAGE_KEY = "astryx-resizable:mysp-nav";
+export const NAV_WIDTH_STORAGE_KEY = "astryx-resizable:vpost-nav";
 
 /**
  * The collapsed state carried by the cookie. Anything that is not exactly "1"

@@ -11,7 +11,7 @@
  * rule as the OAuth state cookies): over plain http the browser would drop it.
  */
 
-export const ACTIVE_TENANT_COOKIE = "mysp_active_tenant";
+export const ACTIVE_TENANT_COOKIE = "vpost_active_tenant";
 
 /**
  * 30 days: a selector, not a credential — losing it costs one picker screen,

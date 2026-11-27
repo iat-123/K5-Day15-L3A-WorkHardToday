@@ -11,7 +11,7 @@ const base = {
 describe("loadMinioConfig", () => {
   it("defaults bucket and useSSL", () => {
     const cfg = loadMinioConfig(base);
-    expect(cfg.MINIO_BUCKET).toBe("mysp-media");
+    expect(cfg.MINIO_BUCKET).toBe("vpost-media");
     expect(cfg.MINIO_USE_SSL).toBe(false);
   });
 

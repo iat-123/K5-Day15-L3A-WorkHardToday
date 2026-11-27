@@ -84,14 +84,14 @@ describe("register — refusals", () => {
   ])("refuses a weak password (%s) with AUTH_WEAK_PASSWORD", async (_label, password) => {
     const { usecase } = harness({ rows: [] });
     await expect(
-      usecase.register({ email: "new@mysp.vn", password }),
+      usecase.register({ email: "new@vpost.vn", password }),
     ).rejects.toMatchObject({ code: "AUTH_WEAK_PASSWORD" });
   });
 
   it("names every broken rule in Vietnamese, not just the first", async () => {
     const { usecase } = harness({ rows: [] });
     const error = await refusalOf(() =>
-      usecase.register({ email: "new@mysp.vn", password: "abc" }),
+      usecase.register({ email: "new@vpost.vn", password: "abc" }),
     );
 
     expect(error.context.problems).toEqual(["length", "uppercase", "digit", "symbol"]);
@@ -104,9 +104,9 @@ describe("register — refusals", () => {
   it("lets the repo's unique index decide who owns an address (AUTH_EMAIL_TAKEN)", async () => {
     // No pre-flight "does it exist" query: that would be both a TOCTOU gap and
     // a probing oracle. The collision comes back from the write.
-    const { usecase } = harness({ rows: [credentialRow({ email: "taken@mysp.vn" })] });
+    const { usecase } = harness({ rows: [credentialRow({ email: "taken@vpost.vn" })] });
     await expect(
-      usecase.register({ email: " Taken@MYSP.vn ", password: PASSWORD }),
+      usecase.register({ email: " Taken@VPOST.vn ", password: PASSWORD }),
     ).rejects.toMatchObject({ code: "AUTH_EMAIL_TAKEN" });
   });
 });
@@ -115,23 +115,23 @@ describe("register — happy path", () => {
   it("normalises the address and files the identity under it", async () => {
     const { usecase, credentials } = harness({ rows: [] });
     const identity = await usecase.register({
-      email: "  New.Person@MYSP.vn ",
+      email: "  New.Person@VPOST.vn ",
       password: PASSWORD,
       displayName: "  Người Mới  ",
     });
 
-    expect(identity.email).toBe("new.person@mysp.vn");
+    expect(identity.email).toBe("new.person@vpost.vn");
     // sessionEmail IS the address for a password identity — that is what makes
     // the account resolve through the same path a Google account does.
-    expect(identity.sessionEmail).toBe("new.person@mysp.vn");
+    expect(identity.sessionEmail).toBe("new.person@vpost.vn");
     expect(identity.displayName).toBe("Người Mới");
-    expect(credentials.rows.get("new.person@mysp.vn")?.passwordHash).toBe(`hash:${PASSWORD}`);
+    expect(credentials.rows.get("new.person@vpost.vn")?.passwordHash).toBe(`hash:${PASSWORD}`);
   });
 
   it("keeps an empty display name as null rather than an empty string", async () => {
     const { usecase } = harness({ rows: [] });
     const identity = await usecase.register({
-      email: "quiet@mysp.vn",
+      email: "quiet@vpost.vn",
       password: PASSWORD,
       displayName: "   ",
     });
@@ -145,34 +145,34 @@ describe("signIn — every refusal is the same code", () => {
   it("answers AUTH_INVALID_CREDENTIALS for an address nobody uses", async () => {
     const { usecase } = harness();
     await expect(
-      usecase.signIn({ email: "ghost@mysp.vn", password: PASSWORD }),
+      usecase.signIn({ email: "ghost@vpost.vn", password: PASSWORD }),
     ).rejects.toMatchObject({ code: "AUTH_INVALID_CREDENTIALS" });
   });
 
   it("burns the same CPU on the unknown-address branch (no timing oracle)", async () => {
     const { usecase, hasher } = harness();
-    await usecase.signIn({ email: "ghost@mysp.vn", password: PASSWORD }).catch(() => {});
+    await usecase.signIn({ email: "ghost@vpost.vn", password: PASSWORD }).catch(() => {});
     expect(hasher.burnCount).toBe(1);
   });
 
   it("answers AUTH_INVALID_CREDENTIALS for a wrong password", async () => {
     const { usecase } = harness();
     await expect(
-      usecase.signIn({ email: "worker@mysp.vn", password: "Wr0ng!pass" }),
+      usecase.signIn({ email: "worker@vpost.vn", password: "Wr0ng!pass" }),
     ).rejects.toMatchObject({ code: "AUTH_INVALID_CREDENTIALS" });
   });
 
   it("answers AUTH_INVALID_CREDENTIALS for a SUSPENDED account with the RIGHT password", async () => {
     const { usecase } = harness({ rows: [credentialRow({ accountStatus: "suspended" })] });
     await expect(
-      usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD }),
+      usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD }),
     ).rejects.toMatchObject({ code: "AUTH_INVALID_CREDENTIALS" });
   });
 
   it.each([
     ["malformed address", { email: "nope", password: PASSWORD }],
-    ["empty password", { email: "worker@mysp.vn", password: "" }],
-    ["missing password", { email: "worker@mysp.vn", password: undefined }],
+    ["empty password", { email: "worker@vpost.vn", password: "" }],
+    ["missing password", { email: "worker@vpost.vn", password: undefined }],
   ])("answers AUTH_INVALID_CREDENTIALS for %s", async (_label, input) => {
     const { usecase } = harness();
     await expect(usecase.signIn(input)).rejects.toMatchObject({
@@ -182,7 +182,7 @@ describe("signIn — every refusal is the same code", () => {
 
   it("does not touch the counter when the address is unknown", async () => {
     const { usecase, credentials } = harness();
-    await usecase.signIn({ email: "ghost@mysp.vn", password: PASSWORD }).catch(() => {});
+    await usecase.signIn({ email: "ghost@vpost.vn", password: PASSWORD }).catch(() => {});
     expect(credentials.attemptWrites).toHaveLength(0);
   });
 });
@@ -191,7 +191,7 @@ describe("signIn — the lock-out", () => {
   it("counts every consecutive failure", async () => {
     const { usecase, credentials } = harness();
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      await usecase.signIn({ email: "worker@mysp.vn", password: "Wr0ng!pass" }).catch(() => {});
+      await usecase.signIn({ email: "worker@vpost.vn", password: "Wr0ng!pass" }).catch(() => {});
     }
     expect(credentials.attemptWrites.map((write) => write.failedAttempts)).toEqual([1, 2, 3]);
     expect(credentials.attemptWrites.every((write) => write.lockedUntil === null)).toBe(true);
@@ -200,11 +200,11 @@ describe("signIn — the lock-out", () => {
   it(`locks for 15 minutes on failure number ${MAX_FAILED_ATTEMPTS}`, async () => {
     const { usecase, credentials } = harness();
     for (let attempt = 0; attempt < MAX_FAILED_ATTEMPTS - 1; attempt += 1) {
-      await usecase.signIn({ email: "worker@mysp.vn", password: "Wr0ng!pass" }).catch(() => {});
+      await usecase.signIn({ email: "worker@vpost.vn", password: "Wr0ng!pass" }).catch(() => {});
     }
 
     await expect(
-      usecase.signIn({ email: "worker@mysp.vn", password: "Wr0ng!pass" }),
+      usecase.signIn({ email: "worker@vpost.vn", password: "Wr0ng!pass" }),
     ).rejects.toMatchObject({ code: "AUTH_ACCOUNT_LOCKED" });
 
     const last = credentials.attemptWrites.at(-1);
@@ -220,7 +220,7 @@ describe("signIn — the lock-out", () => {
       ],
     });
     await expect(
-      usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD }),
+      usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD }),
     ).rejects.toMatchObject({ code: "AUTH_ACCOUNT_LOCKED" });
     // No counter write: a locked-out attempt must not extend its own lock.
     expect(credentials.attemptWrites).toHaveLength(0);
@@ -231,7 +231,7 @@ describe("signIn — the lock-out", () => {
       rows: [credentialRow({ failedAttempts: 5, lockedUntil: new Date(T0 + LOCKOUT_MS) })],
     });
     const error = await refusalOf(() =>
-      usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD }),
+      usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD }),
     );
     // T0 is 09:00 UTC = 16:00 in Asia/Ho_Chi_Minh; +15min = 16:15.
     expect(error.userMessage).toContain("16:15 ngày 24/08/2026");
@@ -243,7 +243,7 @@ describe("signIn — the lock-out", () => {
     });
     advance(LOCKOUT_MS + 1);
     await expect(
-      usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD }),
+      usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD }),
     ).resolves.toMatchObject({ accountId: "acc-1" });
   });
 
@@ -251,7 +251,7 @@ describe("signIn — the lock-out", () => {
     const { usecase, credentials } = harness({
       rows: [credentialRow({ failedAttempts: -7 })],
     });
-    await usecase.signIn({ email: "worker@mysp.vn", password: "Wr0ng!pass" }).catch(() => {});
+    await usecase.signIn({ email: "worker@vpost.vn", password: "Wr0ng!pass" }).catch(() => {});
     expect(credentials.attemptWrites[0]?.failedAttempts).toBe(1);
   });
 });
@@ -259,12 +259,12 @@ describe("signIn — the lock-out", () => {
 describe("signIn — happy path", () => {
   it("returns the identity Auth.js needs and nothing more", async () => {
     const { usecase } = harness();
-    const identity = await usecase.signIn({ email: " Worker@MYSP.vn ", password: PASSWORD });
+    const identity = await usecase.signIn({ email: " Worker@VPOST.vn ", password: PASSWORD });
 
     expect(identity).toEqual({
       accountId: "acc-1",
-      sessionEmail: "worker@mysp.vn",
-      email: "worker@mysp.vn",
+      sessionEmail: "worker@vpost.vn",
+      email: "worker@vpost.vn",
       displayName: "Worker",
     });
     // No hash, no counter, no lock — this object ends up inside a JWT.
@@ -273,17 +273,17 @@ describe("signIn — happy path", () => {
 
   it("resets the failure counter", async () => {
     const { usecase, credentials } = harness({ rows: [credentialRow({ failedAttempts: 3 })] });
-    await usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD });
+    await usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD });
     expect(credentials.clearedIds).toEqual(["cred-1"]);
-    expect(credentials.rows.get("worker@mysp.vn")?.failedAttempts).toBe(0);
+    expect(credentials.rows.get("worker@vpost.vn")?.failedAttempts).toBe(0);
   });
 
   it("clears a STALE lock that has already expired", async () => {
     const { usecase, credentials } = harness({
       rows: [credentialRow({ failedAttempts: 5, lockedUntil: new Date(T0 - 1) })],
     });
-    await usecase.signIn({ email: "worker@mysp.vn", password: PASSWORD });
-    expect(credentials.rows.get("worker@mysp.vn")?.lockedUntil).toBeNull();
+    await usecase.signIn({ email: "worker@vpost.vn", password: PASSWORD });
+    expect(credentials.rows.get("worker@vpost.vn")?.lockedUntil).toBeNull();
   });
 });
 
@@ -355,7 +355,7 @@ describe("setPassword — happy path", () => {
       newPassword: "N3w!password",
     });
 
-    const row = credentials.rows.get("worker@mysp.vn");
+    const row = credentials.rows.get("worker@vpost.vn");
     expect(row?.passwordHash).toBe("hash:N3w!password");
     expect(row?.failedAttempts).toBe(0);
     expect(row?.lockedUntil).toBeNull();

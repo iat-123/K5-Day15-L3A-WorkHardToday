@@ -164,7 +164,7 @@ describe("platform: the confirmation still demands a reason", () => {
     expect(dialog).toContain("isRequired");
   });
 
-  it("warns when the company being locked is MYSP's own", () => {
+  it("warns when the company being locked is VPOST's own", () => {
     expect(dialog).toContain("isInternalTenant");
   });
 });

@@ -69,7 +69,7 @@
 
   .onboarding-mark {
     /* The stagger step, DERIVED from a token rather than typed as a number.
-       `--duration-fast` is 125ms IN THIS PROJECT — `src/ui/theme/mysp.css`
+       `--duration-fast` is 125ms IN THIS PROJECT — `src/ui/theme/vpost.css`
        re-values Astryx's whole duration scale faster than the library default,
        and the token is what has to be honoured, not the number in the library's
        docs — so a third of it is ~42ms, inside the 30–50ms the spec asks for.

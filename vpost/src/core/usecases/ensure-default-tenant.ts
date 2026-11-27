@@ -6,7 +6,7 @@ import type { CreateTenant } from "@/core/usecases/create-tenant";
 /**
  * E10 — a signed-in account always has somewhere to work.
  *
- * Buffer creates the organisation at sign-up; MYSP provisions it LAZILY, the
+ * Buffer creates the organisation at sign-up; VPOST provisions it LAZILY, the
  * first time an account reaches the app without belonging to one. What the
  * operator sees is the same (the "tạo công ty" screen never appears), but the
  * auth layer is untouched and every abuse limit still applies. Someone who

@@ -439,7 +439,7 @@ export interface SignMediaUrlRequest {
   readonly tenantId: TenantId;
   /** Drive file id, i.e. `MediaAsset.driveFileId` / `PostJobMedia.driveFileId`. */
   readonly assetId: string;
-  /** Public origin Meta will call, e.g. `https://mysp.example.com`. */
+  /** Public origin Meta will call, e.g. `https://vpost.example.com`. */
   readonly baseUrl: string;
   /** Defaults to 6h; clamped to [1min, 24h]. */
   readonly ttlMs?: number;
@@ -495,7 +495,7 @@ export function makeInfra(config: Config, options: InfraOptions = {}): Infra {
   const logger = makePinoLogger({
     level: config.LOG_LEVEL,
     pretty: config.LOG_PRETTY,
-    base: { service: options.serviceName ?? "mysp", env: config.NODE_ENV },
+    base: { service: options.serviceName ?? "vpost", env: config.NODE_ENV },
   });
   const { db } = getDbHandle({ url: config.DATABASE_URL });
   return { config, logger, clock: makeSystemClock(), db };
@@ -1159,7 +1159,7 @@ export function makeUsecases(deps: Infra, overrides: UsecaseOverrides = {}): Use
       db: deps.db,
       redisUrl: deps.config.REDIS_URL,
       // Claim validation compares a caption against the labels of THIS tenant's
-      // sheet; without it an external tenant is judged by MYSP's column names.
+      // sheet; without it an external tenant is judged by VPOST's column names.
       catalogConfig,
     }),
     promptTemplates: makeLazyPromptTemplates({

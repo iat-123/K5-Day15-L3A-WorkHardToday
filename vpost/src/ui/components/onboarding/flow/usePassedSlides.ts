@@ -25,7 +25,7 @@ import { isOnboardingScreen, type OnboardingScreen } from "./onboarding-steps";
  * one that forgets it.
  */
 
-const KEY_PREFIX = "mysp:onboarding:passed:";
+const KEY_PREFIX = "vpost:onboarding:passed:";
 
 /** Stable identity for "nothing yet" — `getSnapshot` is compared by identity. */
 const EMPTY: readonly OnboardingScreen[] = [];

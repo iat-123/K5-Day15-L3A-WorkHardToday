@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
  * Support mode is READ-ONLY (doc 09 §3.5): `useActiveTenant()` reports a support
  * session as `viewer`, and every screen that hands a role to a write control has
  * to take THAT value — not the raw membership role sitting on `tenant`. Read the
- * raw one and MYSP staff get a live "Tạo link mời" button whose only outcome is
+ * raw one and VPOST staff get a live "Tạo link mời" button whose only outcome is
  * a 403.
  *
  * `MembersHub` is the one place in this folder that picks the role up and passes

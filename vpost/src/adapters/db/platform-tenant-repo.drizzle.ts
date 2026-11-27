@@ -65,7 +65,7 @@ interface JoinedSurveyColumns {
  *
  * An unreadable row also answers `null`, but only after a WARN naming the
  * tenant and the failing field. Throwing would take the whole platform list —
- * every customer of MYSP — down over one corrupt row; staying silent would let
+ * every customer of VPOST — down over one corrupt row; staying silent would let
  * corruption read as "bỏ qua" and quietly inflate the skip rate.
  */
 function readSurvey(
@@ -165,7 +165,7 @@ export class DrizzlePlatformTenantRepo implements PlatformTenantRepo {
 
     try {
       return await this.db.transaction(async (tx) => {
-        // NO membership on purpose: MYSP staff are not members of a customer's
+        // NO membership on purpose: VPOST staff are not members of a customer's
         // company — the owner arrives through the invite minted right after.
         const rows = await tx
           .insert(tenants)
@@ -258,7 +258,7 @@ export class DrizzlePlatformTenantRepo implements PlatformTenantRepo {
         }
 
         /**
-         * Suspending MYSP's own (`internal`) tenant is legal — locking your
+         * Suspending VPOST's own (`internal`) tenant is legal — locking your
          * own house is a real operation — but it deserves a flare in the log
          * before anyone wonders why every dashboard died.
          */

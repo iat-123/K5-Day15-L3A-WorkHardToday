@@ -167,7 +167,7 @@ function link(overrides: { tenantId?: TenantId; assetId?: string } = {}) {
   const result = signMediaUrl({
     tenantId: overrides.tenantId ?? TENANT,
     assetId: overrides.assetId ?? UPLOAD_ID,
-    baseUrl: "https://mysp.example.com",
+    baseUrl: "https://vpost.example.com",
     nowMs: NOW,
     sign,
   });

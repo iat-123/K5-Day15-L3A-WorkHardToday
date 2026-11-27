@@ -105,13 +105,13 @@ describe("decideAccessRequest — happy paths", () => {
       id: "req-seed",
       decision: "approve",
       role: "editor",
-      actorEmail: "Boss@MYSP.VN",
+      actorEmail: "Boss@VPOST.VN",
     });
 
     expect(result).toEqual({ id: "req-seed", status: "approved", role: "editor" });
     const row = requests.rows()[0];
     expect(row.decidedAt).toEqual(NOW);
-    expect(row.decidedByEmail).toBe("boss@mysp.vn");
+    expect(row.decidedByEmail).toBe("boss@vpost.vn");
   });
 
   it("is idempotent: approving twice keeps the identity approved", async () => {

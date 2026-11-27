@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-08-22T10:00:00+07:00",
-  "title": "Design System: MYSP",
+  "title": "Design System: VPOST",
   "extensions": {
     "colorMeta": {
       "indigo-dye": {
@@ -176,7 +176,7 @@
   ],
   "narrative": {
     "northStar": "Sổ mẫu vải (The Swatch Book)",
-    "overview": "MYSP là cuốn sổ mẫu vải của xưởng: mỗi màu là một thẻ vải, mỗi mã sản phẩm một trang mẫu. Nền là vải mộc (unbleached muslin) chứ không phải trắng văn phòng; chữ là mực nâu đen ấm chứ không phải đen lạnh; hành động duy nhất nhuộm chàm (indigo). Thế giới này từ chối admin-SaaS \"card trắng + accent tím rải đều\" — thay vào đó là bề mặt dệt: dải số liệu khâu bằng chỉ hairline, thẻ mẫu có mấu bậc thang thò ra khỏi tay áo, nhãn dệt mono cho mọi mã và số. Câu chuyện vận hành không đổi: người vận hành mở sổ, thấy việc hôm nay, rút thẻ soạn bài, duyệt caption, và luôn trả lời được \"vì sao bài này không lên\". Toàn bộ palette là oklch semantic; light/dark cùng ngữ nghĩa, chỉ đổi giá trị.",
+    "overview": "VPOST là cuốn sổ mẫu vải của xưởng: mỗi màu là một thẻ vải, mỗi mã sản phẩm một trang mẫu. Nền là vải mộc (unbleached muslin) chứ không phải trắng văn phòng; chữ là mực nâu đen ấm chứ không phải đen lạnh; hành động duy nhất nhuộm chàm (indigo). Thế giới này từ chối admin-SaaS \"card trắng + accent tím rải đều\" — thay vào đó là bề mặt dệt: dải số liệu khâu bằng chỉ hairline, thẻ mẫu có mấu bậc thang thò ra khỏi tay áo, nhãn dệt mono cho mọi mã và số. Câu chuyện vận hành không đổi: người vận hành mở sổ, thấy việc hôm nay, rút thẻ soạn bài, duyệt caption, và luôn trả lời được \"vì sao bài này không lên\". Toàn bộ palette là oklch semantic; light/dark cùng ngữ nghĩa, chỉ đổi giá trị.",
     "keyCharacteristics": [
       "Nền vải mộc ba lớp tonal (muslin → sunken cloth → swatch card) + viền chỉ mực, không bóng trang trí",
       "Một màu hành động duy nhất (chàm); trạng thái là ba màu nhuộm có tên chữ: madder / turmeric / leaf",
@@ -197,7 +197,7 @@
       { "name": "The Flat-By-Default Rule", "body": "Bề mặt đứng yên thì phẳng, tách nền bằng chênh tonal + hairline. Bóng là dấu hiệu \"đang được nhấc lên\" (thẻ mẫu, overlay), không phải trang trí của card.", "section": "elevation" }
     ],
     "dos": [
-      "Do lấy mọi màu/radius từ token semantic (bg-primary, text-muted-foreground, rounded-lg) — lớp giá trị nằm duy nhất ở globals.css; Astryx token đổi mực qua defineTheme trong mysp-theme.ts, không bao giờ override --color-* trong :root trần.",
+      "Do lấy mọi màu/radius từ token semantic (bg-primary, text-muted-foreground, rounded-lg) — lớp giá trị nằm duy nhất ở globals.css; Astryx token đổi mực qua defineTheme trong vpost-theme.ts, không bao giờ override --color-* trong :root trần.",
       "Do viết màu mới bằng oklch và định nghĩa đủ cặp light/dark cùng ngữ nghĩa; kiểm khoảng cách với chàm và các màu nhuộm hiện có ở cả mức đặc lẫn tint.",
       "Do cho mọi trạng thái nghiệp vụ một lối ra chữ: tint + viền + chữ deep, kèm câu \"vì sao\" tiếng Việt ngay tại chỗ hỏng (lỗi cục bộ theo nguồn, nguồn khác vẫn hiển thị).",
       "Do dùng mono tabular-nums cho mã/số/đếm, nhãn dệt mono cho nhãn khối, và chỉ nói số đã đọc được (\"3+ lô\", không tổng bịa).",

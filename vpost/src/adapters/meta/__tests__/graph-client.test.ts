@@ -139,7 +139,7 @@ describe("postAbsolute — the allowed host", () => {
 
     const result = await client.postAbsolute({
       url: UPLOAD_URL,
-      headers: { Authorization: `OAuth ${PAGE_TOKEN}`, file_url: "https://mysp.example.com/v.mp4" },
+      headers: { Authorization: `OAuth ${PAGE_TOKEN}`, file_url: "https://vpost.example.com/v.mp4" },
       context: { step: "reels.upload" },
     });
 

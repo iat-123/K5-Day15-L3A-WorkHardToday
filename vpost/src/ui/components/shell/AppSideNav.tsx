@@ -141,7 +141,7 @@ export function AppSideNav({
       // overlay badge covers it. The nav owns a toggle of its own at the top
       // instead (see NavCollapseToggle).
       collapsible={{ hasButton: false, isCollapsed, onCollapsedChange: handleCollapsedChange }}
-      resizable={{ defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "mysp-nav" }}
+      resizable={{ defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "vpost-nav" }}
       // AppShell renders the top bar as a second navigation landmark, and a
       // screen reader lists both by name — "Side navigation" next to a
       // Vietnamese UI names neither one usefully.

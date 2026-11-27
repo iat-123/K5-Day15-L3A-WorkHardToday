@@ -31,7 +31,7 @@ export interface ValidationContext {
   existingCaptions: readonly string[];
   /**
    * The tenant's own sheet headers. Stage 3 names them in its operator messages
-   * and accepts them as label prefixes on a quoted source. Absent = the MYSP
+   * and accepts them as label prefixes on a quoted source. Absent = the VPOST
    * preset, so an internal generation behaves exactly as before.
    */
   fieldMap?: CatalogFieldMap;

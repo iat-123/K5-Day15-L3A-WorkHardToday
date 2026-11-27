@@ -2,15 +2,15 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { myspTheme } from "@/ui/theme/mysp-theme";
+import { vpostTheme } from "@/ui/theme/vpost-theme";
 
 /**
- * The pin between `mysp-theme.ts` (the source) and `mysp.css` (what the browser
+ * The pin between `vpost-theme.ts` (the source) and `vpost.css` (what the browser
  * actually reads).
  *
  * WHY THIS TEST EXISTS (wave-1 finding M-3): the theme is BUILT, not runtime —
- * `pnpm exec astryx theme build src/ui/theme/mysp-theme.ts` compiles the source
- * into `mysp.css`, and `globals.css` imports the CSS. Nothing in the build
+ * `pnpm exec astryx theme build src/ui/theme/vpost-theme.ts` compiles the source
+ * into `vpost.css`, and `globals.css` imports the CSS. Nothing in the build
  * pipeline re-runs that command, so editing the source and forgetting the build
  * step is silent: types pass, lint passes, the app boots, and every Astryx
  * component keeps painting the OLD ink. The failure mode is a colour being one
@@ -21,14 +21,14 @@ import { myspTheme } from "@/ui/theme/mysp-theme";
  * only the bytes the browser downloads can answer "was the build re-run?".
  */
 
-const CSS_PATH = new URL("../mysp.css", import.meta.url);
+const CSS_PATH = new URL("../vpost.css", import.meta.url);
 
 /**
  * The tokens whose values are OURS, not the neutral theme's — the swatch-book
- * ink and the one indigo. Everything else in `mysp.css` is inherited and moves
+ * ink and the one indigo. Everything else in `vpost.css` is inherited and moves
  * with the Astryx version, which is not this test's business.
  *
- * The list is explicit rather than derived, because `myspTheme.tokens` is the
+ * The list is explicit rather than derived, because `vpostTheme.tokens` is the
  * MERGED set — ours plus every token the neutral theme ships — and pinning all
  * ~170 of those would be pinning the Astryx version, not our decisions. What
  * keeps the list honest is the coverage test at the foot of this file: adding
@@ -71,14 +71,14 @@ function readBuiltCss(): string {
   // Edge case first: an empty or truncated build would make every `.get()`
   // below return undefined and read as "the token is missing", which is a
   // confusing way to say "the file is broken".
-  if (css.trim().length === 0) throw new Error("mysp.css is empty — re-run `astryx theme build`");
+  if (css.trim().length === 0) throw new Error("vpost.css is empty — re-run `astryx theme build`");
   return css;
 }
 
 /**
  * The declarations of the theme ROOT (`:scope`), not of the whole file.
  *
- * `mysp.css` re-declares several of these tokens further down, inside
+ * `vpost.css` re-declares several of these tokens further down, inside
  * component blocks — `.astryx-banner.info` sets its own `--color-accent`, and
  * `.astryx-badge.blue` its own `--color-text-primary`. A whole-file grep would
  * read one of those back and pass on the wrong line.
@@ -86,10 +86,10 @@ function readBuiltCss(): string {
 function themeRootDeclarations(css: string): Map<string, string> {
   const start = css.indexOf(":scope {");
   if (start < 0) {
-    throw new Error("mysp.css has no `:scope` block — the theme build output changed shape");
+    throw new Error("vpost.css has no `:scope` block — the theme build output changed shape");
   }
   const end = css.indexOf("\n  }", start);
-  if (end < 0) throw new Error("mysp.css `:scope` block is unterminated");
+  if (end < 0) throw new Error("vpost.css `:scope` block is unterminated");
 
   const declarations = new Map<string, string>();
   for (const line of css.slice(start, end).split("\n")) {
@@ -99,15 +99,15 @@ function themeRootDeclarations(css: string): Map<string, string> {
   return declarations;
 }
 
-describe("mysp.css is the build of mysp-theme.ts", () => {
+describe("vpost.css is the build of vpost-theme.ts", () => {
   const declarations = themeRootDeclarations(readBuiltCss());
 
   it.each(PINNED_TOKENS)("%s in the built CSS is the value the source defines", (token) => {
-    const source = myspTheme.tokens[token];
-    expect(source, `${token} is not defined in mysp-theme.ts`).toBeTypeOf("string");
+    const source = vpostTheme.tokens[token];
+    expect(source, `${token} is not defined in vpost-theme.ts`).toBeTypeOf("string");
     expect(
       declarations.get(token),
-      `mysp.css is stale for ${token} — re-run \`pnpm exec astryx theme build src/ui/theme/mysp-theme.ts\``,
+      `vpost.css is stale for ${token} — re-run \`pnpm exec astryx theme build src/ui/theme/vpost-theme.ts\``,
     ).toBe(source);
   });
 
@@ -127,23 +127,23 @@ describe("mysp.css is the build of mysp-theme.ts", () => {
    * from that list is a token nothing checks — and the way it goes missing is
    * an override added to the source by somebody who never opened this file.
    *
-   * Read from the SOURCE text rather than from `myspTheme.tokens` (merged with
+   * Read from the SOURCE text rather than from `vpostTheme.tokens` (merged with
    * the neutral theme's ~170) or `__inputTokens` (marked `@internal`, so an
    * Astryx bump may take it away): what is being counted is exactly "the
-   * overrides written in mysp-theme.ts".
+   * overrides written in vpost-theme.ts".
    */
   it("pins every override the source declares — the list cannot fall behind", () => {
     // Comments stripped first, the same way the other structural tests in this
-    // repo read a source file: `mysp-theme.ts` is heavily documented and quotes
+    // repo read a source file: `vpost-theme.ts` is heavily documented and quotes
     // token names in its prose. An example written as `"--color-x": "var(--y)"`
     // inside a docblock would be counted as a declaration and fail this test
     // for a token that does not exist.
-    const source = stripComments(readFileSync(new URL("../mysp-theme.ts", import.meta.url), "utf8"));
+    const source = stripComments(readFileSync(new URL("../vpost-theme.ts", import.meta.url), "utf8"));
     const declared = [...source.matchAll(/^\s*"(--[a-z0-9-]+)":/gm)].map((match) => match[1]);
 
     expect(
       declared.length,
-      "mysp-theme.ts declares no tokens — the file shape changed",
+      "vpost-theme.ts declares no tokens — the file shape changed",
     ).toBeGreaterThan(0);
     expect([...new Set(declared)].sort()).toEqual([...PINNED_TOKENS].sort());
   });
@@ -154,6 +154,6 @@ describe("mysp.css is the build of mysp-theme.ts", () => {
     // honest while the file really is machine-written.
     const header = readBuiltCss().slice(0, 400);
     expect(header).toContain("@generated");
-    expect(header).toContain("src/ui/theme/mysp-theme.ts");
+    expect(header).toContain("src/ui/theme/vpost-theme.ts");
   });
 });

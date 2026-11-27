@@ -25,7 +25,7 @@ const WorkerRuntimeSchema = z.object({
   /** Parallel jobs per worker process. Keep low: external APIs are rate-limited. */
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(50).default(5),
   /** Liveness marker touched by the worker loop; read by the Docker HEALTHCHECK. */
-  WORKER_HEARTBEAT_FILE: z.string().trim().min(1).default("/tmp/mysp-worker-heartbeat"),
+  WORKER_HEARTBEAT_FILE: z.string().trim().min(1).default("/tmp/vpost-worker-heartbeat"),
   WORKER_HEARTBEAT_INTERVAL_MS: z.coerce.number().int().min(1_000).max(120_000).default(15_000),
   /**
    * Hard deadline for a graceful shutdown. Past it the process exits non-zero
@@ -98,7 +98,7 @@ export interface WorkerContainer {
 export function makeWorkerContainer(env: EnvRecord = process.env): WorkerContainer {
   const config = loadWorkerConfig(env);
   // Reuses the web composition root: db handle, clock, logger, usecase wiring.
-  const infra = makeInfra(config, { serviceName: "mysp-worker" });
+  const infra = makeInfra(config, { serviceName: "vpost-worker" });
   const logger = infra.logger;
 
   let connection: Redis | null = null;

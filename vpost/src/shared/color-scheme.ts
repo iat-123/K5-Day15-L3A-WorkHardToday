@@ -23,7 +23,7 @@
  * toggle share ONE definition (two parsers would eventually disagree).
  */
 
-export const COLOR_SCHEME_COOKIE = "mysp-color-scheme";
+export const COLOR_SCHEME_COOKIE = "vpost-color-scheme";
 
 /** A year: a personal preference, not a credential. Losing it costs one click. */
 const COLOR_SCHEME_MAX_AGE_SECONDS = 365 * 24 * 60 * 60;

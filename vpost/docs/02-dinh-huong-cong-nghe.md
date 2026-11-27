@@ -114,7 +114,7 @@ Kéo theo: cần một tiến trình chạy nền 24/7 (không phải serverless
 - Chưa làm: UI đăng ký tenant, mời thành viên, billing — Phase sau, thêm được mà không đổi schema.
 
 ```
-tenant             — hiện chỉ 1 dòng (MYSP); mọi bảng dưới đều mang tenant_id
+tenant             — hiện chỉ 1 dòng (VPOST); mọi bảng dưới đều mang tenant_id
 tenant_integration — theo tenant: drive_folder_id, sheet_id, tên tab,
                      credential Google (tham chiếu), cấu hình khác
 user               — thuộc tenant, vai trò

@@ -173,7 +173,7 @@ export function CreateTenantForm({
                 <Text type="supporting" className="text-muted-foreground text-xs" aria-live="polite">
                   Đường dẫn{" "}
                   <span className="text-foreground font-mono">
-                    mysp.vn/{field.value || "…"}
+                    vpost.vn/{field.value || "…"}
                   </span>{" "}
                   · tự sinh từ tên
                 </Text>

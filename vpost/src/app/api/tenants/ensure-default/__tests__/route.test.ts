@@ -55,7 +55,7 @@ describe("POST /api/tenants/ensure-default — refusals", () => {
 
   it("401s a bootstrap session with NO account row — consistent with M1.3b", async () => {
     getOperatorSession.mockResolvedValue({
-      email: "boss@mysp.vn",
+      email: "boss@vpost.vn",
       accountId: null,
       isBootstrapAdmin: true,
     });

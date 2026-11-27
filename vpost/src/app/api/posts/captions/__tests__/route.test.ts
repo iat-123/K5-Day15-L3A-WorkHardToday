@@ -62,7 +62,7 @@ function validBody(extra: Record<string, unknown> = {}): Record<string, unknown>
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "editor@mysp.vn", accountId: "acc-1" });
+  getOperatorSession.mockResolvedValue({ email: "editor@vpost.vn", accountId: "acc-1" });
   requireTenant.mockResolvedValue({ tenantId: TENANT, role: "editor", membershipVersion: 1 });
   generateCaptions.mockResolvedValue({
     generated: [

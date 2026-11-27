@@ -15,7 +15,7 @@ import { DEMO_TENANT_ID, DEMO_USER_EMAIL, DEV_BYPASS_EMAIL } from "../seed-const
  * wants the database left in.
  *
  * What is being proven is the M1.1 half: the demo tenant is on the `internal`
- * plan, and BOTH logins (`demo@mysp.local` and the dev bypass `dev@localhost`)
+ * plan, and BOTH logins (`demo@vpost.local` and the dev bypass `dev@localhost`)
  * come out with account -> identity -> membership -> app_user wired end to end.
  * Without that chain, M1.2 turns the dev bypass into a session that can do
  * nothing (docs/08 debt B-8).
@@ -102,7 +102,7 @@ describe.skipIf(!url)("seed — M1.1 identity chain", () => {
       .select({ plan: tenants.plan, slug: tenants.slug, status: tenants.status })
       .from(tenants)
       .where(eq(tenants.id, DEMO_TENANT_ID));
-    // MYSP's own tenant: no AI spend ceiling (doc 10 §8.9).
+    // VPOST's own tenant: no AI spend ceiling (doc 10 §8.9).
     expect(tenantRow[0]?.plan).toBe("internal");
     expect(tenantRow[0]?.slug).toBe("demo");
     expect(tenantRow[0]?.status).toBe("active");

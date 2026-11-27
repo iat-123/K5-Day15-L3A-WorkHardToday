@@ -42,10 +42,10 @@ Chuẩn mới: khối intro ≤2 câu; phần quy tắc chi tiết chuyển vào
 Một từ cho một thứ: "Page" trong ngữ cảnh Facebook, "kênh" cho khái niệm chung — quét "Fanpage"/"Kênh"/"Page" về một chuẩn (đề xuất: nav & khái niệm = "Kênh"; khi chỉ đích danh Facebook = "Page"). Tab "Nhật ký đăng" vs heading "Nhật ký đăng bài" → thống nhất. Quét chuỗi tiếng Anh còn sót ngoài mục wave 1.5 đã vá.
 
 ### 3.6 Dọn kỹ thuật (từ final review + re-review wave 1)
-`access/` import qua `posts/posts-tabs` → về `navigation/tab-param` · `legacy-routes.ts:26` dùng helper thay chuỗi tay · gỡ 3 ignore detector hết hạn + quyết `ignoreFiles` cho `mysp.css` (file sinh máy) · test pin `mysp-theme.ts` ↔ css đã build (M-3) · redirects thật trong `next.config.ts` cho 4 route cũ (đã cho phép) · sweep-test nit đã ghi.
+`access/` import qua `posts/posts-tabs` → về `navigation/tab-param` · `legacy-routes.ts:26` dùng helper thay chuỗi tay · gỡ 3 ignore detector hết hạn + quyết `ignoreFiles` cho `vpost.css` (file sinh máy) · test pin `vpost-theme.ts` ↔ css đã build (M-3) · redirects thật trong `next.config.ts` cho 4 route cũ (đã cho phép) · sweep-test nit đã ghi.
 
 ### 3.7 Màn ngoài shell (nhỏ)
-`/signin`: sửa "MysP"→"MYSP", "All right reserved"→"All rights reserved", bỏ form email disabled "Sắp ra mắt" chiếm chỗ (giữ 2 nút thật). Không redesign.
+`/signin`: sửa "VPost"→"VPOST", "All right reserved"→"All rights reserved", bỏ form email disabled "Sắp ra mắt" chiếm chỗ (giữ 2 nút thật). Không redesign.
 
 ## 4. Phase B — vòng đăng nhanh (spec con sau Phase A)
 Phạm vi dự kiến (chưa chốt): nhớ lựa chọn kênh + kiểu bài giữa các bài trong phiên; Ctrl+Enter = hành động chính; retry hàng loạt bài lỗi đủ điều kiện; ⌘K tìm mã sản phẩm. Sẽ qua `/impeccable shape` + spec riêng vì chạm hooks.

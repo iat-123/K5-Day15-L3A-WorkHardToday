@@ -36,7 +36,7 @@ export interface ContentGenerationRequest {
   product: CaptionInput;
   /**
    * The tenant's sheet headers, for validation stage 3 (claim grounding + the
-   * operator messages). Absent = the MYSP preset, i.e. today's behaviour.
+   * operator messages). Absent = the VPOST preset, i.e. today's behaviour.
    * It is NOT prompt data: no column name is rendered into a prompt from here.
    */
   fieldMap?: CatalogFieldMap;

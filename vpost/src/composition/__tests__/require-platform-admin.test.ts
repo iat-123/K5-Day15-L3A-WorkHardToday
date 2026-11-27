@@ -34,7 +34,7 @@ function harness(
   };
 }
 
-const SESSION = { accountId: "acc-1", email: "boss@mysp.vn" };
+const SESSION = { accountId: "acc-1", email: "boss@vpost.vn" };
 
 // --- Refusals first -----------------------------------------------------------
 
@@ -49,7 +49,7 @@ describe("requirePlatformAdmin — refusals", () => {
   it("401s a session with no account (the rescue-door bootstrap) — platform never runs on env alone", async () => {
     const { requirePlatformAdmin } = harness(null);
     await expect(
-      requirePlatformAdmin({ accountId: null, email: "boss@mysp.vn" }, { minRole: "support" }),
+      requirePlatformAdmin({ accountId: null, email: "boss@vpost.vn" }, { minRole: "support" }),
     ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 

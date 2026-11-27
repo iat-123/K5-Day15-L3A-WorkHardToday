@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_STOCK_POLICY, makeFieldMap, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { DEFAULT_STOCK_POLICY, makeFieldMap, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import type { LogBindings, LogContext, Logger } from "@/core/ports/infra";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
 
@@ -58,7 +58,7 @@ describe("findCatalogConfig — the stored mapping", () => {
   it("returns the three coordinates untouched when no mapping is stored", async () => {
     const { repo } = harness({ ...SOURCE });
     const config = await repo.findCatalogConfig(TENANT);
-    // Backward compatibility: no fieldMap key means "the MYSP preset", and the
+    // Backward compatibility: no fieldMap key means "the VPOST preset", and the
     // preset is resolved in core — the repo does not invent one here.
     expect(config).toEqual(SOURCE);
     expect(config?.fieldMap).toBeUndefined();
@@ -78,9 +78,9 @@ describe("findCatalogConfig — the stored mapping", () => {
     expect(config?.stockPolicy).toMatchObject({ mode: "textual" });
   });
 
-  it("accepts the MYSP preset written out in full", async () => {
-    const { repo } = harness({ ...SOURCE, fieldMap: MYSP_FIELD_MAP });
-    expect((await repo.findCatalogConfig(TENANT))?.fieldMap?.code).toBe(MYSP_FIELD_MAP.code);
+  it("accepts the VPOST preset written out in full", async () => {
+    const { repo } = harness({ ...SOURCE, fieldMap: VPOST_FIELD_MAP });
+    expect((await repo.findCatalogConfig(TENANT))?.fieldMap?.code).toBe(VPOST_FIELD_MAP.code);
   });
 
   it.each([
@@ -123,9 +123,9 @@ describe("findCatalogSource — the read model behind the panel", () => {
   });
 
   it("reports a declared map that happens to equal the preset as DECLARED", async () => {
-    const { repo } = harness({ ...SOURCE, fieldMap: MYSP_FIELD_MAP });
+    const { repo } = harness({ ...SOURCE, fieldMap: VPOST_FIELD_MAP });
     expect((await repo.findCatalogSource(TENANT))?.fieldMap).toMatchObject({
-      code: MYSP_FIELD_MAP.code,
+      code: VPOST_FIELD_MAP.code,
     });
   });
 
@@ -247,21 +247,21 @@ describe("findStockPolicy / findFieldMap — never throw for a tenant without co
   it("answers the defaults when the tenant has no integration row", async () => {
     const { repo, lines } = repoOn([]);
     expect(await repo.findStockPolicy(TENANT)).toEqual(DEFAULT_STOCK_POLICY);
-    expect(await repo.findFieldMap(TENANT)).toEqual(MYSP_FIELD_MAP);
+    expect(await repo.findFieldMap(TENANT)).toEqual(VPOST_FIELD_MAP);
     expect(lines.some((line) => line.context?.reason === "NO_INTEGRATION_ROW")).toBe(true);
   });
 
   it("answers the defaults when the integration is disabled", async () => {
     const { repo, lines } = repoOn([{ config: { ...SOURCE }, status: "disabled" }]);
     expect(await repo.findStockPolicy(TENANT)).toEqual(DEFAULT_STOCK_POLICY);
-    expect(await repo.findFieldMap(TENANT)).toEqual(MYSP_FIELD_MAP);
+    expect(await repo.findFieldMap(TENANT)).toEqual(VPOST_FIELD_MAP);
     expect(lines.some((line) => line.context?.reason === "INTEGRATION_DISABLED")).toBe(true);
   });
 
   it("answers the defaults when the keys are simply absent", async () => {
     const { repo } = repoOn([{ config: { ...SOURCE } }]);
     expect(await repo.findStockPolicy(TENANT)).toEqual(DEFAULT_STOCK_POLICY);
-    expect(await repo.findFieldMap(TENANT)).toEqual(MYSP_FIELD_MAP);
+    expect(await repo.findFieldMap(TENANT)).toEqual(VPOST_FIELD_MAP);
   });
 
   it("does NOT need complete coordinates — a half-filled row must not break a compose", async () => {
@@ -269,7 +269,7 @@ describe("findStockPolicy / findFieldMap — never throw for a tenant without co
       { config: { spreadsheetId: "sheet-1", stockPolicy: { mode: "numeric" } } },
     ]);
     expect(await repo.findStockPolicy(TENANT)).toMatchObject({ mode: "numeric" });
-    expect(await repo.findFieldMap(TENANT)).toEqual(MYSP_FIELD_MAP);
+    expect(await repo.findFieldMap(TENANT)).toEqual(VPOST_FIELD_MAP);
   });
 
   it("returns the stored textual policy and the stored map", async () => {
@@ -320,7 +320,7 @@ describe("findStockPolicy / findFieldMap — never throw for a tenant without co
     ["a non-string column", { fieldMap: { ...makeFieldMap({ code: "SKU", name: "T" }), name: 7 } }],
     ["a map with no code column", { fieldMap: makeFieldMap({ name: "Product name" }) }],
     ["one column on two fields", { fieldMap: makeFieldMap({ code: "A", name: "A" }) }],
-  ])("refuses to answer the MYSP preset for %s", async (_label, broken) => {
+  ])("refuses to answer the VPOST preset for %s", async (_label, broken) => {
     const { repo } = repoOn([{ config: { ...SOURCE, ...broken } }]);
     await expect(repo.findFieldMap(TENANT)).rejects.toMatchObject({
       code: "SYNC_FAILED",
@@ -336,7 +336,7 @@ describe("findStockPolicy / findFieldMap — never throw for a tenant without co
  */
 describe("mediaProfile — the phase 2 key of the same blob", () => {
   it("returns no mediaProfile at all for a row written before phase 2", async () => {
-    const { repo } = harness({ ...SOURCE, fieldMap: makeFieldMap(MYSP_FIELD_MAP) });
+    const { repo } = harness({ ...SOURCE, fieldMap: makeFieldMap(VPOST_FIELD_MAP) });
     const config = await repo.findCatalogConfig(TENANT);
     expect(config?.mediaProfile).toBeUndefined();
   });

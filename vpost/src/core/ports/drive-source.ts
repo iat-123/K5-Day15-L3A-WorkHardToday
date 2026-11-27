@@ -157,7 +157,7 @@ export interface CatalogSourceConfig {
   /**
    * Which column of THIS tenant's sheet holds which logical field.
    *
-   * Absent = the MYSP preset (`MYSP_FIELD_MAP`) — what every tenant configured
+   * Absent = the VPOST preset (`VPOST_FIELD_MAP`) — what every tenant configured
    * before onboarding existed already has, so an old `tenant_integration` row
    * keeps working untouched. Implementers validate the stored blob (zod at the
    * adapter) and must NOT silently fall back to the preset on a broken one.
@@ -226,7 +226,7 @@ export interface CatalogConfigRepo {
    * which of the tenant's columns feed a caption).
    *
    * Symmetric to `findStockPolicy`, same three answers: no row / disabled /
-   * no `fieldMap` key -> `MYSP_FIELD_MAP` (the preset, i.e. today's behaviour),
+   * no `fieldMap` key -> `VPOST_FIELD_MAP` (the preset, i.e. today's behaviour),
    * a stored map that does not parse -> coded error (MAPPING_INVALID), a
    * database failure -> DB error. Never a silent preset for a broken map:
    * reading a customer sheet with OUR column names finds nothing at best and

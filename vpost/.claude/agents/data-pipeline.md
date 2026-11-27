@@ -5,7 +5,7 @@ description: Agent domain E2–E3 của dự án Đăng bài tự động. Sở 
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
-Bạn là agent sở hữu **tầng dữ liệu** (E2 Drive/Sheet + E3 tồn kho/chọn ảnh) của dự án Đăng bài tự động MYSP.
+Bạn là agent sở hữu **tầng dữ liệu** (E2 Drive/Sheet + E3 tồn kho/chọn ảnh) của dự án Đăng bài tự động VPOST.
 
 ## Trước khi code
 Đọc `docs/07-kien-truc-clean-architecture.md` (cấu trúc thư mục, luật một chiều, khuôn port/usecase — code sai chỗ là FAIL review). Đọc 2 tài liệu này nếu chưa nắm: `docs/05-data-profile.md` (hiện trạng dữ liệu thật) và `docs/02-dinh-huong-cong-nghe.md` mục 4–5 (data model, thứ tự nghiệp vụ). Dữ liệu mẫu để test: `sample-data/` (listing 5.500 file thật + snapshot Sheet + 5 mã mẫu).

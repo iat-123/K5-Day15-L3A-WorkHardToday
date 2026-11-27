@@ -204,7 +204,7 @@ Thiết kế giữ nguyên: giữ cổng HMAC, chỉ 302 **sau khi** chữ ký h
 
 ## 8. Hạ tầng
 
-Compose (dev + prod): service `minio` (`minio/minio`), volume `miniodata`, bucket `mysp-media`, policy
+Compose (dev + prod): service `minio` (`minio/minio`), volume `miniodata`, bucket `vpost-media`, policy
 **private hoàn toàn** — chỉ presigned mới đọc/ghi được.
 
 Env mới:
@@ -213,7 +213,7 @@ Env mới:
 MINIO_INTERNAL_ENDPOINT=minio:9000      # web/worker gọi trong mạng Docker
 MINIO_PUBLIC_ENDPOINT=https://media.vannt.asia # host dùng để KÝ url đưa ra browser
 MINIO_ACCESS_KEY / MINIO_SECRET_KEY
-MINIO_BUCKET=mysp-media
+MINIO_BUCKET=vpost-media
 MINIO_USE_SSL=true
 ```
 

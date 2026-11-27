@@ -44,7 +44,7 @@ function group(overrides: Partial<ChannelGroup> = {}): ChannelGroup {
   return {
     id: "grp-main",
     name: "Bộ 5 page chính",
-    channelIds: ["ch-lady", "ch-mysp"],
+    channelIds: ["ch-lady", "ch-vpost"],
     channelCount: 2,
     createdAt: "2026-08-01T00:00:00.000Z",
     updatedAt: "2026-08-01T00:00:00.000Z",
@@ -77,7 +77,7 @@ describe("channelBlockReason", () => {
 describe("filterChannels", () => {
   const list = [
     channel({ channelId: "ch-lady", name: "Lady Fashion" }),
-    channel({ channelId: "ch-mysp", name: "Mys.P", externalId: "2020" }),
+    channel({ channelId: "ch-vpost", name: "Mys.P", externalId: "2020" }),
     channel({ channelId: "ch-camilla", name: "Camilla Hè" }),
   ];
 
@@ -91,7 +91,7 @@ describe("filterChannels", () => {
   });
 
   it("falls back to the ids, so a Page with no name is still findable", () => {
-    expect(filterChannels(list, "2020").map((item) => item.channelId)).toEqual(["ch-mysp"]);
+    expect(filterChannels(list, "2020").map((item) => item.channelId)).toEqual(["ch-vpost"]);
   });
 
   it("returns nothing when nothing matches — the caller shows the empty state", () => {
@@ -141,11 +141,11 @@ describe("matchingGroupId", () => {
   });
 
   it("lights the pill whose channels are EXACTLY the selection", () => {
-    expect(matchingGroupId(groups, new Set(["ch-lady", "ch-mysp"]))).toBe("grp-main");
+    expect(matchingGroupId(groups, new Set(["ch-lady", "ch-vpost"]))).toBe("grp-main");
   });
 
   it("lights nothing when the selection merely CONTAINS the group", () => {
-    expect(matchingGroupId(groups, new Set(["ch-lady", "ch-mysp", "ch-extra"]))).toBeNull();
+    expect(matchingGroupId(groups, new Set(["ch-lady", "ch-vpost", "ch-extra"]))).toBeNull();
   });
 
   it("lights nothing for a partial selection of a group", () => {
@@ -243,7 +243,7 @@ describe("applyChannelGroupSafe", () => {
 });
 
 describe("channelDropSentences", () => {
-  const named = (id: string) => (id === "ch-lady" ? "Lady Fashion" : id === "ch-mysp" ? "MYSP Shop" : null);
+  const named = (id: string) => (id === "ch-lady" ? "Lady Fashion" : id === "ch-vpost" ? "VPOST Shop" : null);
 
   it("says nothing when the press lost nothing", () => {
     expect(
@@ -277,11 +277,11 @@ describe("channelDropSentences", () => {
     const text = channelDropSentences({
       groupName: "Bộ 5",
       fromGroup: ["ch-lady"],
-      alreadyTicked: ["ch-mysp"],
+      alreadyTicked: ["ch-vpost"],
       nameOf: named,
     });
     expect(text).toContain("Nhóm “Bộ 5” có Lady Fashion");
-    expect(text).toContain("MYSP Shop bạn đã tick trước đó");
+    expect(text).toContain("VPOST Shop bạn đã tick trước đó");
   });
 
   it("counts the operator's own lost ticks too when they cannot be named", () => {
@@ -310,9 +310,9 @@ describe("channelDropSentences", () => {
 describe("toggleChannelId", () => {
   it("never mutates the set it was given", () => {
     const applied = new Set(["ch-lady"]);
-    const next = toggleChannelId(applied, "ch-mysp", true);
+    const next = toggleChannelId(applied, "ch-vpost", true);
     expect([...applied]).toEqual(["ch-lady"]);
-    expect([...next].sort()).toEqual(["ch-lady", "ch-mysp"]);
+    expect([...next].sort()).toEqual(["ch-lady", "ch-vpost"]);
   });
 
   it("removes on uncheck", () => {
@@ -368,7 +368,7 @@ describe("visibleRows", () => {
 
 describe("draftOnOpenChange", () => {
   const applied = new Set(["ch-lady"]);
-  const draft = new Set(["ch-mysp", "ch-devis"]);
+  const draft = new Set(["ch-vpost", "ch-devis"]);
 
   it("re-seeds from the applied selection when the modal opens", () => {
     const next = draftOnOpenChange({ open: true, wasOpen: false, applied, draft });
@@ -395,10 +395,10 @@ describe("draftOnOpenChange", () => {
 
 describe("groupPayloadFrom", () => {
   it("builds exactly the body POST /api/channel-groups takes", () => {
-    const result = groupPayloadFrom("Bộ 5 page chính", new Set(["ch-lady", "ch-mysp"]));
+    const result = groupPayloadFrom("Bộ 5 page chính", new Set(["ch-lady", "ch-vpost"]));
     expect(result).toEqual({
       ok: true,
-      value: { name: "Bộ 5 page chính", channelIds: ["ch-lady", "ch-mysp"] },
+      value: { name: "Bộ 5 page chính", channelIds: ["ch-lady", "ch-vpost"] },
     });
   });
 

@@ -194,13 +194,13 @@ export function CelebrateScreen({
 - `<h1>` hai dòng, cùng cỡ chữ với `WelcomeScreen` (`text-[1.75rem] leading-[2.1875rem]
   font-medium`, `font-heading`, `text-balance`, `tabIndex={-1}`):
   - dòng 1: `Xong rồi 🎉` — nếu có tên: `Xong rồi, {name} 🎉`
-  - dòng 2: `MYSP đã hiểu xưởng của bạn`
+  - dòng 2: `VPOST đã hiểu xưởng của bạn`
 - Câu phụ, `text-muted-foreground text-sm text-center max-w-[34rem]`:
-  `Câu trả lời của bạn đã được lưu. Từ giờ MYSP sẽ gợi ý caption và kênh đăng theo đúng
+  `Câu trả lời của bạn đã được lưu. Từ giờ VPOST sẽ gợi ý caption và kênh đăng theo đúng
   mặt hàng bạn bán.`
 - Nhãn nhóm việc tiếp theo, dùng `Eyebrow` sẵn có (`src/ui/components/ui/eyebrow.tsx`):
   `CÒN {n} BƯỚC ĐỂ ĐĂNG BÀI ĐẦU TIÊN`
-- Nút chính: `Vào MYSP` + `ArrowRight`. Cùng khuôn với nút của `WelcomeScreen`:
+- Nút chính: `Vào VPOST` + `ArrowRight`. Cùng khuôn với nút của `WelcomeScreen`:
   `h-12 gap-2 rounded-lg px-6 text-sm font-medium bg-foreground text-background
   hover:bg-foreground/90`. Ôm chữ, không `w-full`.
 
@@ -213,7 +213,7 @@ một thứ phải viết lại hai lần và là một cơ hội để hai bên
 Lấy tối đa **3** bước chưa xong đầu tiên. Nếu `useSetupProgress` chưa có dữ liệu hoặc lỗi:
 **không hiện khối này**, không hiện skeleton, không hiện lỗi — màn chúc mừng vẫn đủ nghĩa
 khi thiếu nó, và một thông báo lỗi trên màn ăn mừng là thứ tệ nhất có thể xảy ra ở đây.
-Nút "Vào MYSP" không bao giờ phụ thuộc vào query này.
+Nút "Vào VPOST" không bao giờ phụ thuộc vào query này.
 
 ### 3.2. Con dấu (seal)
 
@@ -261,7 +261,7 @@ Thêm vào `onboarding-motion.ts` (nơi duy nhất giữ đồng hồ):
 export const ENTER_DELAY_SEAL = "60ms";
 /** Câu phụ dưới tiêu đề. */
 export const ENTER_DELAY_SUBHEAD = "180ms";
-/** Nút "Vào MYSP": một nhịp sau hàng việc thứ ba. Ba hàng, không phải sáu card,
+/** Nút "Vào VPOST": một nhịp sau hàng việc thứ ba. Ba hàng, không phải sáu card,
  *  nên không dùng ENTER_DELAY_CTA (635ms — chỗ đó là hàng chờ không tồn tại). */
 export const ENTER_DELAY_CELEBRATE_CTA = "calc(260ms + 3 * var(--stagger))";
 ```
@@ -278,7 +278,7 @@ luồng này):
 | tiêu đề | 100ms | 525ms | 625ms |
 | câu phụ | 180ms | 400ms | 580ms |
 | hàng việc 1..3 | 260ms + n×62.5ms | 525ms | 910ms |
-| nút "Vào MYSP" | 447.5ms | 525ms | 972.5ms |
+| nút "Vào VPOST" | 447.5ms | 525ms | 972.5ms |
 
 Ba hàng việc dùng `enterIndex(0..2)` — trong ngưỡng `LAST_STAGGERED_INDEX` sẵn có.
 
@@ -345,7 +345,7 @@ rule tĩnh `opacity: 0` sẽ làm quầng tàng hình luôn dưới `reduce`, m�
 Màn chúc mừng tự chuyển sau `CELEBRATE_DWELL_MS = 4_000` (đo từ lúc mount, tức khoảng 3s
 sau khi entrance kết thúc).
 
-- Nút "Vào MYSP" luôn là đường đi chính và luôn bấm được ngay từ khung hình đầu.
+- Nút "Vào VPOST" luôn là đường đi chính và luôn bấm được ngay từ khung hình đầu.
 - Đếm ngược hiện **thành chữ**, trong cùng vùng `role="status"`:
   `Tự động vào sau {secondsLeft}s`. Không có vòng tròn chạy quanh nút — đó lại là một
   chuyển động lặp.
@@ -510,7 +510,7 @@ vitest `environment: "node"`, không jsdom. Đừng cố mô phỏng timer/DOM �
 3. `celebrate-screen-render.test.tsx` — `renderToStaticMarkup`:
    - có đúng một `<h1>` và nó có `tabindex="-1"`;
    - có `role="status"` kể cả khi `secondsLeft === null`;
-   - `nextSteps` rỗng → không có `<ul>` nào, nhưng nút "Vào MYSP" vẫn có;
+   - `nextSteps` rỗng → không có `<ul>` nào, nhưng nút "Vào VPOST" vẫn có;
    - chữ của các hàng việc **khớp từng ký tự** với `SETUP_STEP_PRESENTATION` (chống việc
      chép chữ ra chỗ thứ hai).
 4. `onboarding-motion.test.ts` — nới guard sang `CelebrateScreen.tsx`: không element nào
@@ -556,7 +556,7 @@ hoặc `pnpm verify` (chạy đủ chuỗi trên + `theme:presets:check`).
 
 Dựng dev server trong worktree này ở **port khác** (không giết tiến trình đang giữ port),
 lưu PID rồi `kill "$PID"` khi xong. Giả lập `/api/me` bằng `page.route` để vào được đúng
-vai owner — cách này đã ghi trong memory `mysp-verify-ui-states`.
+vai owner — cách này đã ghi trong memory `vpost-verify-ui-states`.
 
 Sáu thứ phải quay/chụp lại:
 
@@ -598,7 +598,7 @@ thật hai lần.
 | 2.3 | `useRef` dựng trước `await` | Hai ảnh chụp `completedAt` (lúc vào / bây giờ) | `react-hooks/refs` cấm đọc ref khi render; và so sánh dữ liệu thì không còn cửa sổ race để lỡ |
 | 3.3 | Nền kẻ đóng khung hai đầu luồng | Bỏ, màn chúc mừng đứng trên vải trơn | Đo ở 1400×900: dòng việc thứ ba đè lên mark TikTok |
 | 5.1 | `focusin` cũng huỷ đếm ngược | Chỉ `keydown` + `pointerdown` | `ScreenLayer` tự focus `<h1>`, nên focus sẽ huỷ đếm ngược ở mọi lần |
-| 5.3 | Cookie `mysp_handoff` | Store module-scope (`useHandoffArrival`) | Đã sửa trong prompt trước khi dựng — xem mục 5.3 |
+| 5.3 | Cookie `vpost_handoff` | Store module-scope (`useHandoffArrival`) | Đã sửa trong prompt trước khi dựng — xem mục 5.3 |
 
 **File đã thêm:** `celebrate-stage.ts` (+test), `CelebrateScreen.tsx` (+test),
 `useCelebrateHandoff.ts`, `useHandoffArrival.ts` (+test), `shell/handoff-motion.css`.

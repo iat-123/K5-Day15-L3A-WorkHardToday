@@ -7,7 +7,7 @@
 
 **Architecture:** Thuần tầng trình bày, MỞ THÊM `src/ui/schemas/**` (chỉ `channel.schema.ts` + test) và `next.config.ts` (redirects). Tái dùng hạ tầng wave 1: `channel-group-labels.ts` (tên Page), `navigation/tab-param.ts`, token DESIGN.md, pattern hub/TabList, statValue/gating-hint.
 
-**Tech Stack:** Next.js 16, Astryx v0.4.0 (theme `mysp`), Tailwind v4 token, vitest node env.
+**Tech Stack:** Next.js 16, Astryx v0.4.0 (theme `vpost`), Tailwind v4 token, vitest node env.
 
 **Spec:** `docs/superpowers/specs/2026-08-22-ui-redesign-wave2-design.md` (PM duyệt 22/08 — bản PM đã sửa §1).
 
@@ -116,7 +116,7 @@
 
 - [ ] **Step 1:** Quét từ vựng về chuẩn spec (khái niệm = "Kênh"; đích danh Facebook = "Page"); bảng thay đổi ghi vào report (chuỗi cũ → mới, file:line).
 - [ ] **Step 2:** Quét chuỗi tiếng Anh user-facing còn sót (ngoài các mục wave 1.5) — sửa hoặc ghi "giới hạn lib".
-- [ ] **Step 3:** SignInScreen: "MysP"→"MYSP" (2 chỗ), "All right reserved"→"All rights reserved", bỏ form email disabled + "Quên mật khẩu" của tính năng chưa có (giữ 2 nút thật). Không redesign.
+- [ ] **Step 3:** SignInScreen: "VPost"→"VPOST" (2 chỗ), "All right reserved"→"All rights reserved", bỏ form email disabled + "Quên mật khẩu" của tính năng chưa có (giữ 2 nút thật). Không redesign.
 - [ ] **Step 4:** Verify + commit.
 
 ### Task 10: Dọn kỹ thuật [spec §3.6]
@@ -124,8 +124,8 @@
 **Files:** `src/ui/components/access/AccessRequestsScreen.tsx`, `src/ui/components/members/members-tabs.test.ts`, `src/ui/components/posts/legacy-routes.ts`, `.impeccable/config.json`, `src/ui/theme/` (+ test mới), `next.config.ts`
 
 - [ ] **Step 1:** `access/` + `members-tabs.test.ts` import `POSTS_TAB_PARAM`/`withTabParam` từ `@/ui/components/navigation/tab-param` (bỏ đường vòng posts-tabs); `legacy-routes.ts` dùng helper thay chuỗi `tab=` tay.
-- [ ] **Step 2:** `.impeccable/config.json`: gỡ 3 ignore font-size hết hạn (DESIGN.md đã ghi ramp); thêm `ignoreFiles` cho `src/ui/theme/mysp.css` (file @generated). Chạy detector xác nhận: 0 finding font-size từ ramp hợp thức, 0 finding màu từ file sinh máy.
-- [ ] **Step 3:** Test pin `src/ui/theme/mysp-theme.ts` ↔ `mysp.css` đã build: test đọc mysp.css assert 4 dòng `--color-text-*` đúng giá trị nguồn (M-3).
+- [ ] **Step 2:** `.impeccable/config.json`: gỡ 3 ignore font-size hết hạn (DESIGN.md đã ghi ramp); thêm `ignoreFiles` cho `src/ui/theme/vpost.css` (file @generated). Chạy detector xác nhận: 0 finding font-size từ ramp hợp thức, 0 finding màu từ file sinh máy.
+- [ ] **Step 3:** Test pin `src/ui/theme/vpost-theme.ts` ↔ `vpost.css` đã build: test đọc vpost.css assert 4 dòng `--color-text-*` đúng giá trị nguồn (M-3).
 - [ ] **Step 4:** `next.config.ts` thêm `redirects()` 307 thật cho 4 route cũ (giữ query — Next tự giữ); page redirect cũ GIỮ NGUYÊN làm defence-in-depth; kiểm bằng curl worktree: HTTP 307/308 thật ở tầng edge.
 - [ ] **Step 5:** Sweep-test nit wave 1 còn lại (fixture route chết trong nav-items.test, ví dụ trung tính). Verify + commit.
 

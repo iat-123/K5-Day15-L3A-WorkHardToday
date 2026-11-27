@@ -11,7 +11,7 @@ import { loadWorkerConfig } from "../worker-container";
 
 const validEnv = {
   NODE_ENV: "production",
-  DATABASE_URL: "postgresql://mysp:mysp@postgres:5432/mysp",
+  DATABASE_URL: "postgresql://vpost:vpost@postgres:5432/vpost",
   REDIS_URL: "redis://redis:6379",
 };
 
@@ -77,7 +77,7 @@ describe("loadWorkerConfig — valid env", () => {
       DATABASE_URL: validEnv.DATABASE_URL,
       REDIS_URL: validEnv.REDIS_URL,
       WORKER_CONCURRENCY: 5,
-      WORKER_HEARTBEAT_FILE: "/tmp/mysp-worker-heartbeat",
+      WORKER_HEARTBEAT_FILE: "/tmp/vpost-worker-heartbeat",
       WORKER_HEARTBEAT_INTERVAL_MS: 15_000,
       WORKER_SHUTDOWN_DEADLINE_MS: 30_000,
     });

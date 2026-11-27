@@ -216,7 +216,7 @@ describe("parseCsv — quoting rules", () => {
   });
 });
 
-describe("parseCsv — the real MYSP export", () => {
+describe("parseCsv — the real VPOST export", () => {
   it("reads the sample sheet with the same shape the Sheets adapter produces", async () => {
     const { readFileSync } = await import("node:fs");
     const raw = readFileSync("sample-data/sheet-mau2026-snapshot-2026-08-12.csv");

@@ -10,7 +10,7 @@ import {
  *
  * WHY IT IS READ IN THE ROOT LAYOUT AND NOT IN THE BROWSER: a preset applied
  * after hydration is a preset the operator watches CHANGE — the indigo paints,
- * then flips. `mysp-theme.ts` documents that trap for runtime themes and takes
+ * then flips. `vpost-theme.ts` documents that trap for runtime themes and takes
  * the same way out: decide before the markup leaves the server. The attribute
  * ships in the HTML, and the stylesheet that answers it is already in the
  * `<head>`, so the first paint is the right colour.

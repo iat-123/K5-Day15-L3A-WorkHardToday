@@ -8,7 +8,7 @@ import { pgEnum } from "drizzle-orm/pg-core";
  * The list is CLOSED — adding a member is a change to the permission contract:
  *   user             an operator with a session, `actor_user_id` names them
  *   system           the worker: no session, no membership (publish-post, reapers)
- *   platform_support MYSP staff inside a tenant through a support session
+ *   platform_support VPOST staff inside a tenant through a support session
  *   external         a third party acting on our data (Meta's fetcher)
  *
  * It exists because today a reaper's row and a row whose actor could not be

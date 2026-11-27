@@ -247,7 +247,7 @@ describe("createTenant — slugs", () => {
 describe("slugify", () => {
   it.each([
     ["Công ty Đá Mỹ Nghệ", "cong-ty-da-my-nghe"],
-    ["  MYSP -- 2026!  ", "mysp-2026"],
+    ["  VPOST -- 2026!  ", "vpost-2026"],
     ["日本語のみ", ""],
   ])("%s -> %s", (name, expected) => {
     expect(slugify(name)).toBe(expected);

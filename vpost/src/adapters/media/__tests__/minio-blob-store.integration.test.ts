@@ -7,7 +7,7 @@ import type { MediaBlobStore } from "@/core/ports/media-blob-store";
 /**
  * Runs against a real MinIO:
  *   docker run -d --name minio-task34 -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
- *   docker run --rm --network host --entrypoint sh minio/mc -c "mc alias set t http://localhost:9000 minioadmin minioadmin && mc mb -p t/mysp-media-test"
+ *   docker run --rm --network host --entrypoint sh minio/mc -c "mc alias set t http://localhost:9000 minioadmin minioadmin && mc mb -p t/vpost-media-test"
  *   TEST_MINIO_ENDPOINT=localhost:9000 pnpm vitest run src/adapters/media/minio-blob-store.integration.test.ts
  *
  * The suite must run on ANY port, not just 9000 — both endpoints below derive
@@ -27,7 +27,7 @@ const publicEndpoint = `http://${publicHost}:${endpointPort}`;
 
 const ACCESS_KEY = process.env.TEST_MINIO_ACCESS_KEY ?? "minioadmin";
 const SECRET_KEY = process.env.TEST_MINIO_SECRET_KEY ?? "minioadmin";
-const BUCKET = "mysp-media-test";
+const BUCKET = "vpost-media-test";
 
 const TENANT = randomUUID() as never;
 const noopLogger = { info(){}, warn(){}, error(){}, debug(){}, child(){ return noopLogger; } } as never;

@@ -54,7 +54,7 @@ export interface AiWiringDeps {
   env?: EnvRecord;
   /**
    * Source of the tenant's own sheet headers. Absent = every tenant validates
-   * against the MYSP preset labels, which is the pre-multi-tenant behaviour.
+   * against the VPOST preset labels, which is the pre-multi-tenant behaviour.
    */
   catalogConfig?: CatalogConfigRepo;
 }

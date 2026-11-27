@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# MYSP — Công cụ đăng bài tự động (Facebook + TikTok, AI viết caption)
+# VPOST — Công cụ đăng bài tự động (Facebook + TikTok, AI viết caption)
 
 Dự án nội bộ, SaaS-ready. Phase hiện tại: **Phase 1 — MVP Facebook** (TikTok/video/hẹn lịch = Phase 2, chế độ tự tải lên = Phase 3).
 
@@ -41,10 +41,10 @@ Next.js App Router + TypeScript · PostgreSQL + Drizzle · BullMQ + Redis (queue
 | **Một test theo tên** | `pnpm exec vitest run -t "<tên test>"` |
 | Integration (cần DB thật) | `pnpm test:integration` |
 | Migration | `pnpm db:generate` → `pnpm db:migrate` (`drizzle/`) · seed: `pnpm db:seed` |
-| Theme | `pnpm theme:presets` sau khi sửa `src/ui/theme/mysp-theme.ts` |
+| Theme | `pnpm theme:presets` sau khi sửa `src/ui/theme/vpost-theme.ts` |
 | Hạ tầng local | `docker compose up -d postgres redis minio` |
 
-**Theme:** `src/ui/theme/mysp.css` là artifact **sinh ra rồi commit**. Sửa `mysp-theme.ts`
+**Theme:** `src/ui/theme/vpost.css` là artifact **sinh ra rồi commit**. Sửa `vpost-theme.ts`
 mà quên build → app chạy bằng file CSS cũ; typecheck/lint/test đều không thấy.
 `pnpm theme:check` build lại và so sánh, không ghi đè.
 

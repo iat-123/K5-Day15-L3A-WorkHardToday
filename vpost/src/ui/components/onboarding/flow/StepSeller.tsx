@@ -38,7 +38,7 @@ const SELLER_LABEL: Record<
   { label: string; emoji: string; tone: OptionChoice["tone"] }
 > = {
   // Colours and emoji are the prototype's, card for card
-  // (`mysp-onboarding-animation.html`, the six `.card` elements of screen 1).
+  // (`vpost-onboarding-animation.html`, the six `.card` elements of screen 1).
   solo_seller: { label: "Bán lẻ cá nhân", emoji: "👋", tone: "yellow" },
   shop_owner: { label: "Chủ shop nhỏ", emoji: "💪", tone: "green" },
   marketing_team: { label: "Trong đội marketing", emoji: "👥", tone: "blue" },

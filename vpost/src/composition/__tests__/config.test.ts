@@ -15,7 +15,7 @@ import {
 
 const CORE_ENV = {
   NODE_ENV: "test",
-  DATABASE_URL: "postgres://mysp:mysp@localhost:5432/mysp",
+  DATABASE_URL: "postgres://vpost:vpost@localhost:5432/vpost",
   REDIS_URL: "redis://localhost:6379",
 } satisfies EnvRecord;
 
@@ -70,7 +70,7 @@ describe("loadConfig — edge cases", () => {
 
   it.each([
     ["empty DATABASE_URL", { DATABASE_URL: "  " }],
-    ["mysql DATABASE_URL", { DATABASE_URL: "mysql://localhost/mysp" }],
+    ["mysql DATABASE_URL", { DATABASE_URL: "mysql://localhost/vpost" }],
   ])("rejects %s", (_label, override) => {
     expect(issuePaths(catchError(() => loadConfig({ ...CORE_ENV, ...override })))).toEqual([
       "DATABASE_URL",
@@ -148,9 +148,9 @@ describe("loadAuthConfig", () => {
 
   it("parses AUTH_BOOTSTRAP_ADMINS csv into lower-cased exact addresses", () => {
     expect(
-      loadAuthConfig({ ...AUTH_ENV, AUTH_BOOTSTRAP_ADMINS: " Boss@MYSP.vn , two@x.io " })
+      loadAuthConfig({ ...AUTH_ENV, AUTH_BOOTSTRAP_ADMINS: " Boss@VPOST.vn , two@x.io " })
         .AUTH_BOOTSTRAP_ADMINS,
-    ).toEqual(["boss@mysp.vn", "two@x.io"]);
+    ).toEqual(["boss@vpost.vn", "two@x.io"]);
   });
 
   it("reads a blank AUTH_BOOTSTRAP_ADMINS as not configured", () => {
@@ -374,12 +374,12 @@ describe("loadMetaOAuthConfig — Facebook connect (E5.1)", () => {
       loadMetaOAuthConfig({
         META_APP_ID: "1640548543911378",
         META_APP_SECRET: "app-secret",
-        META_OAUTH_REDIRECT_URI: "https://mysp.example.com/api/channels/callback",
+        META_OAUTH_REDIRECT_URI: "https://vpost.example.com/api/channels/callback",
       }),
     ).toEqual({
       META_APP_ID: "1640548543911378",
       META_APP_SECRET: "app-secret",
-      META_OAUTH_REDIRECT_URI: "https://mysp.example.com/api/channels/callback",
+      META_OAUTH_REDIRECT_URI: "https://vpost.example.com/api/channels/callback",
     });
   });
 });

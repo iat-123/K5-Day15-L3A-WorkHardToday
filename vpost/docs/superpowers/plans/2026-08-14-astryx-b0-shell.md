@@ -286,7 +286,7 @@ export function AppSideNav({ footer }: { footer: ReactNode }) {
   return (
     <SideNav
       collapsible
-      resizable={{ defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "mysp-nav" }}
+      resizable={{ defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "vpost-nav" }}
       footer={footer}
     >
       {NAV_SECTIONS.map((section) => (

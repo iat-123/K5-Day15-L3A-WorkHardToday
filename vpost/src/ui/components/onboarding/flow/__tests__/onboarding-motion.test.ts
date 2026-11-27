@@ -61,7 +61,7 @@ const APP_HANDOFF_CSS = readFileSync(
 );
 
 const THEME = readFileSync(
-  fileURLToPath(new URL("../../../../theme/mysp.css", import.meta.url)),
+  fileURLToPath(new URL("../../../../theme/vpost.css", import.meta.url)),
   "utf8",
 );
 
@@ -239,7 +239,7 @@ describe("onboarding motion stylesheet", () => {
      * The trap this guards, spelled out because it fails silently.
      *
      * A custom property is substituted on the element it is declared on.
-     * `mysp.css` puts `--duration-*` inside `@scope ([data-astryx-theme="mysp"])`
+     * `vpost.css` puts `--duration-*` inside `@scope ([data-astryx-theme="vpost"])`
      * — on the `<Theme>` wrapper — while `@astryxdesign/core` also declares them
      * on `:root`, at the library's slower values. An alias on `:root` would
      * therefore resolve against the LIBRARY: `--dur-enter` 730ms instead of

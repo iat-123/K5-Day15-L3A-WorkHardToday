@@ -23,7 +23,7 @@ export function InstagramPreview({
   const [currentSlide, setCurrentSlide] = useState(0);
   const firstAsset = media[0];
   const firstVideoUrl = firstAsset && isVideo ? mediaPreviewUrl(firstAsset.driveFileId) : null;
-  const username = channelName ? channelName.toLowerCase().replace(/\s+/g, "_") : "mysp_fashion";
+  const username = channelName ? channelName.toLowerCase().replace(/\s+/g, "_") : "vpost_fashion";
 
   return (
     <div className="flex flex-col bg-card rounded-2xl border border-border overflow-hidden shadow-xs">

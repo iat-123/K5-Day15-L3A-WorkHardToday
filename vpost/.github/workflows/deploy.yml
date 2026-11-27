@@ -52,12 +52,12 @@ jobs:
             main)
               env_name=production
               stack=prod
-              url=https://mysp.vannt.asia
+              url=https://vpost.vannt.asia
               ;;
             stg)
               env_name=staging
               stack=stg
-              url=https://mysp-stg.vannt.asia
+              url=https://vpost-stg.vannt.asia
               ;;
             *)
               echo "::error::$REF_NAME is not a deployable branch (expected stg or main)"
@@ -65,7 +65,7 @@ jobs:
               ;;
           esac
 
-          # GHCR rejects an uppercase path, and the repository is "MYSP".
+          # GHCR rejects an uppercase path, and the repository is "VPOST".
           image_prefix="ghcr.io/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')"
 
           {

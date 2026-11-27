@@ -30,7 +30,7 @@ const VALID_SOURCE = {
     driveFolderUrl: "https://drive.google.com/drive/folders/1bA48sjugz9BczcoR0-zOc-VNlIYikp4v",
     spreadsheetUrl:
       "https://docs.google.com/spreadsheets/d/1Qdhp9YS0mePn7G3focqAhqV3Mb1eymFqbX0EC1bFCVs",
-    // `null` = the tenant never declared a mapping and runs on the MYSP preset.
+    // `null` = the tenant never declared a mapping and runs on the VPOST preset.
     // It is a required key with a nullable value on purpose: a MISSING key would
     // be a server that does not answer the question at all.
     fieldMap: null,

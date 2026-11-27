@@ -23,7 +23,7 @@
 # other sites), and two processes cannot share :443. So each stack publishes its
 # web port on LOOPBACK ONLY — WEB_BIND=127.0.0.1 in the stack's .env — and the
 # host Caddy reverse-proxies to it. The site blocks live in
-# deploy/edge/mysp.caddy; the per-stack `caddy` service from the base file is
+# deploy/edge/vpost.caddy; the per-stack `caddy` service from the base file is
 # left unstarted (`--scale caddy=0`).
 
 services:

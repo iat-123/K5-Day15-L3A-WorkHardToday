@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   validateFieldMapStructure,
   validateStockPolicy,
   type CatalogFieldMap,
@@ -51,7 +51,7 @@ export const GOOGLE_PROVIDER = "google";
  * Per-tenant column mapping, stored next to the three coordinates in the same
  * JSONB blob. `.optional()` everywhere is the backward-compatibility contract:
  * every row written before onboarding existed has no `fieldMap` key, and must
- * keep meaning "the MYSP preset" (resolved in core, not here).
+ * keep meaning "the VPOST preset" (resolved in core, not here).
  *
  * `.nullable()` on each field because "cột này tenant không có" is a real,
  * stored answer — not a missing value.
@@ -409,16 +409,16 @@ export class DrizzleCatalogConfigRepo implements CatalogConfigRepo {
   async findFieldMap(tenantId: TenantId): Promise<CatalogFieldMap> {
     const scope = forTenant(this.db, tenantId);
     const config = await this.readGoogleConfig(scope.tenantId, "catalogConfig.findFieldMap");
-    if (config === null) return MYSP_FIELD_MAP;
+    if (config === null) return VPOST_FIELD_MAP;
 
     const stored = (config as { fieldMap?: unknown })?.fieldMap;
     if (stored === undefined || stored === null) {
-      this.logger?.debug("Tenant declared no field map — using the MYSP preset", {
+      this.logger?.debug("Tenant declared no field map — using the VPOST preset", {
         tenant_id: scope.tenantId,
         provider: GOOGLE_PROVIDER,
         reason: "NO_FIELD_MAP",
       });
-      return MYSP_FIELD_MAP;
+      return VPOST_FIELD_MAP;
     }
 
     const parsed = FieldMapSchema.safeParse(stored);

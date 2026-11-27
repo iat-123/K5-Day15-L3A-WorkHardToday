@@ -2,7 +2,7 @@
 
 ## 1. Nguyên tắc
 
-Không chọn model bằng cảm tính (nguyên tắc #10, #13). Mọi quyết định routing — kể cả "GPT-5.4 mini làm primary" đang đề xuất — chỉ chốt sau khi chạy benchmark trên **dữ liệu thật của MYSP**.
+Không chọn model bằng cảm tính (nguyên tắc #10, #13). Mọi quyết định routing — kể cả "GPT-5.4 mini làm primary" đang đề xuất — chỉ chốt sau khi chạy benchmark trên **dữ liệu thật của VPOST**.
 
 Lợi thế có sẵn: khảo sát 12/08 đã cho chúng ta danh sách 5.497 file thật + snapshot Sheet (`sample-data/`) — không phải bịa dataset.
 

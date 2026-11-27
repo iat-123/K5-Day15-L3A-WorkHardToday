@@ -24,7 +24,7 @@ export type SignMediaUrlFn = (input: {
   readonly tenantId: TenantId;
   /** Drive file id = `PostJobMedia.driveFileId`. */
   readonly assetId: string;
-  /** Public origin Meta will call, e.g. `https://mysp.example.com`. */
+  /** Public origin Meta will call, e.g. `https://vpost.example.com`. */
   readonly baseUrl: string;
   readonly ttlMs?: number;
 }) => SignedMediaUrl;

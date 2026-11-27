@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
 import type { MediaAsset, Product } from "@/core/domain/product";
 import type { TenantId } from "@/core/domain/tenant-context";
@@ -864,7 +864,7 @@ describe("composePost — manual product: the stock gate is NOT optional", () =>
       catalogConfig: {
         findCatalogConfig: async () => null,
         findCatalogSource: async () => null,
-        findFieldMap: async () => MYSP_FIELD_MAP,
+        findFieldMap: async () => VPOST_FIELD_MAP,
         findStockPolicy: async () => ({
           mode: "textual",
           inStockValues: ["còn hàng"],
@@ -889,7 +889,7 @@ describe("composePost — manual product: the stock gate is NOT optional", () =>
       catalogConfig: {
         findCatalogConfig: async () => null,
         findCatalogSource: async () => null,
-        findFieldMap: async () => MYSP_FIELD_MAP,
+        findFieldMap: async () => VPOST_FIELD_MAP,
         findStockPolicy: async () => ({
           mode: "disabled",
           reason: "Đơn vị không theo dõi tồn kho trên bảng tính",

@@ -2,7 +2,7 @@
   "detector": {
     "ignoreRules": [],
     "ignoreFiles": [
-      "src/ui/theme/mysp.css"
+      "src/ui/theme/vpost.css"
     ],
     "ignoreValues": [
       {

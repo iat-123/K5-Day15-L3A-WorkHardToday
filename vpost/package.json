@@ -1,5 +1,5 @@
 {
-  "name": "mysp",
+  "name": "vpost",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "depcruise": "depcruise src --validate",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "theme:check": "astryx theme build --check src/ui/theme/mysp-theme.ts",
+    "theme:check": "astryx theme build --check src/ui/theme/vpost-theme.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm depcruise && pnpm theme:check && pnpm theme:presets:check && pnpm test && pnpm build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

@@ -32,7 +32,7 @@ export interface CatalogSourceView {
   readonly spreadsheetUrl: string;
   /**
    * The mapping this tenant DECLARED, or null when it never declared one and is
-   * therefore running on the MYSP preset.
+   * therefore running on the VPOST preset.
    *
    * The distinction is the point: null means "chưa khai — an toàn để điền theo
    * gợi ý", a value means "người ta đã chỉnh tay — đừng ghi đè". A map that was

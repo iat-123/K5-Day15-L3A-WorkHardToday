@@ -23,9 +23,9 @@ describe("normaliseEmail — refusals", () => {
     ["a number", 42],
     ["empty", ""],
     ["whitespace", "   "],
-    ["no @", "mysp.vn"],
+    ["no @", "vpost.vn"],
     ["two @", "a@b@c.com"],
-    ["a space inside", "a b@mysp.vn"],
+    ["a space inside", "a b@vpost.vn"],
   ])("rejects %s", (_label, value) => {
     expect(normaliseEmail(value)).toBeNull();
   });
@@ -35,7 +35,7 @@ describe("normaliseEmail — refusals", () => {
   });
 
   it("trims and lower-cases", () => {
-    expect(normaliseEmail("  Boss@MYSP.VN ")).toBe("boss@mysp.vn");
+    expect(normaliseEmail("  Boss@VPOST.VN ")).toBe("boss@vpost.vn");
   });
 });
 
@@ -118,7 +118,7 @@ describe("facebookIdFromSessionEmail — the bootstrap allow-list check", () => 
   });
 
   it("ignores a real address", () => {
-    expect(facebookIdFromSessionEmail("boss@mysp.vn")).toBeNull();
+    expect(facebookIdFromSessionEmail("boss@vpost.vn")).toBeNull();
   });
 
   it("ignores a look-alike domain", () => {

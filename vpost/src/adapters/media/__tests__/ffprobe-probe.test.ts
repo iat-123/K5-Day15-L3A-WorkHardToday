@@ -224,20 +224,20 @@ describe("probeVideo — spawn paths provable without ffmpeg on the host", () =>
   it("maps a missing file to MEDIA_NOT_FOUND", async () => {
     const probe = makeFfprobeMediaProbe({ logger: makeLogger() });
     await expect(
-      probe.probeVideo({ kind: "path", path: "/tmp/mysp-does-not-exist-9f1c.mp4" }),
+      probe.probeVideo({ kind: "path", path: "/tmp/vpost-does-not-exist-9f1c.mp4" }),
     ).rejects.toMatchObject({ code: "MEDIA_NOT_FOUND", context: { reason: "PROBE_FILE_MISSING" } });
   });
 
   it("maps a missing ffprobe binary to a named reason, not a raw ENOENT", async () => {
     const probe = makeFfprobeMediaProbe({
       logger: makeLogger(),
-      ffprobePath: "mysp-ffprobe-does-not-exist",
+      ffprobePath: "vpost-ffprobe-does-not-exist",
     });
     await expect(
       probe.probeVideo({ kind: "bytes", bytes: new Uint8Array([0, 1, 2, 3]), fileName: "clip.mov" }),
     ).rejects.toMatchObject({
       code: "INTERNAL",
-      context: { reason: "FFPROBE_NOT_AVAILABLE", ffprobe_path: "mysp-ffprobe-does-not-exist" },
+      context: { reason: "FFPROBE_NOT_AVAILABLE", ffprobe_path: "vpost-ffprobe-does-not-exist" },
     });
   });
 });

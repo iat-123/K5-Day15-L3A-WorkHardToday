@@ -26,7 +26,7 @@ import { StepDots } from "@/ui/components/onboarding/flow/StepDots";
 import { WizardStepInvite } from "@/ui/components/onboarding/WizardStepInvite";
 import { Eyebrow } from "@/ui/components/ui/eyebrow";
 import type { SetupProgress, SetupStepId } from "@/ui/schemas/setup-progress.schema";
-import { myspTheme } from "@/ui/theme/mysp";
+import { vpostTheme } from "@/ui/theme/vpost";
 
 const PREVIEW_STEP_IDS: readonly SetupStepId[] = [
   "tenant",
@@ -243,10 +243,10 @@ export default function OnboardingPreviewPage() {
               16. Khảo sát onboarding — bốn dạng thẻ lựa chọn, cả hai trạng thái
             </Text>
             {/* Inside `Theme`, unlike the rest of this gallery: the cards read
-                their border, their tick and their emoji wash off the MYSP
+                their border, their tick and their emoji wash off the VPOST
                 palette, and outside the scope they would fall back to Astryx's
                 own. The four steps themselves are still checked at /onboarding. */}
-            <Theme theme={myspTheme}>
+            <Theme theme={vpostTheme}>
               <div className="bg-background flex flex-col gap-6 rounded-xl p-6">
                 <SurveyCardGallery />
               </div>

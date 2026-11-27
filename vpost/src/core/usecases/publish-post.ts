@@ -102,7 +102,7 @@ export const TENANT_SUSPENDED_ERROR_CODE = "TENANT_SUSPENDED";
 export const TENANT_SUSPENDED_REASON = "TENANT_SUSPENDED";
 export const TENANT_SUSPENDED_AUDIT_ACTION = "post_job.blocked_tenant_suspended";
 const TENANT_SUSPENDED_MESSAGE =
-  "Công ty đang bị tạm khoá — bài này không được đăng. Liên hệ quản trị viên MYSP.";
+  "Công ty đang bị tạm khoá — bài này không được đăng. Liên hệ quản trị viên VPOST.";
 /** A tenant row that vanished is not "active"; same refusal, different reason. */
 export const TENANT_MISSING_REASON = "TENANT_NOT_FOUND";
 const TENANT_MISSING_MESSAGE =

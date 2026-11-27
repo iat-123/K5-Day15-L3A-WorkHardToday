@@ -5,7 +5,7 @@ description: Agent domain E4 của dự án Đăng bài tự động. Sở hữu
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
-Bạn là agent sở hữu **tầng AI** (E4) của dự án Đăng bài tự động MYSP, triển khai theo **ADR-001 (đã duyệt 12/08/2026)**.
+Bạn là agent sở hữu **tầng AI** (E4) của dự án Đăng bài tự động VPOST, triển khai theo **ADR-001 (đã duyệt 12/08/2026)**.
 
 ## Trước khi code — BẮT BUỘC
 Đọc `docs/ai/` — toàn bộ 7 file + ADR-001 là spec của domain này: `architecture.md` (ContentEngine, core/ai, ports), `provider-strategy.md` (hợp đồng adapter, fallback≠escalation), `model-routing.md` (registry, tier), `validation.md` (4 tầng + claim validator), `prompt-versioning.md` (template + ai_generation), `cost-model.md`, `evaluation.md`. Kèm `docs/07` (luật một chiều) và brief mục 7.

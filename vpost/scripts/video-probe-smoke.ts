@@ -124,7 +124,7 @@ function synthArgs(options: { size: string; seconds: number; fps: number }): str
 async function main(): Promise<void> {
   const logger = makePinoLogger({ level: "info", pretty: true, base: { service: "video-smoke" } });
   const probe = makeFfprobeMediaProbe({ logger });
-  const workDir = mkdtempSync(join(tmpdir(), "mysp-video-smoke-"));
+  const workDir = mkdtempSync(join(tmpdir(), "vpost-video-smoke-"));
   const fixtureOutDir = WRITE_FIXTURES ? REPO_FIXTURE_DIR : join(workDir, "__fixtures__");
   mkdirSync(fixtureOutDir, { recursive: true });
   console.log(

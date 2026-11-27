@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { makeFieldMap, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { makeFieldMap, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
 import type {
   DriveFile,
@@ -359,7 +359,7 @@ describe("profileCatalogSource — the suggestion inside the report", () => {
       spreadsheetId: "sheet",
       sheetName: "Mẫu 2026",
       driveFolderId: "folder",
-      fieldMap: makeFieldMap(MYSP_FIELD_MAP),
+      fieldMap: makeFieldMap(VPOST_FIELD_MAP),
     });
     expect(withDefault.crossCheck?.postableNow).toBe(0);
 
@@ -368,7 +368,7 @@ describe("profileCatalogSource — the suggestion inside the report", () => {
       spreadsheetId: "sheet",
       sheetName: "Mẫu 2026",
       driveFolderId: "folder",
-      fieldMap: makeFieldMap(MYSP_FIELD_MAP),
+      fieldMap: makeFieldMap(VPOST_FIELD_MAP),
       mediaProfile: { kind: "folder-per-code" },
     });
     expect(withProfile.crossCheck?.postableNow).toBe(1);

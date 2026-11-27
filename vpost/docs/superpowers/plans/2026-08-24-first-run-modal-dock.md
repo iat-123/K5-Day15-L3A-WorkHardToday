@@ -822,7 +822,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export type DockState = "expanded" | "collapsed";
 
-const PREFIX = "mysp.setup-dock.";
+const PREFIX = "vpost.setup-dock.";
 
 function readStored(tenantKey: string): DockState | null {
   try {
@@ -1102,7 +1102,7 @@ export const SETUP_STEP_PRESENTATION: readonly SetupStepPresentation[] = [
     id: "google",
     ordinal: 2,
     title: "Kết nối Google Drive",
-    description: "Cho MYSP đọc kho ảnh sản phẩm trong Drive của bạn.",
+    description: "Cho VPOST đọc kho ảnh sản phẩm trong Drive của bạn.",
     minutes: 2,
     href: "/sync",
     requires: [],
@@ -1296,10 +1296,10 @@ git commit -m "feat(onboarding): add the setup dock to the app shell"
 
 - `Dialog` với `purpose="required"`, `width="min(1100px, 94vw)"`, `maxHeight="86vh"`.
 - Hai cột: dưới `md` xếp dọc, rail thành header.
-- **Rail** (`WizardRail`): brand `MYSP`; câu dẫn `Dữ liệu trong MYSP luôn thuộc về một công ty. Tạo công ty rồi mời người vào là xong phần khung — hai phút.`; hai mốc (`Tạo công ty` / `Mời nhân viên`) với chấm tròn → ✓; khối `Đã có người mời bạn?` bọc `JoinInviteForm`; cuối rail dòng `Đăng xuất`.
+- **Rail** (`WizardRail`): brand `VPOST`; câu dẫn `Dữ liệu trong VPOST luôn thuộc về một công ty. Tạo công ty rồi mời người vào là xong phần khung — hai phút.`; hai mốc (`Tạo công ty` / `Mời nhân viên`) với chấm tròn → ✓; khối `Đã có người mời bạn?` bọc `JoinInviteForm`; cuối rail dòng `Đăng xuất`.
 - **Bước 01** (`WizardStepCreate`): eyebrow `BƯỚC 01 / 02`, tiêu đề `Công ty của bạn tên gì?`, `CreateTenantForm` với `slugDisplay="inline"` và `submitLabel="Tạo công ty và tiếp tục"`. KHÔNG có chip ngành nghề.
-- **Bước 02** (`WizardStepInvite`): eyebrow `BƯỚC 02 / 02`, tiêu đề `Ai đăng bài cùng bạn?`; chọn vai trò (`Quản lý nội dung`=`admin`, `Người đăng`=`editor`, `Chỉ xem`=`viewer`) + câu mô tả quyền đổi theo vai; nút `Tạo link mời`; danh sách link đã tạo kèm `Chép link`; nút chính `Vào MYSP`, nút phụ `Mời sau, vào làm việc trước`.
-- `CreateTenantForm` thêm prop `slugDisplay?: "field" | "inline"` (mặc định `"field"` — dialog "Tạo công ty mới…" trong switcher giữ nguyên hành vi cũ). `"inline"` vẽ dòng `Đường dẫn mysp.vn/<slug> · tự sinh từ tên` thay cho ô nhập, vẫn giữ nguyên logic slugify và việc gán lỗi `SLUG_TAKEN` lên trường `slug`.
+- **Bước 02** (`WizardStepInvite`): eyebrow `BƯỚC 02 / 02`, tiêu đề `Ai đăng bài cùng bạn?`; chọn vai trò (`Quản lý nội dung`=`admin`, `Người đăng`=`editor`, `Chỉ xem`=`viewer`) + câu mô tả quyền đổi theo vai; nút `Tạo link mời`; danh sách link đã tạo kèm `Chép link`; nút chính `Vào VPOST`, nút phụ `Mời sau, vào làm việc trước`.
+- `CreateTenantForm` thêm prop `slugDisplay?: "field" | "inline"` (mặc định `"field"` — dialog "Tạo công ty mới…" trong switcher giữ nguyên hành vi cũ). `"inline"` vẽ dòng `Đường dẫn vpost.vn/<slug> · tự sinh từ tên` thay cho ô nhập, vẫn giữ nguyên logic slugify và việc gán lỗi `SLUG_TAKEN` lên trường `slug`.
 - Chuyển sang bước 02 xảy ra trong `onSuccess` của `create.mutate` — lúc đó `adopt()` đã chạy, tenant đã hoạt động, nên `useCreateInvite` gọi được ngay.
 
 - [ ] **Step 1: Thêm `slugDisplay` vào `CreateTenantForm`**

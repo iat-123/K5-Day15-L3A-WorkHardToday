@@ -41,8 +41,8 @@ vi.mock("@/composition/container", () => ({
 const ENV = {
   GOOGLE_CLIENT_ID: "client-id",
   GOOGLE_CLIENT_SECRET: "client-secret",
-  AUTH_ALLOWED_DOMAINS: "mysp.vn",
-  AUTH_BOOTSTRAP_ADMINS: "boss@mysp.vn",
+  AUTH_ALLOWED_DOMAINS: "vpost.vn",
+  AUTH_BOOTSTRAP_ADMINS: "boss@vpost.vn",
   AUTH_FACEBOOK_ALLOWED_USER_IDS: "992710700450296",
   SESSION_SECRET: "x".repeat(40),
 };
@@ -169,13 +169,13 @@ describe("getOperatorSession — the account tables decide", () => {
 
 describe("getOperatorSession — env bootstrap admins (M3.1: the DB decides once a row exists)", () => {
   it("RESCUE DOOR unchanged: no account row → session on env authority alone", async () => {
-    authMock.mockResolvedValue({ user: { email: "boss@mysp.vn", name: "Boss" } });
+    authMock.mockResolvedValue({ user: { email: "boss@vpost.vn", name: "Boss" } });
     resolveMock.mockResolvedValue(null);
     const getOperatorSession = await loadSession();
 
     const session = await getOperatorSession("test");
     expect(session).toMatchObject({
-      email: "boss@mysp.vn",
+      email: "boss@vpost.vn",
       isBootstrapAdmin: true,
       role: null,
       accountId: null,
@@ -189,7 +189,7 @@ describe("getOperatorSession — env bootstrap admins (M3.1: the DB decides once
    * source of truth — a suspended bootstrap admin is OUT, env or no env.
    */
   it("N9: a SUSPENDED bootstrap admin with an account row gets NO session", async () => {
-    authMock.mockResolvedValue({ user: { email: "boss@mysp.vn", name: "Boss" } });
+    authMock.mockResolvedValue({ user: { email: "boss@vpost.vn", name: "Boss" } });
     resolveMock.mockResolvedValue(
       member({ accountId: "acc-boss", status: "suspended", platformRole: "super_admin" }),
     );
@@ -201,18 +201,18 @@ describe("getOperatorSession — env bootstrap admins (M3.1: the DB decides once
 
   /** NEW (M3.1): env seeds the DB exactly once — the promote hook. */
   it("promotes a bootstrap admin with a NULL platform_role and carries super_admin", async () => {
-    authMock.mockResolvedValue({ user: { email: "boss@mysp.vn", name: "Boss" } });
+    authMock.mockResolvedValue({ user: { email: "boss@vpost.vn", name: "Boss" } });
     resolveMock.mockResolvedValue(member({ accountId: "acc-boss", platformRole: null }));
     const getOperatorSession = await loadSession();
 
     const session = await getOperatorSession("test");
 
-    expect(grantBootstrapRoleMock).toHaveBeenCalledWith("acc-boss", "boss@mysp.vn");
+    expect(grantBootstrapRoleMock).toHaveBeenCalledWith("acc-boss", "boss@vpost.vn");
     expect(session).toMatchObject({ isBootstrapAdmin: true, platformRole: "super_admin" });
   });
 
   it("keeps the DB's platform_role verbatim when it is already set", async () => {
-    authMock.mockResolvedValue({ user: { email: "boss@mysp.vn", name: "Boss" } });
+    authMock.mockResolvedValue({ user: { email: "boss@vpost.vn", name: "Boss" } });
     resolveMock.mockResolvedValue(member({ accountId: "acc-boss", platformRole: "support" }));
     const getOperatorSession = await loadSession();
 
@@ -256,7 +256,7 @@ describe("getOperatorSession — a domain match is not a grant", () => {
    * ("a domain grants nothing") holds in its post-M2.4 form.
    */
   it("gives a domain match with no membership a lobby session with NO authority", async () => {
-    authMock.mockResolvedValue({ user: { email: "colleague@mysp.vn", name: "Colleague" } });
+    authMock.mockResolvedValue({ user: { email: "colleague@vpost.vn", name: "Colleague" } });
     resolveMock.mockResolvedValue(member({ activeMemberships: [] }));
 
     const getOperatorSession = await loadSession();
@@ -267,7 +267,7 @@ describe("getOperatorSession — a domain match is not a grant", () => {
   });
 
   it("gives an approved domain match the membership role — and no admin rights", async () => {
-    authMock.mockResolvedValue({ user: { email: "colleague@mysp.vn", name: "Colleague" } });
+    authMock.mockResolvedValue({ user: { email: "colleague@vpost.vn", name: "Colleague" } });
     resolveMock.mockResolvedValue(member());
 
     const getOperatorSession = await loadSession();
@@ -278,7 +278,7 @@ describe("getOperatorSession — a domain match is not a grant", () => {
   });
 
   it("can suspend a domain match — the whole point of B1", async () => {
-    authMock.mockResolvedValue({ user: { email: "colleague@mysp.vn", name: "Colleague" } });
+    authMock.mockResolvedValue({ user: { email: "colleague@vpost.vn", name: "Colleague" } });
     resolveMock.mockResolvedValue(member({ status: "suspended" }));
 
     const getOperatorSession = await loadSession();

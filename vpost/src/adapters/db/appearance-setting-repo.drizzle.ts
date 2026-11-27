@@ -12,7 +12,7 @@ import { APPEARANCE_PRESET_SETTING_KEY, auditLogs, platformSettings } from "./sc
 
 /**
  * The platform appearance setting (M3.4). NOT behind `forTenant()` — like
- * `platform-tenant-repo`, this is the layer that operates MYSP itself, and the
+ * `platform-tenant-repo`, this is the layer that operates VPOST itself, and the
  * row it owns belongs to no company.
  *
  * The value is stored as a bare JSON string (`"cham"`), not `{"presetId":…}`:

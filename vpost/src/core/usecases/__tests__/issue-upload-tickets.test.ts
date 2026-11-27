@@ -19,7 +19,7 @@ function deps(overrides: Record<string, unknown> = {}) {
   return {
     blobs: {
       createUploadUrl: vi.fn(async ({ assetId }: { assetId: string }) => ({
-        postUrl: "https://media.vannt.asia/mysp-media",
+        postUrl: "https://media.vannt.asia/vpost-media",
         formFields: { key: `staging/${TENANT}/${assetId}` },
         storageKey: `${TENANT}/${assetId}`,
         expiresAt: new Date("2026-08-26T10:30:00Z"),
@@ -142,7 +142,7 @@ describe("issueUploadTickets — edge cases first", () => {
       productCode: "mg0ad6112",
       files: [png],
     });
-    expect(result.issued[0].postUrl).toBe("https://media.vannt.asia/mysp-media");
+    expect(result.issued[0].postUrl).toBe("https://media.vannt.asia/vpost-media");
     expect(result.issued[0].assetId).toBe("upload_1");
     const call = (
       d as never as { tickets: { createMany: { mock: { calls: unknown[][] } } } }

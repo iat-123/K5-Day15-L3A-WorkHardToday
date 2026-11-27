@@ -32,7 +32,7 @@ import {
  */
 
 /** Version is IN the key: an old build must not read an entry it cannot parse. */
-export const COMPOSE_DRAFT_BUFFER_KEY_PREFIX = "mysp.compose.draft.v1";
+export const COMPOSE_DRAFT_BUFFER_KEY_PREFIX = "vpost.compose.draft.v1";
 
 /**
  * Owner suffix used when the server could not name an operator (no `app_user`

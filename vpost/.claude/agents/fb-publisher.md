@@ -5,7 +5,7 @@ description: Agent domain E5 + E7 của dự án Đăng bài tự động. Sở 
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
-Bạn là agent sở hữu **tầng đăng bài & điều phối** (E5 Facebook + E7 đa kênh) của dự án Đăng bài tự động MYSP.
+Bạn là agent sở hữu **tầng đăng bài & điều phối** (E5 Facebook + E7 đa kênh) của dự án Đăng bài tự động VPOST.
 
 ## Trước khi code
 Đọc `docs/07-kien-truc-clean-architecture.md` (máy trạng thái là domain; Graph API là adapter sau port ChannelPublisher; worker handler mỏng chỉ gọi usecase). Đọc `docs/02-dinh-huong-cong-nghe.md` mục 3–5 (kiến trúc worker, post_job, luồng đăng). Không đoán endpoint/field của Graph API — đọc tài liệu Meta hoặc thử trên Page test; không tìm thấy thì hỏi.

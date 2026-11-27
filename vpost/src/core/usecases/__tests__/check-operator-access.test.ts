@@ -168,7 +168,7 @@ describe("statusForSessionEmail", () => {
     const { usecase } = harness();
     const state = await usecase.statusForSessionEmail({
       tenantId: TEST_TENANT,
-      sessionEmail: "stranger@mysp.vn",
+      sessionEmail: "stranger@vpost.vn",
     });
     expect(state.status).toBe("unknown");
   });

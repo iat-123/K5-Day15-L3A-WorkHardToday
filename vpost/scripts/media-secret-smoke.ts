@@ -29,7 +29,7 @@ import { AppError } from "@/core/domain/errors";
  *     pnpm exec tsx scripts/media-secret-smoke.ts
  */
 
-const BASE_URL = "https://mysp.example.com";
+const BASE_URL = "https://vpost.example.com";
 /** Same id as adapters/db/seed, inlined so importing it cannot re-run the seed. */
 const DEMO_TENANT_ID = "00000000-0000-0000-0000-000000000001" as TenantId;
 const OTHER_TENANT_ID = "00000000-0000-0000-0000-0000000000ff" as TenantId;

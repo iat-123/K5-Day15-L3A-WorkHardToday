@@ -7,7 +7,7 @@ import { accounts } from "./account";
  * Settings that belong to the PLATFORM, not to any customer company (M3.4).
  *
  * NO `tenant_id`, deliberately — and it is the only business table without one.
- * These rows configure MYSP itself: one value, in force for every company at
+ * These rows configure VPOST itself: one value, in force for every company at
  * once. Giving it a tenant column would invite a per-tenant read that the
  * feature does not have and the UI does not offer.
  *

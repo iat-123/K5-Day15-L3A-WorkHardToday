@@ -108,8 +108,8 @@ describe.skipIf(!url)("Platform admin — the write path", () => {
 
   it("promotes ONCE under a real race: one winner, one audit row", async () => {
     const [a, b] = await Promise.all([
-      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@mysp.vn`),
-      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@mysp.vn`),
+      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@vpost.vn`),
+      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@vpost.vn`),
     ]);
 
     expect([a, b].filter(Boolean)).toHaveLength(1); // exactly one granted
@@ -132,7 +132,7 @@ describe.skipIf(!url)("Platform admin — the write path", () => {
 
   it("a repeated grant after the fact is a no-op — the role is never re-stamped", async () => {
     await expect(
-      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@mysp.vn`),
+      accountRepo.grantBootstrapPlatformRole(adminId, `root-${suffix}@vpost.vn`),
     ).resolves.toBe(false);
   });
 
@@ -153,11 +153,11 @@ describe.skipIf(!url)("Platform admin — the write path", () => {
       slug: `khach-${suffix}`,
       plan: "standard",
       actorAccountId: adminId,
-      actorEmail: `root-${suffix}@mysp.vn`,
+      actorEmail: `root-${suffix}@vpost.vn`,
     });
     createdTenantIds.push(created.id);
 
-    // MYSP staff are NOT members of the customer's company.
+    // VPOST staff are NOT members of the customer's company.
     const membershipRows = await handle.db
       .select()
       .from(memberships)

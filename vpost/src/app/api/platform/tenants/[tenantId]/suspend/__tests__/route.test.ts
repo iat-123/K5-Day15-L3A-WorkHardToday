@@ -54,7 +54,7 @@ const call = (
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "root@mysp.vn", accountId: "acc-root" });
+  getOperatorSession.mockResolvedValue({ email: "root@vpost.vn", accountId: "acc-root" });
   requirePlatformAdmin.mockResolvedValue({ accountId: "acc-root", platformRole: "super_admin" });
   setTenantStatus.mockResolvedValue({ tenantId: TENANT, status: "suspended", already: false });
 });
@@ -100,7 +100,7 @@ describe("POST .../suspend and .../activate", () => {
       status: "suspended",
       reason: REASON,
       actorAccountId: "acc-root",
-      actorEmail: "root@mysp.vn",
+      actorEmail: "root@vpost.vn",
     });
   });
 

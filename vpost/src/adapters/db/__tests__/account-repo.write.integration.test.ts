@@ -449,7 +449,7 @@ describe.skipIf(!url)("DrizzleAccountRepo + decide provisioning — the write pa
       role: null,
       decidedAt: new Date(),
       decidedByUserId: null,
-      decidedByEmail: "boss@mysp.vn",
+      decidedByEmail: "boss@vpost.vn",
     });
 
     const accountRows = await handle.db

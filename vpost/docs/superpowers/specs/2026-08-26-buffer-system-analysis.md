@@ -1,7 +1,7 @@
 # Phân tích hệ thống Buffer — sau onboarding
 
 Ngày: 2026-08-26 · Bổ trợ cho `2026-08-26-onboarding-buffer-clone-design.md`
-Mục đích: làm nền tham chiếu khi dựng lại MYSP
+Mục đích: làm nền tham chiếu khi dựng lại VPOST
 
 ---
 
@@ -38,7 +38,7 @@ Những chỗ đó dưới đây ghi rõ là **suy ra**, không phải **thấy*
 
 Dưới nav chính là khối **"Connect channels"** — các icon kênh chưa nối, luôn hiện, cộng
 nút `+`. Đây là lời nhắc thiết lập **thường trực**, không phải một checklist bật rồi tắt.
-Đáng chú ý: MYSP đang dùng `SetupDock` cho vai trò này.
+Đáng chú ý: VPOST đang dùng `SetupDock` cho vai trò này.
 
 Chân cột trái: tên tổ chức + gói (`My organization` / `Free Plan`), và nút thu gọn cột.
 
@@ -81,7 +81,7 @@ lớp trên cùng; phần lớn diện tích dành cho "làm gì tiếp".
 - Hàng dưới: bộ lọc `Tags`, và chuyển chế độ xem **Board / Gallery**
 
 Đây là **kho nội dung tách khỏi hàng đợi**: ý tưởng sống độc lập, chưa gắn kênh hay giờ.
-MYSP hiện không có khái niệm này — bài đi thẳng từ sản phẩm sang hàng đợi.
+VPOST hiện không có khái niệm này — bài đi thẳng từ sản phẩm sang hàng đợi.
 
 ### 2.3 Publish — `/schedule`
 
@@ -177,10 +177,10 @@ Mở từ `＋ New Post` hoặc từ một khung giờ trống trong hàng đợ
 - Nút chính ở góc phải dưới, và nó **đổi chữ theo trạng thái**: chưa có kênh thì thành
   "Connect a Channel to Post" — nút không chết, nó chỉ đường.
 
-Mô hình này khớp trực tiếp với MYSP: `post_job` = 1 bài × 1 kênh, fan-out từ một bản soạn.
+Mô hình này khớp trực tiếp với VPOST: `post_job` = 1 bài × 1 kênh, fan-out từ một bản soạn.
 
 > **PHẠM VI — PM chốt 26/08/2026: KHÔNG đụng vào composer.**
-> MYSP tạm thời **giữ nguyên màn soạn bài hiện có** (`/compose`, `src/ui/components/compose/**`).
+> VPOST tạm thời **giữ nguyên màn soạn bài hiện có** (`/compose`, `src/ui/components/compose/**`).
 > Toàn bộ phần composer trong tài liệu này là **tham chiếu cho sau này**, không phải việc
 > đang giao. Agent nào nhận task từ đợt này mà thấy mình đang sửa file trong `compose/`
 > thì đã đi sai phạm vi — dừng lại và báo orchestrator.
@@ -214,7 +214,7 @@ Mô hình này khớp trực tiếp với MYSP: `post_job` = 1 bài × 1 kênh, 
 - **Tổ chức là gốc của mọi thứ**, tạo tự động lúc đăng ký, có chủ sở hữu chuyển nhượng được.
 - **Kênh thuộc tổ chức**, đếm ở `Settings > Channels`, và số kênh là đơn vị tính tiền
   ("0/3 channels connected" ở gói Free).
-- **Nhóm kênh là tính năng trả phí** (`Channel Groups ⚡`). MYSP đang cho miễn phí.
+- **Nhóm kênh là tính năng trả phí** (`Channel Groups ⚡`). VPOST đang cho miễn phí.
 - **Múi giờ theo người dùng**, hiện ngay trên thanh lọc chứ không giấu trong cài đặt.
 - Có **API công khai** và **Integrations** — hướng mở nền tảng.
 
@@ -224,7 +224,7 @@ Mô hình này khớp trực tiếp với MYSP: `post_job` = 1 bài × 1 kênh, 
 
 1. **Lỗi GraphQL thô lọt ra giao diện.** Vào `/channels/connect` (URL đoán) hiện nguyên
    văn `Variable "$channelId" got invalid value "connect"; Invalid ChannelId format.`
-   Người vận hành không làm gì được với câu đó. MYSP đã có `AppError` với `userMessage`
+   Người vận hành không làm gì được với câu đó. VPOST đã có `AppError` với `userMessage`
    tiếng Việt — giữ kỷ luật đó.
 2. **Trạng thái rỗng lặp lại quá nhiều lời mời nối kênh.** Cùng một lưới kênh xuất hiện ở
    Home, Community, Insights và composer. Với người chưa nối kênh, cả sản phẩm biến thành
@@ -237,24 +237,24 @@ Mô hình này khớp trực tiếp với MYSP: `post_job` = 1 bài × 1 kênh, 
 
 ---
 
-## 6. Đối chiếu với MYSP
+## 6. Đối chiếu với VPOST
 
 ### Nên lấy
 
-| Ý tưởng | Vì sao hợp MYSP |
+| Ý tưởng | Vì sao hợp VPOST |
 |---|---|
 | **Hàng đợi là khung giờ trống, không phải danh sách bài** | Giải quyết được màn rỗng của lịch đăng, và khớp luật giãn cách đã có |
-| **Một nút "＋ Tạo mới" duy nhất mở menu** | MYSP đang rải nút tạo ở nhiều màn |
+| **Một nút "＋ Tạo mới" duy nhất mở menu** | VPOST đang rải nút tạo ở nhiều màn |
 | Tiêu đề màn kiêm bộ chọn phạm vi kênh | Dùng chung được cho màn duyệt, nhật ký, thống kê |
 | Tab có số đếm | Trả lời "còn bao nhiêu việc" mà không cần bấm vào |
 | Nút chính **đổi chữ** thay vì làm mờ | Đúng Named Status Rule dự án đang theo |
-| Skeleton đúng hình dạng nội dung | MYSP đã làm ở vài màn, nên làm đều |
+| Skeleton đúng hình dạng nội dung | VPOST đã làm ở vài màn, nên làm đều |
 | Khối nhắc thiết lập **thường trực** ở cột trái | Thay cho `SetupDock` dạng thẻ nổi góc màn |
 | Tổ chức tự tạo lúc đăng ký, tên mặc định, sửa trong cài đặt | Chính là yêu cầu PM đã chốt |
 
 ### Nên cân nhắc
 
-- **Kho ý tưởng tách khỏi hàng đợi** (`Create > Ideas`). MYSP sinh bài từ sản phẩm nên
+- **Kho ý tưởng tách khỏi hàng đợi** (`Create > Ideas`). VPOST sinh bài từ sản phẩm nên
   chưa cần, nhưng nếu sau này có "soạn trước, gán sản phẩm sau" thì đây là khuôn sẵn.
 - **Community (bình luận gộp một chỗ)** — ngoài phạm vi mọi phase hiện tại.
 - **Habits** trong Insights — đo thói quen đăng đều, không chỉ đo tương tác.

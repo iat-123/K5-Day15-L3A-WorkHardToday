@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   type StockPolicy,
 } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
@@ -88,7 +88,7 @@ function makeCatalogConfig(policy: StockPolicy | Error): CatalogConfigRepo {
   return {
     findCatalogConfig: async () => null,
     findCatalogSource: async () => null,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     findStockPolicy: async () => {
       if (policy instanceof Error) throw policy;
       return policy;
@@ -348,7 +348,7 @@ interface Harness {
 /** Stand-in photo bytes; a real JPEG header so nothing looks like an empty buffer. */
 const PHOTO_BYTES = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4]);
 
-const MEDIA_BASE_URL = "https://mysp.example.com";
+const MEDIA_BASE_URL = "https://vpost.example.com";
 
 /**
  * Stand-in for the HMAC signer. The expiry is derived from the CLOCK, so a test

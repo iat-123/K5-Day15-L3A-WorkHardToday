@@ -79,7 +79,7 @@ describe.skipIf(!url)("DrizzleSupportSessionRepo — the write path", () => {
       purpose,
       expiresAt: LATER,
       now: new Date(),
-      actorEmail: `staff-${suffix}@mysp.vn`,
+      actorEmail: `staff-${suffix}@vpost.vn`,
     });
 
   const auditActions = async (tenantId: string) =>

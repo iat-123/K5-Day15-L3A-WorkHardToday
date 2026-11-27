@@ -38,12 +38,12 @@ const APPROVED_ROW = {
   provider: "google",
   providerAccountId: "108273645019283746501",
   displayName: "Trần Thị B",
-  email: "b@mysp.vn",
+  email: "b@vpost.vn",
   status: "approved",
   role: "editor",
   requestedAt: "2026-08-18T09:00:00+07:00",
   decidedAt: "2026-08-18T10:15:00+07:00",
-  decidedByEmail: "admin@mysp.vn",
+  decidedByEmail: "admin@vpost.vn",
 };
 
 describe("AccessRequestListResponseSchema", () => {
@@ -158,7 +158,7 @@ describe("accessSearchParams", () => {
 
 describe("display helpers", () => {
   it("never renders an anonymous row: falls back to the e-mail, then to a label", () => {
-    expect(accessRequestDisplayName({ displayName: "  ", email: "b@mysp.vn" })).toBe("b@mysp.vn");
+    expect(accessRequestDisplayName({ displayName: "  ", email: "b@vpost.vn" })).toBe("b@vpost.vn");
     expect(accessRequestDisplayName({ displayName: "", email: null })).toBe("(chưa có tên)");
     expect(accessRequestDisplayName({ displayName: null, email: null })).toBe("(chưa có tên)");
     expect(accessRequestDisplayName({ displayName: " Nguyen Van A ", email: null })).toBe(
@@ -169,9 +169,9 @@ describe("display helpers", () => {
   it("says 'no e-mail' out loud instead of printing null", () => {
     expect(accessRequestEmailLabel(null)).toBe("Không có email");
     expect(accessRequestEmailLabel("   ")).toBe("Không có email");
-    expect(accessRequestEmailLabel("b@mysp.vn")).toBe("b@mysp.vn");
+    expect(accessRequestEmailLabel("b@vpost.vn")).toBe("b@vpost.vn");
     expect(hasEmail(null)).toBe(false);
     expect(hasEmail(" ")).toBe(false);
-    expect(hasEmail("b@mysp.vn")).toBe(true);
+    expect(hasEmail("b@vpost.vn")).toBe(true);
   });
 });

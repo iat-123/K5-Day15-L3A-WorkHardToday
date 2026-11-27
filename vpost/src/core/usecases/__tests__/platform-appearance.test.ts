@@ -42,7 +42,7 @@ function makeRepo(stored: unknown): AppearanceSettingRepo & {
   };
 }
 
-const ACTOR = { actorAccountId: "acc-1", actorEmail: "staff@mysp.vn" };
+const ACTOR = { actorAccountId: "acc-1", actorEmail: "staff@vpost.vn" };
 
 describe("get()", () => {
   let logger: ReturnType<typeof makeLogger>;
@@ -176,7 +176,7 @@ describe("set()", () => {
       {
         presetId: "tia",
         actorAccountId: "acc-1",
-        actorEmail: "staff@mysp.vn",
+        actorEmail: "staff@vpost.vn",
         previousPresetId: "cham",
       },
     ]);

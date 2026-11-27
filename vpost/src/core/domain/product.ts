@@ -17,8 +17,8 @@
 
 import {
   FIELD_LABELS,
-  MYSP_FIELD_MAP,
-  MYSP_PRICE_COLUMNS,
+  VPOST_FIELD_MAP,
+  VPOST_PRICE_COLUMNS,
   type CatalogFieldMap,
 } from "./catalog-field-map";
 import { normalizeProductCode, type MediaKind, type MediaVariantFlags } from "./media-file-name";
@@ -30,31 +30,31 @@ import { normalizeProductCode, type MediaKind, type MediaVariantFlags } from "./
  * company's sheet. Columns are read BY NAME, never by position.
  *
  * Since the onboarding work this is no longer the source of truth: it is a view
- * of `MYSP_FIELD_MAP`, the default field map. A tenant with a different sheet
+ * of `VPOST_FIELD_MAP`, the default field map. A tenant with a different sheet
  * carries its own map in `tenant_integration.config` (see catalog-field-map).
  */
 export const SHEET_COLUMNS = {
-  code: MYSP_FIELD_MAP.code,
-  name: MYSP_FIELD_MAP.name,
-  description: MYSP_FIELD_MAP.description,
-  category: MYSP_FIELD_MAP.category,
-  season: MYSP_FIELD_MAP.season,
-  stock: MYSP_FIELD_MAP.stock,
-  note: MYSP_FIELD_MAP.note,
-  colors: MYSP_FIELD_MAP.colors,
+  code: VPOST_FIELD_MAP.code,
+  name: VPOST_FIELD_MAP.name,
+  description: VPOST_FIELD_MAP.description,
+  category: VPOST_FIELD_MAP.category,
+  season: VPOST_FIELD_MAP.season,
+  stock: VPOST_FIELD_MAP.stock,
+  note: VPOST_FIELD_MAP.note,
+  colors: VPOST_FIELD_MAP.colors,
 } as const;
 
-/** Without these the row cannot be used at all — for the MYSP preset. */
+/** Without these the row cannot be used at all — for the VPOST preset. */
 export const REQUIRED_SHEET_COLUMNS: readonly string[] = [SHEET_COLUMNS.code, SHEET_COLUMNS.name];
 
 /**
- * @deprecated Renamed to `MYSP_PRICE_COLUMNS` and demoted to an onboarding
+ * @deprecated Renamed to `VPOST_PRICE_COLUMNS` and demoted to an onboarding
  * HINT. It never was a general guard: it lists four headers of one sheet, so it
  * could not protect a customer sheet nobody has seen. The real guarantee is the
  * opt-in map — `parseSheetRow` reads only mapped columns, so an unmapped price
  * column cannot reach `ProductContent`. Kept as an alias for existing callers.
  */
-export const FORBIDDEN_SHEET_COLUMNS: readonly string[] = MYSP_PRICE_COLUMNS;
+export const FORBIDDEN_SHEET_COLUMNS: readonly string[] = VPOST_PRICE_COLUMNS;
 
 // --- Product ----------------------------------------------------------------
 
@@ -234,16 +234,16 @@ function cell(values: Readonly<Record<string, string>>, column: string | null): 
  * failure — a broken row must not abort the whole sync (business rule 5).
  *
  * `fieldMap` is optional: without it the row is read with the internal
- * company's headers (`MYSP_FIELD_MAP`), exactly as before this parameter
+ * company's headers (`VPOST_FIELD_MAP`), exactly as before this parameter
  * existed. Operator messages always name the CALLER's column, never ours.
  */
 export function parseSheetRow(
   rowNumber: number,
   values: Readonly<Record<string, string>>,
-  fieldMap: CatalogFieldMap = MYSP_FIELD_MAP,
+  fieldMap: CatalogFieldMap = VPOST_FIELD_MAP,
 ): ParsedSheetRow {
   // --- Edge cases first ----------------------------------------------------
-  const map = fieldMap ?? MYSP_FIELD_MAP;
+  const map = fieldMap ?? VPOST_FIELD_MAP;
   const codeColumn = typeof map.code === "string" && map.code.length > 0 ? map.code : null;
   const nameColumn = typeof map.name === "string" && map.name.length > 0 ? map.name : null;
   if (codeColumn === null || nameColumn === null) {

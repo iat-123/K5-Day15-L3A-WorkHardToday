@@ -1,4 +1,4 @@
-# Spec — Redesign toàn bộ giao diện MYSP ("Sổ mẫu vải")
+# Spec — Redesign toàn bộ giao diện VPOST ("Sổ mẫu vải")
 
 Ngày: 2026-08-21 · Trạng thái: chờ PM duyệt spec · Người quyết định: PM (Zan)
 
@@ -101,4 +101,4 @@ Redirect làm ở tầng route (Next.js redirect trong page/`next.config.ts`), k
 
 ## 7. Ngoài phạm vi
 
-- Mọi thay đổi API/endpoint/schema/worker; TikTok/video Phase 2; trang marketing (mode Persuade); đổi tên thương hiệu "MYSP"; endpoint thống kê mới cho Tổng quan (đợt sau nếu PM muốn số thật cho mọi ô).
+- Mọi thay đổi API/endpoint/schema/worker; TikTok/video Phase 2; trang marketing (mode Persuade); đổi tên thương hiệu "VPOST"; endpoint thống kê mới cho Tổng quan (đợt sau nếu PM muốn số thật cho mọi ô).

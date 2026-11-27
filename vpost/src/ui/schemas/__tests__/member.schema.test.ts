@@ -24,7 +24,7 @@ const OWNER_ROW = {
   membershipId: "m-owner",
   accountId: "a-owner",
   displayName: "Chị Chủ",
-  email: "owner@mysp.vn",
+  email: "owner@vpost.vn",
   role: "owner" as const,
   status: "active",
   joinedAt: "2026-08-01T09:00:00+07:00",
@@ -66,7 +66,7 @@ describe("MemberListResponseSchema", () => {
     expect(parsed.success).toBe(true);
     // …and the row still has something to call the person.
     expect(memberDisplayName({ displayName: null, email: null })).toBe("(chưa có tên)");
-    expect(memberDisplayName({ displayName: "  ", email: "a@mysp.vn" })).toBe("a@mysp.vn");
+    expect(memberDisplayName({ displayName: "  ", email: "a@vpost.vn" })).toBe("a@vpost.vn");
   });
 
   it("rejects a role the UI cannot render", () => {

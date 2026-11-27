@@ -25,15 +25,15 @@ import { neutralTheme } from "@astryxdesign/theme-neutral";
  * the app would be stuck in one scheme. Pointing at the variable keeps ONE
  * source of truth and inherits the class switch for free.
  *
- * BUILT, NOT RUNTIME: `astryx theme build` compiles this to `mysp-theme.css`,
+ * BUILT, NOT RUNTIME: `astryx theme build` compiles this to `vpost-theme.css`,
  * which is imported in `globals.css`. A runtime theme injects its tokens in
  * `useInsertionEffect`, i.e. after hydration — the first paint would show the
  * neutral ink and then swap (`astryx docs theme` §Runtime vs Built).
  * After editing this file, re-run:
- *   pnpm exec astryx theme build src/ui/theme/mysp-theme.ts
+ *   pnpm exec astryx theme build src/ui/theme/vpost-theme.ts
  */
-export const myspTheme = defineTheme({
-  name: "mysp",
+export const vpostTheme = defineTheme({
+  name: "vpost",
   extends: neutralTheme,
   /**
    * THE ROUNDEST THE SYSTEM ALLOWS. `astryx docs theme` caps `multiplier` at 2,

@@ -69,7 +69,7 @@ function harness(options: { takenSlugs?: string[]; rows?: PlatformTenantListItem
   return { usecase, platformTenants, invites, createdSlugs };
 }
 
-const ACTOR = { actorAccountId: "acc-root", actorEmail: "root@mysp.vn" };
+const ACTOR = { actorAccountId: "acc-root", actorEmail: "root@vpost.vn" };
 
 // --- Edge cases first ---------------------------------------------------------
 
@@ -107,7 +107,7 @@ describe("platform createTenant — the handover flow", () => {
       expiresAt: new Date("2026-08-28T05:00:00Z"),
       maxUses: 1,
       createdByAccountId: "acc-root",
-      actorEmail: "root@mysp.vn",
+      actorEmail: "root@vpost.vn",
     });
   });
 
@@ -118,9 +118,9 @@ describe("platform createTenant — the handover flow", () => {
     expect(result.tenant.slug).toBe("khach-a-ff00");
   });
 
-  it("passes the plan through (internal allowed for MYSP's own)", async () => {
+  it("passes the plan through (internal allowed for VPOST's own)", async () => {
     const { usecase, platformTenants } = harness();
-    await usecase.createTenant({ name: "MYSP Nội bộ", plan: "internal", ...ACTOR });
+    await usecase.createTenant({ name: "VPOST Nội bộ", plan: "internal", ...ACTOR });
     expect(platformTenants.createTenant).toHaveBeenCalledWith(
       expect.objectContaining({ plan: "internal" }),
     );

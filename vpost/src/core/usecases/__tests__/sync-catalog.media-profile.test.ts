@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_STOCK_POLICY, makeFieldMap, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { DEFAULT_STOCK_POLICY, makeFieldMap, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import type { MediaProfile } from "@/core/domain/media-profile";
 import type { MediaAsset, Product } from "@/core/domain/product";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
@@ -140,7 +140,7 @@ function makeHarness(options: {
     findCatalogConfig: async () => config,
     findCatalogSource: async () => config,
     findStockPolicy: async () => DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => config.fieldMap ?? MYSP_FIELD_MAP,
+    findFieldMap: async () => config.fieldMap ?? VPOST_FIELD_MAP,
     saveCatalogSource: async () => ({ previous: null }),
   };
 
@@ -284,7 +284,7 @@ describe("syncCatalog — folder-per-code", () => {
 });
 
 describe("syncCatalog — sheet-column", () => {
-  const fieldMap = makeFieldMap({ ...MYSP_FIELD_MAP, mediaLink: "Link ảnh" });
+  const fieldMap = makeFieldMap({ ...VPOST_FIELD_MAP, mediaLink: "Link ảnh" });
 
   it("attaches the file a sheet cell links to", async () => {
     const harness = makeHarness({

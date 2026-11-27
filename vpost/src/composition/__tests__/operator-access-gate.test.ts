@@ -75,7 +75,7 @@ describe("operator access gate", () => {
     const { gate, statusForSessionEmail } = harness();
 
     await gate.readState(TENANT, EMAIL);
-    await gate.readState(TENANT, "someone.else@mysp.vn");
+    await gate.readState(TENANT, "someone.else@vpost.vn");
 
     expect(statusForSessionEmail).toHaveBeenCalledTimes(2);
   });

@@ -14,7 +14,7 @@ import {
 } from "@/core/domain/caption";
 import {
   contentColumns,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   type CatalogFieldMap,
 } from "@/core/domain/catalog-field-map";
 import { failure, type ValidationContext, type ValidationFailure } from "@/core/ai/validation/types";
@@ -75,7 +75,7 @@ function sourceTextOf(product: CaptionInput): string {
  * headers of its own sheet ("Nhóm hàng", "Product name"). A header the tenant
  * never mapped onto a caption field is not a label — it cannot be in a prompt.
  */
-const DEFAULT_PROMPT_LABELS: readonly string[] = contentColumns(MYSP_FIELD_MAP);
+const DEFAULT_PROMPT_LABELS: readonly string[] = contentColumns(VPOST_FIELD_MAP);
 
 function promptLabelsFor(map: CatalogFieldMap | null | undefined): readonly string[] {
   const tenantColumns = map ? contentColumns(map) : [];
@@ -129,9 +129,9 @@ function columnLabel(
   field: "description" | "category" | "season",
 ): string {
   const column = map?.[field];
-  if (typeof column !== "string") return MYSP_FIELD_MAP[field];
+  if (typeof column !== "string") return VPOST_FIELD_MAP[field];
   const trimmed = column.trim();
-  return trimmed.length > 0 ? trimmed : MYSP_FIELD_MAP[field];
+  return trimmed.length > 0 ? trimmed : VPOST_FIELD_MAP[field];
 }
 
 /** The three columns stage 3 checks against, named the way the operator sees them. */
@@ -177,7 +177,7 @@ export function validateClaims(
   const body = content.body;
   const isPureVision = source.trim().length === 0;
 
-  // No map = the MYSP preset, so an internal generation behaves as before.
+  // No map = the VPOST preset, so an internal generation behaves as before.
   const fieldMap = context.fieldMap ?? null;
   const labelPrefix = labelPrefixPattern(promptLabelsFor(fieldMap));
   const sourceColumns = sourceColumnsLabel(fieldMap);

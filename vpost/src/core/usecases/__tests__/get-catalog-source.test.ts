@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
 } from "@/core/domain/catalog-field-map";
 
 import { AppError } from "@/core/domain/errors";
@@ -32,7 +32,7 @@ function makeDeps(source: CatalogSourceConfig | null, error?: unknown) {
   const catalogConfig: CatalogConfigRepo = {
     findCatalogConfig: async () => source,
     findStockPolicy: async () => DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     findCatalogSource: async () => {
       if (error) throw error;
       return source;
@@ -181,11 +181,11 @@ describe("getCatalogSource — declared mapping vs preset", () => {
     // "Đã khai và trùng preset" is a different state from "chưa khai": only the
     // second one may be overwritten by the suggestion.
     const view = await makeGetCatalogSource(
-      makeDeps({ ...SOURCE, fieldMap: MYSP_FIELD_MAP, stockPolicy: DEFAULT_STOCK_POLICY }),
+      makeDeps({ ...SOURCE, fieldMap: VPOST_FIELD_MAP, stockPolicy: DEFAULT_STOCK_POLICY }),
     )({ tenantId: TENANT });
 
     expect(view?.fieldMap).not.toBeNull();
-    expect(view?.fieldMap?.code).toBe(MYSP_FIELD_MAP.code);
+    expect(view?.fieldMap?.code).toBe(VPOST_FIELD_MAP.code);
     expect(view?.stockPolicy).toMatchObject({ mode: "numeric" });
   });
 

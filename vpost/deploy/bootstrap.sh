@@ -11,11 +11,11 @@
 # ---------------------------------------------------------------------------
 # LAYOUT it creates
 #
-#   /srv/mysp/stg/    staging stack    (COMPOSE_PROJECT_NAME=mysp-stg,  :3110)
-#   /srv/mysp/prod/   production stack (COMPOSE_PROJECT_NAME=mysp-prod, :3100)
+#   /srv/vpost/stg/    staging stack    (COMPOSE_PROJECT_NAME=vpost-stg,  :3110)
+#   /srv/vpost/prod/   production stack (COMPOSE_PROJECT_NAME=vpost-prod, :3100)
 #
 # HTTPS comes from the Caddy already installed on this host under systemd — the
-# one serving the other sites. MYSP does not run its own proxy: two processes
+# one serving the other sites. VPOST does not run its own proxy: two processes
 # cannot share :443. This script drops a site file into /etc/caddy/conf.d/ and
 # makes sure the main Caddyfile imports that directory, so the existing site
 # blocks are never edited.
@@ -23,8 +23,8 @@
 # ---------------------------------------------------------------------------
 # ROLLBACK runbook (there is no button; this is the procedure)
 #
-#   cd /srv/mysp/prod
-#   docker image ls 'ghcr.io/zannngyn/mysp/web'      # find the previous sha
+#   cd /srv/vpost/prod
+#   docker image ls 'ghcr.io/zannngyn/vpost/web'      # find the previous sha
 #   sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=<previous-sha>/' .image-tag.env
 #   ./deploy/stack.sh up -d --no-build --scale caddy=0
 #
@@ -32,7 +32,7 @@
 #   the schema, restore from deploy/backup/backup.sh's latest dump first.
 set -euo pipefail
 
-ROOT="${MYSP_ROOT:-/srv/mysp}"
+ROOT="${VPOST_ROOT:-/srv/vpost}"
 CADDY_CONF_D=/etc/caddy/conf.d
 CADDY_FILE=/etc/caddy/Caddyfile
 
@@ -105,7 +105,7 @@ for stack in prod stg; do
   else
     cat > "$file" <<'EOF'
 # Written by CI on every deploy. Placeholder until the first pipeline runs.
-IMAGE_PREFIX=ghcr.io/zannngyn/mysp
+IMAGE_PREFIX=ghcr.io/zannngyn/vpost
 IMAGE_TAG=bootstrap
 EOF
     echo "  $file created"
@@ -114,8 +114,8 @@ done
 
 say "caddy site blocks"
 mkdir -p "$CADDY_CONF_D"
-cp "$here/edge/mysp.caddy" "$CADDY_CONF_D/mysp.caddy"
-echo "  installed $CADDY_CONF_D/mysp.caddy"
+cp "$here/edge/vpost.caddy" "$CADDY_CONF_D/vpost.caddy"
+echo "  installed $CADDY_CONF_D/vpost.caddy"
 
 # Add the import exactly once, and only if it is not already there — this file
 # belongs to whoever set the box up, and it has other sites in it.
@@ -123,13 +123,13 @@ if grep -qF "$CADDY_CONF_D" "$CADDY_FILE"; then
   echo "  $CADDY_FILE already imports $CADDY_CONF_D"
 else
   cp "$CADDY_FILE" "$CADDY_FILE.bak.$(date +%Y%m%d%H%M%S)"
-  printf '\n# Added by MYSP deploy/bootstrap.sh — site files live in their own directory.\nimport %s/*.caddy\n' "$CADDY_CONF_D" >> "$CADDY_FILE"
+  printf '\n# Added by VPOST deploy/bootstrap.sh — site files live in their own directory.\nimport %s/*.caddy\n' "$CADDY_CONF_D" >> "$CADDY_FILE"
   echo "  appended the import (previous file backed up next to it)"
 fi
 
 say "validating caddy config"
 # Validate BEFORE reloading: a reload with a broken config would take the other
-# sites on this host down, and they have nothing to do with MYSP.
+# sites on this host down, and they have nothing to do with VPOST.
 if caddy validate --config "$CADDY_FILE" --adapter caddyfile >/dev/null 2>&1; then
   echo "  config is valid"
   systemctl reload caddy
@@ -160,8 +160,8 @@ cat <<EOF
 
   2. Check DNS resolves here — two type-A records, both "DNS only" on
      Cloudflare (grey cloud), both to this box's public IP:
-       mysp.vannt.asia       -> production
-       mysp-stg.vannt.asia   -> staging
+       vpost.vannt.asia       -> production
+       vpost-stg.vannt.asia   -> staging
      Caddy fetches a certificate on the first request to each hostname.
 
   3. Push to the stg branch. CI builds, pushes to GHCR and deploys here.

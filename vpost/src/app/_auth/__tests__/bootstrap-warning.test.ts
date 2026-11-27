@@ -55,7 +55,7 @@ describe("warnWhenNoBootstrapAdmin — warns", () => {
   it("still warns when only a domain filter is configured — a domain grants nothing", () => {
     const { lines } = captureWarnings();
 
-    warnWhenNoBootstrapAdmin({ ...BASE, AUTH_ALLOWED_DOMAINS: ["mysp.vn"] });
+    warnWhenNoBootstrapAdmin({ ...BASE, AUTH_ALLOWED_DOMAINS: ["vpost.vn"] });
 
     expect(lines).toHaveLength(1);
   });
@@ -104,7 +104,7 @@ describe("loadAuthEnv wires the warning", () => {
   it("says nothing when a bootstrap admin is configured", async () => {
     vi.resetModules();
     for (const [key, value] of Object.entries(ENV)) vi.stubEnv(key, value);
-    vi.stubEnv("AUTH_BOOTSTRAP_ADMINS", "boss@mysp.vn");
+    vi.stubEnv("AUTH_BOOTSTRAP_ADMINS", "boss@vpost.vn");
     const { lines } = captureWarnings();
 
     const { loadAuthEnv } = await import("../auth.config");
@@ -118,7 +118,7 @@ describe("warnWhenNoBootstrapAdmin — stays quiet", () => {
   it("says nothing when an e-mail bootstrap admin exists", () => {
     const { lines } = captureWarnings();
 
-    warnWhenNoBootstrapAdmin({ ...BASE, AUTH_BOOTSTRAP_ADMINS: ["boss@mysp.vn"] });
+    warnWhenNoBootstrapAdmin({ ...BASE, AUTH_BOOTSTRAP_ADMINS: ["boss@vpost.vn"] });
 
     expect(lines).toEqual([]);
   });

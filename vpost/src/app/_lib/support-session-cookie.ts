@@ -6,7 +6,7 @@
  * (the ROW is what actually expires — a stale cookie just reads as absent).
  */
 
-export const SUPPORT_SESSION_COOKIE = "mysp_support_session";
+export const SUPPORT_SESSION_COOKIE = "vpost_support_session";
 export const SUPPORT_SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60;
 
 const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

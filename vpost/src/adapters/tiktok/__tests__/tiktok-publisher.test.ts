@@ -35,7 +35,7 @@ const CHANNEL: ChannelConfig = {
   tiktok: { privacyLevel: "SELF_ONLY", isAigc: true, openId: "open-id-1" },
 };
 
-const VIDEO_URL = "https://mysp.example.com/api/media/drive-1?tenant=t&expires=1&sig=ab";
+const VIDEO_URL = "https://vpost.example.com/api/media/drive-1?tenant=t&expires=1&sig=ab";
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

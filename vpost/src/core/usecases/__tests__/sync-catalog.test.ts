@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   type StockPolicy,
 } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
@@ -133,7 +133,7 @@ function makeHarness(options: {
     // Not used by the sync; present because the port is one interface.
     findCatalogSource: async () => null,
     findStockPolicy: async () => options.config?.stockPolicy ?? DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => options.config?.fieldMap ?? MYSP_FIELD_MAP,
+    findFieldMap: async () => options.config?.fieldMap ?? VPOST_FIELD_MAP,
     saveCatalogSource: async () => ({ previous: null }),
   };
   const products: ProductRepo = {

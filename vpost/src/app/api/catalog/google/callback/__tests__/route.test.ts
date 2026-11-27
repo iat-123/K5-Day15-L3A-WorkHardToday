@@ -187,7 +187,7 @@ describe("GET /api/catalog/google/callback — success", () => {
     const headers = new Headers();
     headers.set(
       "cookie",
-      `${GOOGLE_OAUTH_STATE_COOKIE}=${NONCE}; mysp_active_tenant=${OTHER_TENANT}`,
+      `${GOOGLE_OAUTH_STATE_COOKIE}=${NONCE}; vpost_active_tenant=${OTHER_TENANT}`,
     );
     const response = await GET(
       new Request(`http://localhost/api/catalog/google/callback?code=c&state=${NONCE}`, { headers }),
@@ -283,12 +283,12 @@ describe("GET /api/catalog/google/callback — return target", () => {
  */
 describe("the redirect never trusts the request Host", () => {
   it("sends the browser to AUTH_URL even when the request arrived as 0.0.0.0:3000", async () => {
-    vi.stubEnv("AUTH_URL", "https://mysp-stg.vannt.asia");
+    vi.stubEnv("AUTH_URL", "https://vpost-stg.vannt.asia");
 
     const response = await GET(requestFromBehindProxy("?error=access_denied", NONCE));
 
     const target = new URL(response.headers.get("location") ?? "");
-    expect(target.origin).toBe("https://mysp-stg.vannt.asia");
+    expect(target.origin).toBe("https://vpost-stg.vannt.asia");
     expect(target.pathname).toBe("/sync");
     expect(response.headers.get("location")).not.toContain("0.0.0.0");
 

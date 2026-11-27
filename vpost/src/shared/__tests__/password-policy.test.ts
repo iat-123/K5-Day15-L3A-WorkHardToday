@@ -122,7 +122,7 @@ describe("CredentialEmailSchema — refusals", () => {
   );
 
   it("normalises to the identity key the unique index holds", () => {
-    expect(CredentialEmailSchema.parse("  Worker@MYSP.VN  ")).toBe("worker@mysp.vn");
+    expect(CredentialEmailSchema.parse("  Worker@VPOST.VN  ")).toBe("worker@vpost.vn");
   });
 });
 
@@ -131,24 +131,24 @@ describe("CredentialEmailSchema — refusals", () => {
 describe("form schemas", () => {
   it("register: normalises the address and drops an empty display name", () => {
     const parsed = RegisterWithPasswordSchema.parse({
-      email: " New@MYSP.vn ",
+      email: " New@VPOST.vn ",
       password: "Str0ng!pass",
       displayName: "   ",
     });
-    expect(parsed.email).toBe("new@mysp.vn");
+    expect(parsed.email).toBe("new@vpost.vn");
     expect(parsed.displayName).toBeUndefined();
   });
 
   it("sign-in does not re-apply the strength rules", () => {
     // An account created before a policy change must still be able to log in.
     expect(
-      SignInWithPasswordSchema.safeParse({ email: "old@mysp.vn", password: "weak" }).success,
+      SignInWithPasswordSchema.safeParse({ email: "old@vpost.vn", password: "weak" }).success,
     ).toBe(true);
   });
 
   it("sign-in still refuses an empty password before anything is hashed", () => {
     expect(
-      SignInWithPasswordSchema.safeParse({ email: "old@mysp.vn", password: "" }).success,
+      SignInWithPasswordSchema.safeParse({ email: "old@vpost.vn", password: "" }).success,
     ).toBe(false);
   });
 });

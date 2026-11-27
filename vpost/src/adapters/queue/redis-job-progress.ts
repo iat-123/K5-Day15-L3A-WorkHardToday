@@ -44,7 +44,7 @@ export const PROGRESS_TTL_SECONDS = 3600;
  */
 export const PROGRESS_COMMAND_TIMEOUT_MS = 1_500;
 
-const KEY_PREFIX = "mysp:progress";
+const KEY_PREFIX = "vpost:progress";
 
 /**
  * The three commands this store uses, as a structural type instead of the full
@@ -255,7 +255,7 @@ export function makeRedisJobProgressStore(deps: RedisJobProgressDeps): JobProgre
   };
 }
 
-/** `mysp:progress:{tenantId}:{postJobId}` (design §5.3). */
+/** `vpost:progress:{tenantId}:{postJobId}` (design §5.3). */
 export function progressKey(tenantId: TenantId, postJobId: string): string {
   return keyOf(normalizeTenantId(tenantId), str(postJobId));
 }

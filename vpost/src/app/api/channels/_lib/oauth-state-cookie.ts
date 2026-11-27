@@ -16,7 +16,7 @@
  * with "state mismatch".
  */
 
-export const OAUTH_STATE_COOKIE = "mysp_fb_oauth";
+export const OAUTH_STATE_COOKIE = "vpost_fb_oauth";
 /** Matches OAUTH_STATE_TTL_MS server-side; the ROW is what actually expires. */
 export const OAUTH_STATE_TTL_SECONDS = 600;
 /** Both endpoints of the flow live under this path; nothing else sees it. */

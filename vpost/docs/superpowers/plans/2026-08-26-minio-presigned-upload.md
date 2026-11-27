@@ -87,7 +87,7 @@ const base = {
 describe("loadMinioConfig", () => {
   it("defaults the bucket and useSSL", () => {
     const cfg = loadMinioConfig(base);
-    expect(cfg.MINIO_BUCKET).toBe("mysp-media");
+    expect(cfg.MINIO_BUCKET).toBe("vpost-media");
     expect(cfg.MINIO_USE_SSL).toBe(true);
   });
 
@@ -121,7 +121,7 @@ export const MinioConfigSchema = z.object({
   MINIO_PUBLIC_ENDPOINT: z.string().trim().url(),
   MINIO_ACCESS_KEY: z.string().trim().min(1),
   MINIO_SECRET_KEY: z.string().trim().min(1),
-  MINIO_BUCKET: z.string().trim().min(1).default("mysp-media"),
+  MINIO_BUCKET: z.string().trim().min(1).default("vpost-media"),
   MINIO_USE_SSL: z
     .union([z.boolean(), z.string()])
     .default(true)
@@ -411,7 +411,7 @@ beforeAll(() => {
       MINIO_PUBLIC_ENDPOINT: "http://localhost:9000",
       MINIO_ACCESS_KEY: process.env.TEST_MINIO_ACCESS_KEY ?? "minioadmin",
       MINIO_SECRET_KEY: process.env.TEST_MINIO_SECRET_KEY ?? "minioadmin",
-      MINIO_BUCKET: "mysp-media-test",
+      MINIO_BUCKET: "vpost-media-test",
       MINIO_USE_SSL: false,
     },
     logger: noopLogger,
@@ -626,7 +626,7 @@ function isNotFound(error: unknown): boolean {
 
 ```bash
 docker run -d --name minio-test -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
-docker run --rm --network host --entrypoint sh minio/mc -c "mc alias set t http://localhost:9000 minioadmin minioadmin && mc mb -p t/mysp-media-test"
+docker run --rm --network host --entrypoint sh minio/mc -c "mc alias set t http://localhost:9000 minioadmin minioadmin && mc mb -p t/vpost-media-test"
 TEST_MINIO_ENDPOINT=localhost:9000 pnpm vitest run src/adapters/media/minio-blob-store.integration.test.ts
 ```
 
@@ -1196,7 +1196,7 @@ function deps(overrides: Record<string, unknown> = {}) {
   return {
     blobs: {
       createUploadUrl: vi.fn(async ({ assetId }: { assetId: string }) => ({
-        postUrl: "https://media.vannt.asia/mysp-media",
+        postUrl: "https://media.vannt.asia/vpost-media",
         formFields: { key: `staging/${TENANT}/${assetId}` },
         storageKey: `${TENANT}/${assetId}`,
         expiresAt: new Date("2026-08-26T10:30:00Z"),
@@ -1284,7 +1284,7 @@ describe("issueUploadTickets — edge cases first", () => {
   it("happy path: writes one ticket per file and returns a postUrl", async () => {
     const d = deps();
     const result = await makeIssueUploadTickets(d)({ tenantId: TENANT, productCode: "mg0ad6112", files: [png] });
-    expect(result.issued[0].postUrl).toBe("https://media.vannt.asia/mysp-media");
+    expect(result.issued[0].postUrl).toBe("https://media.vannt.asia/vpost-media");
     expect(result.issued[0].assetId).toBe("upload_1");
     const call = (d as never as { tickets: { createMany: { mock: { calls: unknown[][] } } } }).tickets.createMany.mock.calls[0];
     expect((call[1] as { productCode: string }[])[0].productCode).toBe("MG0AD6112");
@@ -2787,7 +2787,7 @@ Thêm `miniodata:` vào khối `volumes:` ở cuối file. Thêm `minio` vào `d
     environment:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET:-mysp-media}
+      MINIO_BUCKET: ${MINIO_BUCKET:-vpost-media}
 ```
 
 `mc anonymous set none` là dòng khiến bucket **private hoàn toàn** — chỉ URL ký sẵn mới đọc được. Bỏ dòng này là mở toàn bộ ảnh của mọi tenant ra internet.
@@ -2802,7 +2802,7 @@ MINIO_INTERNAL_ENDPOINT=minio:9000
 MINIO_PUBLIC_ENDPOINT=https://media.vannt.asia
 MINIO_ACCESS_KEY=
 MINIO_SECRET_KEY=
-MINIO_BUCKET=mysp-media
+MINIO_BUCKET=vpost-media
 MINIO_USE_SSL=true
 ```
 
@@ -2929,7 +2929,7 @@ Vào `/compose`, chọn một mã còn hàng, tải 3 ảnh, sinh caption, chọ
 Expected — kiểm **cả ba**:
 1. Bài lên Facebook đủ 3 ảnh, đúng thứ tự, ảnh bìa đúng.
 2. Log worker có dòng `Photo bytes will be uploaded for this attempt` — chứng minh worker đọc byte từ MinIO qua `readMediaBytes` chứ không đưa URL cho Graph.
-3. `mc ls local/mysp-media/staging/` **rỗng** — không còn file chưa duyệt nào.
+3. `mc ls local/vpost-media/staging/` **rỗng** — không còn file chưa duyệt nào.
 
 Nếu bất kỳ mục nào sai: **dừng, không xoá gì**, báo PM.
 
@@ -2939,7 +2939,7 @@ Nếu bất kỳ mục nào sai: **dừng, không xoá gì**, báo PM.
 cp /bin/ls /tmp/fake.jpg
 ```
 
-Tải `/tmp/fake.jpg` qua màn compose. Expected: bị từ chối với câu "Nội dung file ... không khớp định dạng khai báo", và `mc ls local/mysp-media/media/` **không** có nó.
+Tải `/tmp/fake.jpg` qua màn compose. Expected: bị từ chối với câu "Nội dung file ... không khớp định dạng khai báo", và `mc ls local/vpost-media/media/` **không** có nó.
 
 Tải một file 30MB. Expected: MinIO tự trả lỗi ở chặng POST, Node không nhận byte nào.
 

@@ -30,7 +30,7 @@ import type {
   ToolKind,
 } from "@/ui/schemas/onboarding-profile.schema";
 import { ApiError } from "@/ui/services/api-error";
-import { myspTheme } from "@/ui/theme/mysp";
+import { vpostTheme } from "@/ui/theme/vpost";
 
 import { CelebrateScreen } from "./CelebrateScreen";
 import { OnboardingFrame, type FlowDirection } from "./OnboardingFrame";
@@ -682,7 +682,7 @@ export function OnboardingFlow({
         locale={ASTRYX_LOCALE}
         messages={{ [ASTRYX_LOCALE]: ASTRYX_VI }}
       >
-        <Theme theme={myspTheme}>
+        <Theme theme={vpostTheme}>
           {renderStage()}
           {/* The flow's own way out, kept for accounts that signed in with the
               wrong Google account: this route has no top bar to sign out from. */}

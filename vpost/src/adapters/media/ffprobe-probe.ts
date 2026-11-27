@@ -433,7 +433,7 @@ async function writeTempFile(
   logger: Logger,
 ): Promise<string> {
   const extension = extensionOf(fileName);
-  const path = join(tmpdir(), `mysp-probe-${randomUUID()}${extension}`);
+  const path = join(tmpdir(), `vpost-probe-${randomUUID()}${extension}`);
   try {
     await writeFile(path, bytes);
     return path;

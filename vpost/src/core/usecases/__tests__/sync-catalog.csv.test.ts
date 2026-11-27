@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_STOCK_POLICY, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { DEFAULT_STOCK_POLICY, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
 import type { MediaAsset, Product } from "@/core/domain/product";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
@@ -156,7 +156,7 @@ function harness(options: HarnessOptions = {}) {
     findCatalogConfig: async () => config,
     findCatalogSource: async () => config,
     findStockPolicy: async () => config.stockPolicy ?? DEFAULT_STOCK_POLICY,
-    findFieldMap: async () => config.fieldMap ?? MYSP_FIELD_MAP,
+    findFieldMap: async () => config.fieldMap ?? VPOST_FIELD_MAP,
     saveCatalogSource: async () => ({ previous: null }),
   };
 

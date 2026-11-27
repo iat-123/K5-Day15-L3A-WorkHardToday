@@ -147,7 +147,7 @@ describe("GET /api/channels/callback — success", () => {
 
   it("ignores an active-tenant cookie switched mid-consent — the row wins", async () => {
     const response = await GET(
-      request(`?code=c&state=${NONCE}`, NONCE, `; mysp_active_tenant=${OTHER_TENANT}`),
+      request(`?code=c&state=${NONCE}`, NONCE, `; vpost_active_tenant=${OTHER_TENANT}`),
     );
 
     expect(location(response).searchParams.get("connected")).toBe("3");

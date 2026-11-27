@@ -26,7 +26,7 @@ describe("slugify", () => {
   it("turns a Vietnamese company name into a URL segment", () => {
     expect(slugify("Nhà Xe An Anh")).toBe("nha-xe-an-anh");
     expect(slugify("Đồng Tâm")).toBe("dong-tam");
-    expect(slugify("MYSP — Hàng Thiết Kế")).toBe("mysp-hang-thiet-ke");
+    expect(slugify("VPOST — Hàng Thiết Kế")).toBe("vpost-hang-thiet-ke");
   });
 
   it("never leaves a dangling dash, including after the length cut", () => {
@@ -73,10 +73,10 @@ describe("CreateTenantFormSchema", () => {
 
 describe("parseInviteToken", () => {
   it("reads the token out of a pasted link", () => {
-    expect(parseInviteToken("https://mysp.vn/join/abc123XYZ")).toBe("abc123XYZ");
+    expect(parseInviteToken("https://vpost.vn/join/abc123XYZ")).toBe("abc123XYZ");
     expect(parseInviteToken("/join/abc123XYZ")).toBe("abc123XYZ");
     // Mailers append tracking parameters and anchors.
-    expect(parseInviteToken("https://mysp.vn/join/abc123XYZ?utm_source=mail#top")).toBe(
+    expect(parseInviteToken("https://vpost.vn/join/abc123XYZ?utm_source=mail#top")).toBe(
       "abc123XYZ",
     );
   });
@@ -86,7 +86,7 @@ describe("parseInviteToken", () => {
   });
 
   it("decodes a token that travelled percent-encoded", () => {
-    expect(parseInviteToken("https://mysp.vn/join/abc%2D123")).toBe("abc-123");
+    expect(parseInviteToken("https://vpost.vn/join/abc%2D123")).toBe("abc-123");
   });
 
   it("returns null for anything that is not a token", () => {
@@ -100,7 +100,7 @@ describe("parseInviteToken", () => {
 
 describe("JoinInviteFormSchema", () => {
   it("accepts a link and a bare token", () => {
-    expect(JoinInviteFormSchema.safeParse({ invite: "https://mysp.vn/join/abc123XYZ" }).success).toBe(
+    expect(JoinInviteFormSchema.safeParse({ invite: "https://vpost.vn/join/abc123XYZ" }).success).toBe(
       true,
     );
     expect(JoinInviteFormSchema.safeParse({ invite: "abc123XYZ" }).success).toBe(true);

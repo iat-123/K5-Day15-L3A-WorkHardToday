@@ -11,7 +11,7 @@ export const tenantStatusEnum = pgEnum("tenant_status", ["active", "suspended"])
 /**
  * Subscription plan (doc 10 §8.9). Every consumption ceiling — AI spend per day,
  * quotas — hangs off this column, never off an env var: an env ceiling is one
- * number for every customer on the box. `internal` is MYSP's own tenant and has
+ * number for every customer on the box. `internal` is VPOST's own tenant and has
  * no ceiling; `standard` is the default for customers. Billing itself is out of
  * scope, the column is not.
  */

@@ -31,7 +31,7 @@ export function TikTokPreview({
 }: TikTokPreviewProps) {
   const firstAsset = media[0];
   const firstVideoUrl = firstAsset && isVideo ? mediaPreviewUrl(firstAsset.driveFileId) : null;
-  const username = channelName ? channelName.toLowerCase().replace(/\s+/g, "_") : "mysp_fashion";
+  const username = channelName ? channelName.toLowerCase().replace(/\s+/g, "_") : "vpost_fashion";
 
   return (
     <div className="relative aspect-[9/16] w-full max-w-[340px] mx-auto overflow-hidden rounded-2xl bg-black text-white select-none border border-border shadow-md">

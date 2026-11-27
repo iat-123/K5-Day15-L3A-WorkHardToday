@@ -120,7 +120,7 @@ echo "--- start stack"
 #   production containers, and a build failure would happen after the old ones
 #   are already stopped.
 # --scale caddy=0: the per-stack Caddy from the base compose file is unused;
-#   the single edge Caddy in /srv/mysp/edge fronts both stacks on 443.
+#   the single edge Caddy in /srv/vpost/edge fronts both stacks on 443.
 # migrate runs first and must exit 0 — compose enforces that ordering, so a
 #   failed migration stops the deploy instead of booting web against an old
 #   schema.
@@ -183,8 +183,8 @@ echo "--- caddy site file"
 # VALIDATE THE WHOLE CONFIG, and only reload if it passes. A failed validation
 # puts the previous file back and fails the deploy, because a reload with a
 # broken config would take those other sites down too.
-caddy_src=./deploy/edge/mysp.caddy
-caddy_dst=/etc/caddy/conf.d/mysp.caddy
+caddy_src=./deploy/edge/vpost.caddy
+caddy_dst=/etc/caddy/conf.d/vpost.caddy
 
 if [ ! -f "$caddy_src" ]; then
   echo "  $caddy_src is missing from the shipped files, skipping"

@@ -35,7 +35,7 @@ import { makeMemoryRateLimiter, makeRedisRateLimiter } from "../sliding-window-r
 const url = process.env.TEST_REDIS_URL ?? process.env.REDIS_URL;
 
 /** Mirrors the adapter's own prefix — the test asserts on real key names. */
-const KEY_PREFIX = "mysp:ratelimit";
+const KEY_PREFIX = "vpost:ratelimit";
 
 function silentLogger(): Logger {
   const logger: Logger = {

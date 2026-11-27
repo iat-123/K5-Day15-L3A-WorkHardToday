@@ -1,6 +1,6 @@
 #!/bin/sh
 # Compose wrapper for a deployed stack. Run it from the stack directory
-# (/srv/mysp/prod or /srv/mysp/stg), which is where its .env lives:
+# (/srv/vpost/prod or /srv/vpost/stg), which is where its .env lives:
 #
 #   ./deploy/stack.sh ps
 #   ./deploy/stack.sh logs -f web

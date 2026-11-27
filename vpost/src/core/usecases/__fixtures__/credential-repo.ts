@@ -24,7 +24,7 @@ export interface FakeCredentialRepo extends CredentialRepo {
 export function credentialRow(
   overrides: Partial<PasswordCredentialRecord> = {},
 ): PasswordCredentialRecord {
-  const email = overrides.email ?? "worker@mysp.vn";
+  const email = overrides.email ?? "worker@vpost.vn";
   return {
     credentialId: "cred-1",
     accountId: "acc-1",

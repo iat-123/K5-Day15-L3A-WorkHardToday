@@ -94,7 +94,7 @@ describe("GET /api/me — answers", () => {
 
   it("hands the SESSION's bootstrap flag to the usecase — N6, the UI's only tell", async () => {
     getOperatorSession.mockResolvedValue({
-      email: "boss@mysp.vn",
+      email: "boss@vpost.vn",
       accountId: null,
       isBootstrapAdmin: true,
     });

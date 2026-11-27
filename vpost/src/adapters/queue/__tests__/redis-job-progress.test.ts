@@ -192,7 +192,7 @@ describe("stored values that pair a stage with the wrong fields", () => {
     // pairing: an older build, a future writer, or a key edited by hand. Left
     // as read, the screen would count down on the upload step (design §3.2).
     const client = fakeRedis({
-      [`mysp:progress:${TENANT}:job-1`]: JSON.stringify({
+      [`vpost:progress:${TENANT}:job-1`]: JSON.stringify({
         v: 1,
         stage: "uploading_media",
         attempt: 1,
@@ -215,7 +215,7 @@ describe("stored values that pair a stage with the wrong fields", () => {
 
   it("drops counts stored against a waiting step", async () => {
     const client = fakeRedis({
-      [`mysp:progress:${TENANT}:job-1`]: JSON.stringify({
+      [`vpost:progress:${TENANT}:job-1`]: JSON.stringify({
         v: 1,
         stage: "waiting_for_spacing",
         attempt: 1,
@@ -372,7 +372,7 @@ describe("report / read / clear", () => {
     await store.report({ tenantId: TENANT, postJobId: "job-1", progress: UPLOADING });
 
     expect(client.setCalls).toHaveLength(1);
-    expect(client.setCalls[0].key).toBe(`mysp:progress:${TENANT}:job-1`);
+    expect(client.setCalls[0].key).toBe(`vpost:progress:${TENANT}:job-1`);
     expect(client.setCalls[0].ttl).toBe(PROGRESS_TTL_SECONDS);
 
     const map = await store.read(TENANT, ["job-1"]);
@@ -432,7 +432,7 @@ describe("report / read / clear", () => {
 
     await store.clear(TENANT, "job-1");
 
-    expect(client.delCalls).toEqual([`mysp:progress:${TENANT}:job-1`]);
+    expect(client.delCalls).toEqual([`vpost:progress:${TENANT}:job-1`]);
     expect((await store.read(TENANT, ["job-1"])).size).toBe(0);
   });
 });

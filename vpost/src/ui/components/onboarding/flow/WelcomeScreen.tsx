@@ -71,7 +71,7 @@ export function WelcomeScreen({
           than an invented one.
         */}
         <span className="block">{name === null ? "Hey you 👋" : `Hello ${name} 👋`}</span>
-        <span className="block">Welcome To MysP</span>
+        <span className="block">Welcome To VPost</span>
       </h1>
 
       {/*

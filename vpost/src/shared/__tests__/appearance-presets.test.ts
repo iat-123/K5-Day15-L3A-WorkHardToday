@@ -29,7 +29,7 @@ import {
  * The conversion below is an independent re-implementation of the one in the
  * module: if both drifted the same way this test would bless a bad palette, so
  * it is also checked against a number the repo measured before either existed —
- * `mysp-theme.ts` records the primary button at 7.19:1 light and 5.99:1 dark,
+ * `vpost-theme.ts` records the primary button at 7.19:1 light and 5.99:1 dark,
  * and the `cham` case reproduces both.
  */
 
@@ -221,7 +221,7 @@ describe("the reference preset reproduces globals.css", () => {
     const dark = derivePresetColors(cham, "dark");
 
     // "contrast on the primary button is 7.19:1 light and 5.99:1 dark"
-    // — src/ui/theme/mysp-theme.ts, measured before this file existed.
+    // — src/ui/theme/vpost-theme.ts, measured before this file existed.
     expect(contrastRatio(light.dyeInk, light.dye)).toBeCloseTo(7.19, 1);
     expect(contrastRatio(dark.dyeInk, dark.dye)).toBeCloseTo(5.99, 1);
     // "4.65:1 on the cloth ground and 5.07:1 on a card" — globals.css on

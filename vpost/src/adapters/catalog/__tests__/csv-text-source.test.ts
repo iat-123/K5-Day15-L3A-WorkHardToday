@@ -231,7 +231,7 @@ describe("readCatalog — how the file was understood", () => {
   });
 });
 
-describe("readCatalog — the real MYSP export", () => {
+describe("readCatalog — the real VPOST export", () => {
   it("produces the same columns the Sheets adapter produces from the same table", async () => {
     const bytes = new Uint8Array(readFileSync("sample-data/sheet-mau2026-snapshot-2026-08-12.csv"));
     const result = await build().readCatalog({

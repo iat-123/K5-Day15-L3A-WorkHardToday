@@ -74,7 +74,7 @@ CMD ["pnpm", "db:migrate"]
 # --- worker: BullMQ consumer -------------------------------------------------
 FROM base AS worker
 ENV NODE_ENV=production \
-    WORKER_HEARTBEAT_FILE=/tmp/mysp-worker-heartbeat
+    WORKER_HEARTBEAT_FILE=/tmp/vpost-worker-heartbeat
 # ffmpeg carries ffprobe, which the media adapter shells out to for video specs
 # (E5.3 contract: the probe expects `ffprobe` in PATH). Only the worker needs it —
 # the web image stays small because it never touches a media file.
@@ -89,7 +89,7 @@ USER node
 # Liveness without an HTTP port: the worker refreshes a heartbeat file every
 # WORKER_HEARTBEAT_INTERVAL_MS (default 15s). A blocked event loop stops it.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD node -e "const fs=require('node:fs');const p=process.env.WORKER_HEARTBEAT_FILE||'/tmp/mysp-worker-heartbeat';const age=Date.now()-fs.statSync(p).mtimeMs;if(age>60000){console.error('heartbeat stale '+age+'ms');process.exit(1);}"
+  CMD node -e "const fs=require('node:fs');const p=process.env.WORKER_HEARTBEAT_FILE||'/tmp/vpost-worker-heartbeat';const age=Date.now()-fs.statSync(p).mtimeMs;if(age>60000){console.error('heartbeat stale '+age+'ms');process.exit(1);}"
 # `node --import tsx` runs the loader IN-PROCESS: the worker is PID 1 and gets
 # SIGTERM directly (the tsx CLI would fork a child and swallow the signal).
 CMD ["node", "--import", "tsx", "src/worker/index.ts"]

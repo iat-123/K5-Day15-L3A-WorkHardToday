@@ -58,7 +58,7 @@ describe("InviteListResponseSchema", () => {
     // Not a schema failure (unknown keys are stripped), but the parsed row must
     // not carry it: a credential has no business in a cached list.
     const parsed = InviteListResponseSchema.parse({
-      items: [{ ...LIVE_INVITE, url: "https://mysp.vn/join/leaked" }],
+      items: [{ ...LIVE_INVITE, url: "https://vpost.vn/join/leaked" }],
     });
     expect("url" in parsed.items[0]).toBe(false);
   });

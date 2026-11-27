@@ -175,7 +175,7 @@ describe("compose-draft-buffer — no storage available", () => {
 describe("compose-draft-buffer — one bucket per operator", () => {
   it("puts the owner in the key, next to the tenant", () => {
     expect(composeDraftBufferKey(TENANT, OWNER_A)).toBe(
-      `mysp.compose.draft.v1:${TENANT}:${OWNER_A}`,
+      `vpost.compose.draft.v1:${TENANT}:${OWNER_A}`,
     );
     expect(composeDraftBufferKey(TENANT, OWNER_A)).not.toBe(
       composeDraftBufferKey(TENANT, OWNER_B),
@@ -183,7 +183,7 @@ describe("compose-draft-buffer — one bucket per operator", () => {
   });
 
   it("falls back to the anonymous bucket, which is a scope of its own", () => {
-    expect(composeDraftBufferKey(TENANT, "")).toBe(`mysp.compose.draft.v1:${TENANT}:anon`);
+    expect(composeDraftBufferKey(TENANT, "")).toBe(`vpost.compose.draft.v1:${TENANT}:anon`);
     expect(composeDraftBufferKey(TENANT, "   ")).toBe(composeDraftBufferKey(TENANT, ""));
   });
 
@@ -249,9 +249,9 @@ describe("compose-draft-buffer — reading a broken entry", () => {
   });
 
   it("ignores an entry parked under an older key, and leaves it alone", () => {
-    storage.seed(`mysp.compose.draft.v0:${TENANT}`, JSON.stringify({ payload: payload() }));
+    storage.seed(`vpost.compose.draft.v0:${TENANT}`, JSON.stringify({ payload: payload() }));
     expect(composeDraftBuffer.read(A, T0)).toBeNull();
-    expect(storage.has(`mysp.compose.draft.v0:${TENANT}`)).toBe(true);
+    expect(storage.has(`vpost.compose.draft.v0:${TENANT}`)).toBe(true);
   });
 
   it("drops an entry whose payload carries a forbidden field", () => {

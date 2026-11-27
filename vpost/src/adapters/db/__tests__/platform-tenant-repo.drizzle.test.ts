@@ -17,7 +17,7 @@ import { DrizzlePlatformTenantRepo } from "../platform-tenant-repo.drizzle";
  *   - null column    -> null (skipped), never degraded to `[]`.
  * A corrupt stored value is the fourth case: reported as `null` with a WARN
  * naming the tenant, because one bad row must not take the whole platform
- * list — every customer of MYSP — down with it.
+ * list — every customer of VPOST — down with it.
  */
 
 const TENANT = "00000000-0000-0000-0000-00000000d00d";

@@ -24,7 +24,7 @@ function write(level: "warn" | "error", message: string, context?: Record<string
   const line = JSON.stringify({
     level,
     time: new Date().toISOString(),
-    service: "mysp-web",
+    service: "vpost-web",
     logger: "fallback",
     message,
     ...serialise(context),

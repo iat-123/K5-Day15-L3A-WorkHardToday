@@ -12,7 +12,7 @@ import { AppError } from "@/core/domain/errors";
 import { testTenantId } from "@/core/domain/tenant-context.testing";
 
 const REAL_REGISTRY = join(process.cwd(), "config", "ai-models.yaml");
-const tempDir = mkdtempSync(join(tmpdir(), "mysp-registry-"));
+const tempDir = mkdtempSync(join(tmpdir(), "vpost-registry-"));
 
 afterAll(() => {
   rmSync(tempDir, { recursive: true, force: true });

@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
     }));
   },
   // VPOST (hackathon): mọi /api/* đi sang backend Python thay cho route Next (cần Postgres/Redis).
-  // beforeFiles để thắng cả route có sẵn trong src/app/api. Bỏ biến VPOST_API_URL = dùng lại backend MYSP.
+  // beforeFiles để thắng cả route có sẵn trong src/app/api. Bỏ biến VPOST_API_URL = dùng lại backend VPOST.
   async rewrites() {
     const api = process.env.VPOST_API_URL;
     return api ? { beforeFiles: [{ source: "/api/:path*", destination: `${api}/api/:path*` }] } : [];

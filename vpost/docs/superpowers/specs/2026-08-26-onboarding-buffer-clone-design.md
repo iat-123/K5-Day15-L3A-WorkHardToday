@@ -42,7 +42,7 @@ Bằng chứng: ô lưới nền đo trong ảnh ra 48–49px, trong khi giá tr
 Hệ quả, và đây là chỗ dễ làm hỏng nhất:
 
 - **Số kích thước CSS lấy từ DOM là sự thật**: 54px lưới, 48px nút, 341×58 thẻ, 12px bo
-  (MYSP dùng token 12.8px). **Đừng chia chúng cho 0.9126.** Nền lưới là `background-size`
+  (VPOST dùng token 12.8px). **Đừng chia chúng cho 0.9126.** Nền lưới là `background-size`
   cố định, không co theo khung.
 - **Số vị trí theo trục dọc thì đối chiếu bằng TỈ LỆ**, không bằng pixel tuyệt đối. Tâm khối
   nội dung màn chào ở y≈279 trên ảnh 867 cao = **32.2% từ đỉnh**; con số đó mới là thứ phải
@@ -50,16 +50,16 @@ Hệ quả, và đây là chỗ dễ làm hỏng nhất:
 - Dựng đúng rồi thì **lưới của ta sẽ trông to hơn lưới trong ảnh khoảng 10%**. Đó là đúng,
   không phải lỗi. Ai "sửa" cho khớp mắt sẽ làm sai giá trị CSS thật.
 
-## 0c. Buffer giữ MỘT URL cho cả luồng — MYSP cố ý làm khác
+## 0c. Buffer giữ MỘT URL cho cả luồng — VPOST cố ý làm khác
 
 Quan sát trực tiếp: từ màn chào tới hết bước 4, thanh địa chỉ **không đổi một ký tự**, luôn
 là `publish.buffer.com/onboarding`. Vị trí trong luồng nằm trong state React; chỉ có đáp án
 là ghi lên server sau mỗi bước.
 
-**MYSP làm ngược lại: đặt bước lên URL (`/onboarding?step=…`).** Đây là quyết định có chủ ý,
+**VPOST làm ngược lại: đặt bước lên URL (`/onboarding?step=…`).** Đây là quyết định có chủ ý,
 không phải quên bắt chước:
 
-| | Buffer | MYSP |
+| | Buffer | VPOST |
 |---|---|---|
 | Bấm F5 giữa chừng | về màn chào, phải bấm lại | về đúng bước đang dở |
 | Nút Back của trình duyệt | thoát khỏi cả luồng | lùi một bước |
@@ -69,7 +69,7 @@ không phải quên bắt chước:
 `core/web-wizard` trong bộ skill của dự án cũng yêu cầu bước nằm ở URL chứ không ở state.
 
 **Hệ quả cho người dựng:** đừng nhìn ảnh rồi kết luận "không có gì trên URL nên mình cũng
-không cần". Phần nhìn thấy được thì clone; phần điều hướng thì theo MYSP.
+không cần". Phần nhìn thấy được thì clone; phần điều hướng thì theo VPOST.
 
 Bốn ảnh có chữ "SELECTED"/"đang chọn" là thứ ảnh chụp tay ban đầu **không có**, và là
 trạng thái dễ làm sai nhất.
@@ -92,7 +92,7 @@ lập (Google Drive, Sheet, Facebook, nhóm kênh, mời người, chúc mừng)
 "survey thay luôn, kết nối tính sau"). Chúng quay về `SetupDock` và các route thật
 `/sync`, `/data-mapping`, `/channels`, `/channels/groups` — vốn vẫn hoạt động đầy đủ.
 
-**Giữ lại từ lượt trước:** cơ chế cookie `mysp_oauth_return` (commit `064ca88`, `0df33f7`)
+**Giữ lại từ lượt trước:** cơ chế cookie `vpost_oauth_return` (commit `064ca88`, `0df33f7`)
 vẫn có ích và không được gỡ — nó giúp callback OAuth quay về đúng nơi phát lệnh.
 
 **NGOÀI PHẠM VI — PM chốt 26/08/2026:** màn soạn bài `/compose` **giữ nguyên như hiện tại**.
@@ -136,7 +136,7 @@ việc đang giao. Không sửa `src/ui/components/compose/**`.
 
 ### 2.3 Chữ
 
-| | Buffer dùng | MYSP dùng |
+| | Buffer dùng | VPOST dùng |
 |---|---|---|
 | Tiêu đề | **Stolzl** 28px / line-height 35px / weight 400 | **Font tiêu đề của Astryx** — Stolzl là font thương mại, KHÔNG dùng được |
 | Nhãn thẻ | 16px / 400 | giữ nguyên cỡ |
@@ -171,7 +171,7 @@ căn giữa, một cái mờ đi trong khi cái kia hiện lên — **không có
 Kèm theo: nút Tiếp tục **hiện vòng quay trong lúc lưu** rồi mới sang bước sau — tức mỗi
 bước ghi lên server trước khi đi tiếp, khớp với mục 8.
 
-MYSP dùng chuẩn đã có trong dự án cho thời lượng — vào 320ms, ra 200ms, chỉ
+VPOST dùng chuẩn đã có trong dự án cho thời lượng — vào 320ms, ra 200ms, chỉ
 `transform`/`opacity`, `useReducedMotion()` thu về 120ms — nhưng **kiểu chuyển phải là
 crossfade**, không phải trượt.
 
@@ -248,11 +248,11 @@ background-size: 100% 100%, 100% 100%, 54px 54px, 54px 54px;
   - **Vị trí cụ thể không quan trọng** — đây là trang trí. Quy tắc cần giữ là: bám lưới,
     thưa ở giữa (chừa chỗ cho chữ), dày hơn ở rìa, độ rõ biến thiên mạnh.
   - Xem `assets/buffer-onboarding/00-welcome.jpg`.
-- `<h1>` hai dòng, căn giữa: `Chào {tên} 👋` / `Chào mừng tới MYSP`.
+- `<h1>` hai dòng, căn giữa: `Chào {tên} 👋` / `Chào mừng tới VPOST`.
 - Nút `Bắt đầu →`: nền `#B0EC9C`, chữ `#292928`, bo 12px, cao 48px, padding `0 24px`,
   rộng **139px** (co theo nội dung, không giãn hết).
 
-**MYSP:** dùng logo Facebook + TikTok + các kênh ở mục 6. Không đủ 16 kênh như Buffer thì
+**VPOST:** dùng logo Facebook + TikTok + các kênh ở mục 6. Không đủ 16 kênh như Buffer thì
 lặp lại với độ mờ khác nhau — đám icon là trang trí, `aria-hidden="true"`.
 
 ---
@@ -318,15 +318,15 @@ trùng khớp.
 **Easing chỉ có MỘT:** `--ease-standard: cubic-bezier(0.24, 1, 0.4, 1)`.
 Nhập bằng `import {durationVars, easeVars} from '@astryxdesign/core'`.
 
-> **CẢNH BÁO: bảng trên là mặc định của THƯ VIỆN, không phải giá trị MYSP thật sự chạy.**
-> `src/ui/theme/mysp.css` (sinh tự động, canh bởi `pnpm theme:check`) **định lại thang này
+> **CẢNH BÁO: bảng trên là mặc định của THƯ VIỆN, không phải giá trị VPOST thật sự chạy.**
+> `src/ui/theme/vpost.css` (sinh tự động, canh bởi `pnpm theme:check`) **định lại thang này
 > nhanh hơn**: `--duration-fast` = **125ms** (không phải 175), `--duration-medium-min` =
 > **225ms** (không phải 310), `--duration-fast-min` = **95ms** (không phải 130).
 > `--ease-standard` không đổi.
 >
-> Hệ quả: CSS đọc `var()` nên tự lấy đúng giá trị của MYSP. Nhưng **framer-motion không
+> Hệ quả: CSS đọc `var()` nên tự lấy đúng giá trị của VPOST. Nhưng **framer-motion không
 > nhận `var()`** — nơi nào truyền số trực tiếp cho framer-motion thì phải dùng con số của
-> `mysp.css` (0.225 / 0.125 / 0.095), kèm comment chỉ về `mysp.css` làm nguồn. Chép số của
+> `vpost.css` (0.225 / 0.125 / 0.095), kèm comment chỉ về `vpost.css` làm nguồn. Chép số của
 > thư viện vào đó là làm onboarding chạy chậm hơn phần còn lại của app.
 
 Hệ quả: crossfade chuyển bước phải là **vào `--duration-medium-min` (310), ra
@@ -414,14 +414,14 @@ with instant state changes"* khi bật reduced motion (tắt hẳn, không làm 
 
 - **Ô tick chỉ hiện ở góc phải trên khi hover/focus**, không hiện thường trực. Xem ô
   Bluesky trong `assets/buffer-onboarding/04-channels.jpg`.
-  **MYSP không sao chép chỗ này:** trạng thái chỉ lộ khi rê chuột là không dùng được bằng
-  bàn phím và trên cảm ứng. Ô tick của MYSP hiện thường trực.
+  **VPOST không sao chép chỗ này:** trạng thái chỉ lộ khi rê chuột là không dùng được bằng
+  bàn phím và trên cảm ứng. Ô tick của VPOST hiện thường trực.
 
 ---
 
-## 6. Bốn bước của MYSP
+## 6. Bốn bước của VPOST
 
-Buffer hỏi về mạng xã hội; MYSP bán hàng qua Facebook nên câu chữ đổi, **cấu trúc giữ nguyên**.
+Buffer hỏi về mạng xã hội; VPOST bán hàng qua Facebook nên câu chữ đổi, **cấu trúc giữ nguyên**.
 
 | Bước | Câu hỏi | Dạng thẻ | Lựa chọn |
 |---|---|---|---|
@@ -494,14 +494,14 @@ Tên tổ chức mặc định lấy theo tên hiển thị của tài khoản, 
 
 ## 9. Khả năng tiếp cận — bắt buộc, Buffer làm chưa đủ
 
-Buffer dùng `<label>` bọc input, nhưng thiếu vài thứ. MYSP **không sao chép phần thiếu đó**:
+Buffer dùng `<label>` bọc input, nhưng thiếu vài thứ. VPOST **không sao chép phần thiếu đó**:
 
 1. Mỗi bước đúng **một `<h1>`**, focus nhảy vào nó khi đổi bước.
 2. Nhóm thẻ một-lựa-chọn là `radiogroup`; nhóm nhiều-lựa-chọn là các `checkbox` thật.
    Bàn phím phải đi được bằng mũi tên trong nhóm radio.
 3. **Trạng thái đã chọn không được chỉ dựa vào màu viền.** Viền `#337046` khác `#EAE8E5`
    chưa đủ tương phản để một mình mang nghĩa — phải kèm dấu tick hoặc đổi độ dày viền.
-   Đây là chỗ MYSP cố ý **khác** Buffer.
+   Đây là chỗ VPOST cố ý **khác** Buffer.
 4. Chấm tiến độ kèm chữ "Bước n/4" cho trình đọc màn hình (Buffer không có).
 5. Vùng bấm tối thiểu 24×24 CSS px. Ô tick 16px của Buffer **không đạt** — vùng bấm phải
    mở rộng ra cả thẻ.
@@ -510,13 +510,13 @@ Buffer dùng `<label>` bọc input, nhưng thiếu vài thứ. MYSP **không sao
 
 ---
 
-## 10. Chỗ MYSP cố ý khác Buffer
+## 10. Chỗ VPOST cố ý khác Buffer
 
-| Thứ | Buffer | MYSP | Vì sao |
+| Thứ | Buffer | VPOST | Vì sao |
 |---|---|---|---|
 | Font tiêu đề | Stolzl | Font Astryx | Stolzl là font thương mại có phí |
 | Màu | hex thô | **token Astryx** | CLAUDE.md cấm hex thô và cấm override `--color-*` |
-| Xanh nút chính | `#B0EC9C` | token accent của Astryx | giữ nhận diện MYSP |
+| Xanh nút chính | `#B0EC9C` | token accent của Astryx | giữ nhận diện VPOST |
 | Trạng thái chọn | chỉ đổi viền | viền **+** dấu tick | màu một mình không mang nghĩa (mục 9.3) |
 | Chấm tiến độ | chỉ hình | hình **+** chữ "Bước n/4" | như trên |
 | Vùng bấm ô tick | 16px | cả thẻ | 16px dưới ngưỡng WCAG |
@@ -548,17 +548,17 @@ Thiếu token tương ứng thì báo PM, **không tự thêm biến màu mới*
   phương án dự phòng "lấy phần trước `@` của email" ghi ở bản spec đầu là **bất khả thi**.
 
   **Chốt:** có `displayName` thì chào tên; `null` thì chào trống — "Chào bạn 👋 / Chào mừng
-  tới MYSP". Không bịa tên, không hiện chuỗi rỗng, và **không** thêm email vào `/api/me`
+  tới VPOST". Không bịa tên, không hiện chuỗi rỗng, và **không** thêm email vào `/api/me`
   chỉ để phục vụ một lời chào.
 - **Nút chuyển sáng/tối — đã tra xong, dùng đúng component này:**
-  `src/ui/components/shell/ColorSchemeToggle.tsx` (cookie `mysp-color-scheme`, gắn class
+  `src/ui/components/shell/ColorSchemeToggle.tsx` (cookie `vpost-color-scheme`, gắn class
   `dark` lên `<html>`, cố ý không giữ React state).
 
   **`src/ui/hooks/useAppearance.ts` KHÔNG phải cái đó** — đó là preset màu cấp nền tảng,
   thiết lập của quản trị viên. Nối onboarding vào nó chính là dựng bộ chuyển theme thứ hai
   mà spec đang cấm. Bản spec đầu chỉ sai địa chỉ, đã sửa.
 
-- **Bo góc: dùng token, KHÔNG hardcode 12px.** Buffer đo được 12px; thang của MYSP là
+- **Bo góc: dùng token, KHÔNG hardcode 12px.** Buffer đo được 12px; thang của VPOST là
   `--radius: 1rem` (Astryx `radius: { base: 4, multiplier: 2 }`), token gần nhất là
   `rounded-md` = `calc(var(--radius) * 0.8)` = **12.8px**. Lệch 0.8px không nhìn thấy được;
   hardcode `12px` thì mâu thuẫn `DESIGN.md` và phá hệ thống. **Dùng `rounded-md`.**
@@ -573,4 +573,4 @@ Thiếu token tương ứng thì báo PM, **không tự thêm biến màu mới*
 
 - **Phiên dev giả thuộc 2 tổ chức và `activeTenantId` là `null`**, nên `useActiveTenant().role`
   ra `null` và `OnboardingFlow` đá về `/`. Muốn chụp được onboarding phải đặt cookie
-  `mysp_active_tenant` trước. Không đặt thì ảnh chụp ra màn chọn công ty, không phải onboarding.
+  `vpost_active_tenant` trước. Không đặt thì ảnh chụp ra màn chọn công ty, không phải onboarding.

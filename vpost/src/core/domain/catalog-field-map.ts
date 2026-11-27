@@ -64,7 +64,7 @@ export interface CatalogFieldMap {
  * This is the source of truth for `SHEET_COLUMNS`, and the default of every
  * `fieldMap` parameter — an absent map must behave exactly like before.
  */
-export const MYSP_FIELD_MAP = {
+export const VPOST_FIELD_MAP = {
   code: "Mã sản phẩm",
   name: "Tên sản phẩm",
   description: "Mô tả sản phẩm",
@@ -77,7 +77,7 @@ export const MYSP_FIELD_MAP = {
 } as const satisfies CatalogFieldMap;
 
 /** Price columns of tab "Mẫu 2026" — kept for the onboarding hint only. */
-export const MYSP_PRICE_COLUMNS: readonly string[] = [
+export const VPOST_PRICE_COLUMNS: readonly string[] = [
   "Nguyên Giá (bắt buộc)",
   "Giá TMĐT",
   "Giá TMĐT làm tròn",

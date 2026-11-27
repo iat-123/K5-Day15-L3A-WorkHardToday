@@ -15,7 +15,7 @@ import { describe, expect, it } from "vitest";
 import { validateClaims } from "@/core/ai/validation/claim";
 import { validateGeneratedContent } from "@/core/ai/validation";
 import type { ValidationContext } from "@/core/ai/validation/types";
-import { makeFieldMap, MYSP_FIELD_MAP } from "@/core/domain/catalog-field-map";
+import { makeFieldMap, VPOST_FIELD_MAP } from "@/core/domain/catalog-field-map";
 import type { CaptionContent, CaptionInput } from "@/core/domain/caption";
 
 const product: CaptionInput = {
@@ -109,7 +109,7 @@ describe("stage 3 — prompt labels follow the tenant's field map", () => {
   });
 
   it("survives a tenant header identical to a preset label", () => {
-    const context = { ...baseContext, fieldMap: makeFieldMap({ ...MYSP_FIELD_MAP }) };
+    const context = { ...baseContext, fieldMap: makeFieldMap({ ...VPOST_FIELD_MAP }) };
     expect(rules(context, "- Mô tả sản phẩm: Chất liệu lụa mềm mát")).toEqual([]);
   });
 

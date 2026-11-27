@@ -9,7 +9,7 @@ import type { OnboardingProfile } from "@/core/ports/tenant-profile";
  * a super_admin names which customer they are acting on.
  *
  * Contract for every implementer:
- * - `createTenant` mints NO membership: MYSP staff are not members of a
+ * - `createTenant` mints NO membership: VPOST staff are not members of a
  *   customer's company; the owner arrives through the invite the caller mints
  *   right after (M2.2 infrastructure);
  * - `setStatus` is idempotent (suspending a suspended tenant reports

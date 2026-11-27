@@ -61,7 +61,7 @@ function logFatal(message: string, error: unknown): void {
     `${JSON.stringify({
       level: "fatal",
       time: new Date().toISOString(),
-      service: "mysp-worker",
+      service: "vpost-worker",
       msg: message,
       err: appError.toLogObject(),
     })}\n`,

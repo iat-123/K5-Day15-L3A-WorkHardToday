@@ -7,7 +7,7 @@
  * callback trusted it — the worst B-8 hole; nothing the browser holds decides
  * a tenant anymore.
  *
- * Deliberately a DIFFERENT cookie from the Facebook one (`mysp_fb_oauth`, path
+ * Deliberately a DIFFERENT cookie from the Facebook one (`vpost_fb_oauth`, path
  * /api/channels): the two flows can be started in two tabs, and sharing a name
  * would make the second start silently invalidate the first.
  *
@@ -21,7 +21,7 @@
  * with "state mismatch".
  */
 
-export const GOOGLE_OAUTH_STATE_COOKIE = "mysp_google_oauth";
+export const GOOGLE_OAUTH_STATE_COOKIE = "vpost_google_oauth";
 /** Matches OAUTH_STATE_TTL_MS server-side; the ROW is what actually expires. */
 export const GOOGLE_OAUTH_STATE_TTL_SECONDS = 600;
 /** Both endpoints of the flow live under this path; nothing else sees it. */

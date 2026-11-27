@@ -76,7 +76,7 @@ describe("makeGoogleAuth", () => {
   it("accepts an inlined key with escaped newlines", () => {
     const key = JSON.stringify({
       type: "service_account",
-      client_email: "mysp@project.iam.gserviceaccount.com",
+      client_email: "vpost@project.iam.gserviceaccount.com",
       private_key: "-----BEGIN PRIVATE KEY-----\\nAAAA\\n-----END PRIVATE KEY-----\\n",
     });
     expect(() => makeGoogleAuth({ serviceAccountJson: key })).not.toThrow();

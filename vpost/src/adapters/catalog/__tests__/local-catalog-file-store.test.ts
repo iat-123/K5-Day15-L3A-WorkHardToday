@@ -15,7 +15,7 @@ const encoder = new TextEncoder();
 let root = "";
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), "mysp-catalog-store-"));
+  root = await mkdtemp(join(tmpdir(), "vpost-catalog-store-"));
 });
 
 afterEach(async () => {

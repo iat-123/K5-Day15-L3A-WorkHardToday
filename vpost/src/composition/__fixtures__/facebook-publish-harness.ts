@@ -278,7 +278,7 @@ export function harness(
     clock,
     logger,
     signMediaUrl,
-    mediaBaseUrl: () => "https://mysp.example.com",
+    mediaBaseUrl: () => "https://vpost.example.com",
     readMediaBytes,
   });
   // The operator's button and the screen that draws it, on the SAME repo the

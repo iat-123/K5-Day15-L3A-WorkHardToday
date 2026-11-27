@@ -5,7 +5,7 @@ import {
   readFixtureSheetSnapshot,
 } from "@/adapters/google/fixture-catalog-source";
 
-import { MYSP_FIELD_MAP } from "../catalog-field-map";
+import { VPOST_FIELD_MAP } from "../catalog-field-map";
 import { resolveMedia, type MediaSourceFile } from "../media-resolver";
 import { parseSheetRow } from "../product";
 
@@ -23,7 +23,7 @@ const files = readFixtureDriveFiles() as MediaSourceFile[];
 const snapshot = readFixtureSheetSnapshot();
 
 const sheetCodes = snapshot.rows
-  .map((row) => parseSheetRow(row.rowNumber, row.values, MYSP_FIELD_MAP))
+  .map((row) => parseSheetRow(row.rowNumber, row.values, VPOST_FIELD_MAP))
   .filter((parsed) => parsed.ok)
   .map((parsed) => (parsed.ok ? parsed.value.content.code : ""));
 

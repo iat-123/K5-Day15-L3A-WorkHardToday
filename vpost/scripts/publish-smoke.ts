@@ -412,7 +412,7 @@ async function main(): Promise<void> {
     .from(postJobs)
     .where(eq(postJobs.batchId, batch1));
   print({ rows_in_post_job: waitingJobs });
-  const queueCounts = await connection.keys("bull:mysp-jobs:*");
+  const queueCounts = await connection.keys("bull:vpost-jobs:*");
   print({ redis_keys_for_queue: queueCounts.length });
 
   // --- Case b: worker publishes both, spacing visible -----------------------
@@ -852,10 +852,10 @@ async function main(): Promise<void> {
     media: MEDIA,
     scheduledAtByChannel: { [CHANNEL_A]: scheduleA, [CHANNEL_B]: scheduleB },
   });
-  const delayedIds = await connection.zrange("bull:mysp-jobs:delayed", "0", "-1");
+  const delayedIds = await connection.zrange("bull:vpost-jobs:delayed", "0", "-1");
   const delayedDetails = await Promise.all(
     scheduled.channels.map(async (entry) => {
-      const raw = await connection.hgetall(`bull:mysp-jobs:${entry.queueJobId}`);
+      const raw = await connection.hgetall(`bull:vpost-jobs:${entry.queueJobId}`);
       return {
         channel: entry.channelId,
         queueJobId: entry.queueJobId,
@@ -892,8 +892,8 @@ async function main(): Promise<void> {
     newScheduledAt: newTime,
     actorEmail: "van@example.com",
   });
-  const afterReschedule = await connection.zrange("bull:mysp-jobs:delayed", "0", "-1");
-  const newRaw = await connection.hgetall(`bull:mysp-jobs:${rescheduled.queueJobId}`);
+  const afterReschedule = await connection.zrange("bull:vpost-jobs:delayed", "0", "-1");
+  const newRaw = await connection.hgetall(`bull:vpost-jobs:${rescheduled.queueJobId}`);
   print({
     previous_queue_job_id: jobA.queueJobId,
     new_queue_job_id: rescheduled.queueJobId,
@@ -919,7 +919,7 @@ async function main(): Promise<void> {
     actorEmail: "van@example.com",
     note: "khách đổi ý",
   });
-  const afterCancel = await connection.zrange("bull:mysp-jobs:delayed", "0", "-1");
+  const afterCancel = await connection.zrange("bull:vpost-jobs:delayed", "0", "-1");
   const cancelAudit = await db
     .select({ action: auditLogs.action, actorUserId: auditLogs.actorUserId, payload: auditLogs.payload })
     .from(auditLogs)

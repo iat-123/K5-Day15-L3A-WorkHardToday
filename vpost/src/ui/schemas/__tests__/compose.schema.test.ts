@@ -237,7 +237,7 @@ describe("CaptionsResponseSchema", () => {
           channelId: "facebook",
           platform: "facebook",
           text: "Giannal – ĐẸP",
-          hashtags: ["#mysp"],
+          hashtags: ["#vpost"],
           model: "gemini",
           provider: "google",
         },

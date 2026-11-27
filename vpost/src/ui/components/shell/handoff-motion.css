@@ -17,7 +17,7 @@
  * animation gỡ nó ra là cách để một hôm nào đó app vô hình.
  *
  * TOKEN ĐỌC THẲNG, KHÔNG QUA ALIAS. `--duration-medium-max` và `--ease-standard`
- * được `mysp.css` khai trong `@scope ([data-astryx-theme="mysp"])`, tức trên
+ * được `vpost.css` khai trong `@scope ([data-astryx-theme="vpost"])`, tức trên
  * thẻ <Theme>; element mang class này nằm bên dưới đó nên nó KẾ THỪA giá trị
  * của dự án. Một alias khai ở `:root` thì ngược lại — nó sẽ resolve theo thang
  * chậm hơn của `@astryxdesign/core`, và không có gì báo.

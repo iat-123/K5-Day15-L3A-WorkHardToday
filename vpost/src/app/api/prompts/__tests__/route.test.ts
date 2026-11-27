@@ -58,7 +58,7 @@ function postRequest(body: unknown): Request {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "admin@mysp.vn", accountId: "acc-1" });
+  getOperatorSession.mockResolvedValue({ email: "admin@vpost.vn", accountId: "acc-1" });
   requireTenant.mockResolvedValue({ tenantId: TENANT, role: "admin", membershipVersion: 3 });
   listVersions.mockResolvedValue({ versions: [], effective: { version: 1 }, nextVersion: 2 });
   createVersion.mockResolvedValue({ template: { version: 2 }, warnings: [] });
@@ -165,7 +165,7 @@ describe("POST /api/prompts — answers", () => {
 
     expect(response.status).toBe(201);
     expect(createVersion).toHaveBeenCalledWith(
-      expect.objectContaining({ tenantId: TENANT, createdBy: "admin@mysp.vn" }),
+      expect.objectContaining({ tenantId: TENANT, createdBy: "admin@vpost.vn" }),
     );
   });
 });

@@ -71,7 +71,7 @@ describe("requireAccessAdmin — the two doors", () => {
     // The escape hatch may hold no account row at all — requireTenant would
     // 401 exactly the person this screen exists for. Env is their authority.
     getOperatorSession.mockResolvedValue({
-      email: "boss@mysp.vn",
+      email: "boss@vpost.vn",
       isBootstrapAdmin: true,
       accountId: null,
     });

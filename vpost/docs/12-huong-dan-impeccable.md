@@ -1,4 +1,4 @@
-# Hướng dẫn dùng Impeccable cho Claude — dự án MYSP
+# Hướng dẫn dùng Impeccable cho Claude — dự án VPOST
 
 > Nguồn: https://impeccable.style/docs/ (đọc 21/08/2026) + skill đã cài ở `~/.claude/skills/impeccable/`.
 > Đối tượng đọc: Claude session làm việc trên repo này (đặc biệt nhánh redesign). Người dùng gọi lệnh bằng `/impeccable <command> [target]`.
@@ -15,7 +15,7 @@ Skill thiết kế UI cho AI coding agent: lập kế hoạch, dựng, review v�
 
 Không có ngữ cảnh → kết quả generic. Thứ tự thẩm quyền khi mâu thuẫn: PRODUCT.md thắng về quyết định sản phẩm bền vững · DESIGN.md thắng về quyết định thị giác · surface brief thắng về chiến lược từng trang · code hiện hữu là tín hiệu docs có thể đã cũ.
 
-| File | Vai trò | Trạng thái MYSP | Cập nhật bằng |
+| File | Vai trò | Trạng thái VPOST | Cập nhật bằng |
 |---|---|---|---|
 | `PRODUCT.md` (root) | Tầng chiến lược: platform, users, định vị, ràng buộc, evidence | **ĐÃ CÓ** (tạo 21/08/2026, schema 1) | `/impeccable init` khi chiến lược đổi |
 | `DESIGN.md` (root) | Hệ thị giác: palette, typography, component, radius/elevation, luật | **CHƯA CÓ** | `/impeccable document` (ghi hệ hiện hữu) hoặc new-work (hệ mới khi redesign) |
@@ -23,9 +23,9 @@ Không có ngữ cảnh → kết quả generic. Thứ tự thẩm quyền khi m
 
 File sinh máy: `.impeccable/design.json` — **không sửa tay**, refresh bằng `/impeccable document`.
 
-Điểm chốt của PRODUCT.md hiện tại (đọc file để biết đủ): 2 vai người dùng (chủ shop cấu hình / nhân viên vận hành), desktop-first, định vị **SaaS thật sự**, "MYSP" là **tên tạm** không ràng buộc nhận diện, chưa có testimonial/số liệu — **không được bịa**.
+Điểm chốt của PRODUCT.md hiện tại (đọc file để biết đủ): 2 vai người dùng (chủ shop cấu hình / nhân viên vận hành), desktop-first, định vị **SaaS thật sự**, "VPOST" là **tên tạm** không ràng buộc nhận diện, chưa có testimonial/số liệu — **không được bịa**.
 
-## 3. Quy trình chuẩn cho redesign MYSP
+## 3. Quy trình chuẩn cho redesign VPOST
 
 Nguyên tắc skill: **refinement giữ nguyên bản sắc hiện có; redesign thay thế** — giữ product truth, nội dung, chức năng, ràng buộc, nhưng coi giao diện cũ là bằng chứng và anti-reference. Không được "lai" hai hướng thành bản đánh bóng giao diện cũ.
 
@@ -36,7 +36,7 @@ Nguyên tắc skill: **refinement giữ nguyên bản sắc hiện có; redesign
 5. **Sau build**: DESIGN.md được thay bằng giá trị thật từ code mới; surface brief tự sinh.
 6. **Kiểm**: verify theo **vòng có giới hạn** — build đủ, 1 vòng inspect gộp (desktop + mobile), sửa 1 đợt, tối đa 1 vòng xác nhận nữa rồi dừng. Không tự QA vô hạn.
 
-Mode cho app UI MYSP (compose, duyệt caption, kênh, members, sync, platform) là **Operate**: scanability, nhất quán, đúng kỳ vọng người vận hành > biểu đạt. Trang marketing/landing (nếu làm) là **Persuade**.
+Mode cho app UI VPOST (compose, duyệt caption, kênh, members, sync, platform) là **Operate**: scanability, nhất quán, đúng kỳ vọng người vận hành > biểu đạt. Trang marketing/landing (nếu làm) là **Persuade**.
 
 ## 4. Bảng lệnh
 

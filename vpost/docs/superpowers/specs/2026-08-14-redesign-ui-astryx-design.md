@@ -1,4 +1,4 @@
-# Thiết kế lại giao diện web MYSP trên Astryx Design System
+# Thiết kế lại giao diện web VPOST trên Astryx Design System
 
 Ngày: 2026-08-14 · Branch: `feat/ui` · Trạng thái: đã duyệt, chờ lên kế hoạch thi công
 
@@ -67,7 +67,7 @@ Ghi trong `src/app/globals.css`, giữ nguyên toàn bộ `@theme inline`, `:roo
 
 ### 3.3 SideNav
 
-`resizable={{defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "mysp-nav"}}`,
+`resizable={{defaultWidth: 256, minWidth: 240, maxWidth: 280, autoSaveId: "vpost-nav"}}`,
 `collapsible`, chia 4 section:
 
 | Section | Mục |

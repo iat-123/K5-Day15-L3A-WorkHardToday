@@ -33,7 +33,7 @@ function signed(overrides: { ttlMs?: number; assetId?: string; tenantId?: string
   return signMediaUrl({
     tenantId: overrides.tenantId ?? TENANT,
     assetId: overrides.assetId ?? ASSET,
-    baseUrl: "https://mysp.example.com",
+    baseUrl: "https://vpost.example.com",
     nowMs: NOW,
     ttlMs: overrides.ttlMs,
     sign,
@@ -87,7 +87,7 @@ describe("mediaSignaturePayload", () => {
 describe("signMediaUrl", () => {
   it.each([
     ["a relative base URL", "/api"],
-    ["a non-http scheme", "ftp://mysp.example.com"],
+    ["a non-http scheme", "ftp://vpost.example.com"],
     ["an empty base URL", "  "],
   ])("refuses %s — Facebook must be able to GET it", (_label, baseUrl) => {
     expect(() => signMediaUrl({ tenantId: TENANT, assetId: ASSET, baseUrl, nowMs: NOW, sign })).toThrowError(
@@ -123,7 +123,7 @@ describe("signMediaUrl", () => {
     const result = signed();
     const url = new URL(result.url);
 
-    expect(result.url.startsWith("https://mysp.example.com")).toBe(true);
+    expect(result.url.startsWith("https://vpost.example.com")).toBe(true);
     expect(/^https?:\/\/\S+$/i.test(result.url)).toBe(true);
     expect(url.pathname).toBe(`${MEDIA_ROUTE_PREFIX}/${ASSET}`);
     expect(url.searchParams.get(MEDIA_QUERY_PARAMS.tenant)).toBe(TENANT);
@@ -136,11 +136,11 @@ describe("signMediaUrl", () => {
     const result = signMediaUrl({
       tenantId: TENANT,
       assetId: ASSET,
-      baseUrl: "https://mysp.example.com//",
+      baseUrl: "https://vpost.example.com//",
       nowMs: NOW,
       sign,
     });
-    expect(result.url).toBe(`https://mysp.example.com${result.path}`);
+    expect(result.url).toBe(`https://vpost.example.com${result.path}`);
   });
 });
 

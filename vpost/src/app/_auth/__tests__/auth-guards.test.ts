@@ -15,14 +15,14 @@ import { DEFAULT_RETURN_URL, safeReturnUrl } from "../return-url";
  * Edge cases first — the happy path is the last block on purpose.
  */
 
-const ALLOWED = ["mysp.vn", "example.com"];
+const ALLOWED = ["vpost.vn", "example.com"];
 
 describe("isAllowedEmail — edge cases", () => {
   it.each([
     ["undefined", undefined],
     ["null", null],
     ["a number", 42],
-    ["an object", { email: "a@mysp.vn" }],
+    ["an object", { email: "a@vpost.vn" }],
     ["empty string", ""],
     ["whitespace only", "   "],
   ])("rejects %s", (_label, value) => {
@@ -30,38 +30,38 @@ describe("isAllowedEmail — edge cases", () => {
   });
 
   it("rejects everything when the allow-list is empty — fail closed", () => {
-    expect(isAllowedEmail("boss@mysp.vn", [])).toBe(false);
+    expect(isAllowedEmail("boss@vpost.vn", [])).toBe(false);
   });
 
   it("rejects an address without @", () => {
-    expect(isAllowedEmail("mysp.vn", ALLOWED)).toBe(false);
+    expect(isAllowedEmail("vpost.vn", ALLOWED)).toBe(false);
   });
 
-  it("rejects a multi-@ address (a@mysp.vn@evil.com)", () => {
-    expect(isAllowedEmail("a@mysp.vn@evil.com", ALLOWED)).toBe(false);
+  it("rejects a multi-@ address (a@vpost.vn@evil.com)", () => {
+    expect(isAllowedEmail("a@vpost.vn@evil.com", ALLOWED)).toBe(false);
   });
 
   it("rejects an empty local part or empty domain", () => {
-    expect(isAllowedEmail("@mysp.vn", ALLOWED)).toBe(false);
+    expect(isAllowedEmail("@vpost.vn", ALLOWED)).toBe(false);
     expect(isAllowedEmail("boss@", ALLOWED)).toBe(false);
   });
 
-  it("rejects a look-alike suffix (notmysp.vn)", () => {
-    expect(isAllowedEmail("boss@notmysp.vn", ALLOWED)).toBe(false);
+  it("rejects a look-alike suffix (notvpost.vn)", () => {
+    expect(isAllowedEmail("boss@notvpost.vn", ALLOWED)).toBe(false);
   });
 
   it("rejects a subdomain that was not allow-listed", () => {
-    expect(isAllowedEmail("boss@mail.mysp.vn", ALLOWED)).toBe(false);
+    expect(isAllowedEmail("boss@mail.vpost.vn", ALLOWED)).toBe(false);
   });
 });
 
 describe("isAllowedEmail — happy path", () => {
   it("accepts an allow-listed domain", () => {
-    expect(isAllowedEmail("boss@mysp.vn", ALLOWED)).toBe(true);
+    expect(isAllowedEmail("boss@vpost.vn", ALLOWED)).toBe(true);
   });
 
   it("is case-insensitive and trims surrounding spaces", () => {
-    expect(isAllowedEmail("  Boss@MYSP.VN  ", ALLOWED)).toBe(true);
+    expect(isAllowedEmail("  Boss@VPOST.VN  ", ALLOWED)).toBe(true);
   });
 });
 
@@ -176,7 +176,7 @@ describe("passesDomainFilter — a filter, never a grant", () => {
   });
 
   it("passes an address inside a listed domain", () => {
-    expect(passesDomainFilter("boss@mysp.vn", ALLOWED)).toBe(true);
+    expect(passesDomainFilter("boss@vpost.vn", ALLOWED)).toBe(true);
   });
 
   it("blocks an address outside every listed domain", () => {
@@ -189,18 +189,18 @@ describe("passesDomainFilter — a filter, never a grant", () => {
 });
 
 describe("isBootstrapAdminEmail — exact addresses only", () => {
-  const ADMINS = ["boss@mysp.vn", "owner@example.com"];
+  const ADMINS = ["boss@vpost.vn", "owner@example.com"];
 
   it("matches an exact address, case- and space-insensitively", () => {
-    expect(isBootstrapAdminEmail("  Boss@MYSP.VN ", ADMINS)).toBe(true);
+    expect(isBootstrapAdminEmail("  Boss@VPOST.VN ", ADMINS)).toBe(true);
   });
 
   it("does NOT match another address in the same domain", () => {
-    expect(isBootstrapAdminEmail("colleague@mysp.vn", ADMINS)).toBe(false);
+    expect(isBootstrapAdminEmail("colleague@vpost.vn", ADMINS)).toBe(false);
   });
 
   it("does not treat a bare domain as a member", () => {
-    expect(isBootstrapAdminEmail("mysp.vn", ADMINS)).toBe(false);
+    expect(isBootstrapAdminEmail("vpost.vn", ADMINS)).toBe(false);
   });
 
   it.each([
@@ -213,7 +213,7 @@ describe("isBootstrapAdminEmail — exact addresses only", () => {
   });
 
   it("rejects everyone when the list is empty or absent — fail closed", () => {
-    expect(isBootstrapAdminEmail("boss@mysp.vn", [])).toBe(false);
-    expect(isBootstrapAdminEmail("boss@mysp.vn", undefined)).toBe(false);
+    expect(isBootstrapAdminEmail("boss@vpost.vn", [])).toBe(false);
+    expect(isBootstrapAdminEmail("boss@vpost.vn", undefined)).toBe(false);
   });
 });

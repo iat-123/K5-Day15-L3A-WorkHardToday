@@ -140,7 +140,7 @@ describe("the emoji wells match the prototype, card for card", () => {
   }
 
   it("step 1 is the prototype's own six, in the prototype's order", () => {
-    // `mysp-onboarding-animation.html`, the six `.card` of screen 1:
+    // `vpost-onboarding-animation.html`, the six `.card` of screen 1:
     // 👋 yellow · 💪 green · 👥 blue · ✨ orange · 🎯 pink · 🦄 purple.
     const html = renderToStaticMarkup(
       <StepSeller value={null} onChange={noop} onContinue={noop} onSkip={noop} />,

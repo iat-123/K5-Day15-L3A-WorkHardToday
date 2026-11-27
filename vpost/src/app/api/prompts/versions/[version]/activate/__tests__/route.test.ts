@@ -48,7 +48,7 @@ function params(version: string) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getOperatorSession.mockResolvedValue({ email: "admin@mysp.vn", accountId: "acc-1" });
+  getOperatorSession.mockResolvedValue({ email: "admin@vpost.vn", accountId: "acc-1" });
   requireTenant.mockResolvedValue({ tenantId: TENANT, role: "admin", membershipVersion: 3 });
   activateVersion.mockResolvedValue({ id: "tpl-3", version: 3 });
 });

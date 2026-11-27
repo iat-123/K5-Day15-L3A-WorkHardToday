@@ -56,7 +56,7 @@ export interface MediaUrlClaims {
 export type SignatureFn = (payload: string) => string;
 
 export interface SignMediaUrlInput extends Omit<MediaUrlClaims, "expiresAtMs"> {
-  /** Public origin Meta will call, e.g. `https://mysp.example.com`. */
+  /** Public origin Meta will call, e.g. `https://vpost.example.com`. */
   readonly baseUrl: string;
   readonly nowMs: number;
   readonly sign: SignatureFn;

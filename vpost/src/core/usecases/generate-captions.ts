@@ -95,7 +95,7 @@ export interface GenerateCaptionsDeps {
   /**
    * Per-tenant column mapping (onboarding phase 1), read once per call and
    * handed to validation stage 3. Optional so a caller that is not wired yet
-   * keeps the MYSP preset — exactly the behaviour before onboarding.
+   * keeps the VPOST preset — exactly the behaviour before onboarding.
    */
   catalogConfig?: CatalogConfigRepo;
 }
@@ -332,7 +332,7 @@ export function makeGenerateCaptions(deps: GenerateCaptionsDeps) {
 /**
  * The tenant's column mapping for one caption run.
  *
- * `undefined` means "nothing wired": stage 3 then uses the MYSP preset, which
+ * `undefined` means "nothing wired": stage 3 then uses the VPOST preset, which
  * is what every caller did before onboarding. A repo FAILURE is rethrown, never
  * downgraded to the preset — the repo already answers a missing/disabled
  * integration with the preset itself, so a throw means the STORED map is

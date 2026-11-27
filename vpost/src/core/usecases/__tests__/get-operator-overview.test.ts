@@ -34,7 +34,7 @@ function harness(records = [accountRecord()]) {
 describe("getOperatorOverview — isBootstrapAdmin survives every branch", () => {
   it("bootstrap admin with NO account row: flag true, empty overview", async () => {
     const overview = await harness([])({
-      sessionEmail: "boss@mysp.vn",
+      sessionEmail: "boss@vpost.vn",
       isBootstrapAdmin: true,
     });
     expect(overview).toEqual({

@@ -1,5 +1,5 @@
 #!/bin/sh
-# E11.4 — periodic pg_dump of the MYSP database.
+# E11.4 — periodic pg_dump of the VPOST database.
 #
 # Runs as its own compose service (`pg-backup`) next to Postgres. No cron daemon:
 # a sleep loop is one process, logs to stdout like every other service, and
@@ -21,22 +21,22 @@
 #
 #   1. List what is inside a dump — never restore blind:
 #        docker compose run --rm --entrypoint pg_restore pg-backup \
-#          --list /backups/mysp-20260813T020000Z.dump | head -50
+#          --list /backups/vpost-20260813T020000Z.dump | head -50
 #
 #   2. Restore into a FRESH database first (never straight over production):
-#        docker compose exec postgres createdb -U mysp mysp_restore
+#        docker compose exec postgres createdb -U vpost vpost_restore
 #        docker compose run --rm --entrypoint pg_restore pg-backup \
 #          --no-owner --no-privileges --dbname \
-#          "postgresql://mysp:$POSTGRES_PASSWORD@postgres:5432/mysp_restore" \
-#          /backups/mysp-20260813T020000Z.dump
-#        docker compose exec postgres psql -U mysp -d mysp_restore \
+#          "postgresql://vpost:$POSTGRES_PASSWORD@postgres:5432/vpost_restore" \
+#          /backups/vpost-20260813T020000Z.dump
+#        docker compose exec postgres psql -U vpost -d vpost_restore \
 #          -c "select count(*) from post_job;"
 #
 #   3. Only then swap: stop web+worker, rename the databases, start again.
 #        docker compose stop web worker
-#        docker compose exec postgres psql -U mysp -d postgres \
-#          -c 'alter database mysp rename to mysp_broken;' \
-#          -c 'alter database mysp_restore rename to mysp;'
+#        docker compose exec postgres psql -U vpost -d postgres \
+#          -c 'alter database vpost rename to vpost_broken;' \
+#          -c 'alter database vpost_restore rename to vpost;'
 #        docker compose start web worker
 #
 #   A dump nobody has restored is not a backup. Do step 2 on a schedule.
@@ -47,7 +47,7 @@ BACKUP_DIR="${BACKUP_DIR:-/backups}"
 BACKUP_INTERVAL="${BACKUP_INTERVAL:-86400}"
 BACKUP_KEEP="${BACKUP_KEEP:-7}"
 BACKUP_RUN_ONCE="${BACKUP_RUN_ONCE:-false}"
-DB_NAME="${PGDATABASE:-mysp}"
+DB_NAME="${PGDATABASE:-vpost}"
 
 log() {
   # Same shape as the app logs: one JSON object per line.

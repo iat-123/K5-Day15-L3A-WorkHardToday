@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_STOCK_POLICY,
   makeFieldMap,
-  MYSP_FIELD_MAP,
+  VPOST_FIELD_MAP,
   type StockPolicy,
 } from "@/core/domain/catalog-field-map";
 import { AppError } from "@/core/domain/errors";
@@ -57,7 +57,7 @@ function configRepo(policy: StockPolicy | Error): CatalogConfigRepo {
   return {
     findCatalogConfig: async () => null,
     findCatalogSource: async () => null,
-    findFieldMap: async () => MYSP_FIELD_MAP,
+    findFieldMap: async () => VPOST_FIELD_MAP,
     findStockPolicy: async () => {
       if (policy instanceof Error) throw policy;
       return policy;
@@ -281,6 +281,6 @@ describe("configRepo contract used above", () => {
     const repo = configRepo(DEFAULT_STOCK_POLICY);
     expect(typeof repo.findStockPolicy).toBe("function");
     expect(typeof repo.findFieldMap).toBe("function");
-    expect(makeFieldMap(MYSP_FIELD_MAP).code).toBe("Mã sản phẩm");
+    expect(makeFieldMap(VPOST_FIELD_MAP).code).toBe("Mã sản phẩm");
   });
 });

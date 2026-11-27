@@ -9,7 +9,7 @@ import {
 } from "@/shared/appearance-presets";
 
 /**
- * M3.4 — the colour of the product, set by MYSP staff for every company at once.
+ * M3.4 — the colour of the product, set by VPOST staff for every company at once.
  *
  * Two rules shape everything here:
  *

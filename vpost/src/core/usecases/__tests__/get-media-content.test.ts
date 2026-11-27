@@ -175,7 +175,7 @@ function link(overrides: { tenantId?: TenantId; assetId?: string; ttlMs?: number
   const result = signMediaUrl({
     tenantId: overrides.tenantId ?? TENANT,
     assetId: overrides.assetId ?? ASSET,
-    baseUrl: "https://mysp.example.com",
+    baseUrl: "https://vpost.example.com",
     nowMs: NOW,
     ttlMs: overrides.ttlMs,
     sign,
@@ -227,7 +227,7 @@ describe("getMediaContent — rejections come first", () => {
     const expired = signMediaUrl({
       tenantId: TENANT,
       assetId: ASSET,
-      baseUrl: "https://mysp.example.com",
+      baseUrl: "https://vpost.example.com",
       nowMs: NOW - 7 * 60 * 60 * 1000,
       sign,
     });
