@@ -401,10 +401,193 @@ def allowed_facts(row, stock, page, glob):
 
 
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
+COMMENT_MAX_CHARS = 2000
+
+_DATE_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:"
+    r"(?:0?[1-9]|[12]\d|3[01])([./\-])(?:0?[1-9]|1[0-2])\1(?:19|20)\d{2}"
+    r"|(?:19|20)\d{2}([./\-])(?:0?[1-9]|1[0-2])\2(?:0?[1-9]|[12]\d|3[01])"
+    r")(?![A-Za-z0-9])"
+)
+_EMAIL_RE = re.compile(
+    r"(?<![A-Za-z0-9._%+-])"
+    r"[A-Za-z0-9_%+-][A-Za-z0-9._%+-]*"
+    r"@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+"
+    r"(?:"
+    r"(?:com|net|org|edu|gov|vn|io|co|me|info|biz|xyz|shop|store|online|site|app|dev|ai|uk|us|jp|kr|sg|au|ca|de|fr)(?![A-Za-z0-9-])"
+    r"|(?:com|net|org|edu|gov|vn)(?=[A-Za-z]*[^\x00-\x7f])"
+    r"|[A-Za-z]{2,10}(?![A-Za-z0-9-])"
+    r"|(?:com|net|org|edu|gov|vn)"
+    r")",
+    re.I,
+)
+_PHONE_SEP = r"(?:[ \t\u00a0]*[.\-\u2013\u2014][ \t\u00a0]*|/|[ \t\u00a0]+)"
+_PHONE_CANDIDATE_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:"
+    r"(?:(?:\(\+84\)|\+84)(?:[ \t\u00a0]*\(0\)[ \t\u00a0]*|(?:[ \t\u00a0]*[.\-\u2013\u2014][ \t\u00a0]*|[ \t\u00a0]+)?0?(?:[ \t\u00a0]*[.\-\u2013\u2014][ \t\u00a0]*|[ \t\u00a0]+)?)"
+    r"|84(?:[ \t\u00a0]*\(0\)[ \t\u00a0]*|(?:[ \t\u00a0]*[.\-\u2013\u2014][ \t\u00a0]*|[ \t\u00a0]+)?))"
+    r"[235789]\d*(?:" + _PHONE_SEP + r"\d{2,4}){0,4}"
+    r"|\(0[235789]\d{1,2}\)[ \t\u00a0]*(?:[.\-\u2013\u2014][ \t\u00a0]*)?\d+(?:" + _PHONE_SEP + r"\d{2,4}){0,3}"
+    r"|0[235789]\d*(?:" + _PHONE_SEP + r"\d{2,4}){0,4}"
+    r")(?![A-Za-z0-9đ₫])"
+)
+_SCHEME_URL_RE = re.compile(r"(?i)(?<![A-Za-z0-9])https?://[^\s<>\"'()\[\]{}]+")
+_WWW_URL_RE = re.compile(r"(?i)(?<![A-Za-z0-9@._/-])www\.[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:/[^\s<>\"'()\[\]{}]*)?")
+_BARE_URL_PATH_RE = re.compile(
+    r"(?i)(?<![A-Za-z0-9@._/-])[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*"
+    r"\.(?:com|net|org|vn|ly|gl|co|gy|gd|at|cc|id|so|to|ee|me|xyz|top|vip|click|info|biz|shop|store|online|site|club|icu|link|pro|live|bet|win|io|app|tk|ml|ga|cf|gq|gg)"
+    r"/[^\s<>\"'()\[\]{}]+"
+)
+_BARE_URL_DOMAIN_RE = re.compile(
+    r"(?i)(?<![A-Za-z0-9@._/-])[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*"
+    r"\.(?:com\.vn|net\.vn|edu\.vn|gov\.vn|com|net|org|vn|xyz|info|biz|vip|icu|click|site|online)"
+    r"(?![A-Za-z0-9./-])"
+)
+
+_OOS_NEG_PHRASE = re.compile(
+    r"(?<!\w)(?:đã\s+hết|tạm\s+hết|hiện\s+hết|hết\s+hàng|hết\s+tồn|hết\s+mất|hết\s+rồi|hết\s+size|hết\s+màu|hết"
+    r"|cháy\s+hàng|không\s+còn|ko\s+còn|k\s+còn|ngừng\s+bán)(?!\w)",
+    re.I,
+)
+_OOS_ANTI_NEG = re.compile(r"(?<!\w)(?:chưa\s+hết|không\s+hết|ko\s+hết|k\s+hết|hết\s+đâu)(?!\w)", re.I)
+_OOS_AFFIRM = re.compile(
+    r"(?<!\w)(?:vẫn\s+còn|đang\s+còn|còn\s+hàng|còn\s+sẵn|sẵn\s+hàng|có\s+sẵn|còn\s+đủ|đủ\s+size|full\s+size)(?!\w)",
+    re.I,
+)
+_CLAUSE_BOUNDARY = re.compile(
+    r"[.!?;,\n]|(?<!\w)(?:nhưng|tuy\s+nhiên|chỉ\s+còn|shop\s+còn|hiện\s+còn|bên\s+mình\s+còn|vẫn\s+còn|đang\s+còn|còn\s+lại)(?!\w)",
+    re.I,
+)
 
 
-def verify_post(text, allowed):
-    """→ {"block": [...], "warn": [...]} — block thì phải viết lại / đánh dấu."""
+def _mask_spans(text, spans):
+    if not spans:
+        return text
+    chars = list(text)
+    for a, b in spans:
+        for i in range(a, b):
+            chars[i] = " "
+    return "".join(chars)
+
+
+def _merge_spans(spans):
+    if not spans:
+        return []
+    ordered = sorted(spans, key=lambda r: (r[0], -r[1]))
+    merged = [ordered[0]]
+    for a, b in ordered[1:]:
+        pa, pb = merged[-1]
+        if a <= pb:
+            merged[-1] = (pa, max(pb, b))
+        else:
+            merged.append((a, b))
+    return merged
+
+
+def _valid_vn_phone(raw):
+    digits = re.sub(r"\D", "", raw)
+    stripped = raw.lstrip()
+    if stripped.startswith(("(+84", "+84", "84")):
+        sub = digits[2:]
+        if sub.startswith("0"):
+            sub = sub[1:]
+    elif digits.startswith("0"):
+        sub = digits[1:]
+    else:
+        return False
+    return 8 <= len(sub) <= 10 and bool(sub) and sub[0] in "235789"
+
+
+def find_emails(text):
+    """Tìm vị trí (start, end) mọi địa chỉ email trong văn bản (không bị phá bởi chữ tiếng Việt đứng liền)."""
+    s = str(text or "")
+    return [(m.start(), m.end()) for m in _EMAIL_RE.finditer(s)]
+
+
+def find_phones(text):
+    """Tìm vị trí (start, end) số điện thoại Việt Nam, bỏ qua ngày tháng, số lượng và mã sản phẩm."""
+    s = str(text or "")
+    email_spans = find_emails(s)
+    date_spans = [(m.start(), m.end()) for m in _DATE_RE.finditer(s)]
+    scan = _mask_spans(s, _merge_spans(email_spans + date_spans))
+    return [(m.start(), m.end()) for m in _PHONE_CANDIDATE_RE.finditer(scan) if _valid_vn_phone(m.group(0))]
+
+
+def find_urls(text):
+    """Tìm vị trí (start, end) mọi đường link (có http/www hoặc tên miền trần/rút gọn), không tính email."""
+    s = str(text or "")
+    scan = _mask_spans(s, _merge_spans(find_emails(s) + [(m.start(), m.end()) for m in _DATE_RE.finditer(s)]))
+    spans = []
+    for rx in (_SCHEME_URL_RE, _WWW_URL_RE, _BARE_URL_PATH_RE, _BARE_URL_DOMAIN_RE):
+        for m in rx.finditer(scan):
+            spans.append((m.start(), m.end()))
+    return _merge_spans(spans)
+
+
+def find_pii_spans(text):
+    """Danh sách khoảng (start, end) đã gộp của mọi SĐT Việt Nam và email cần ẩn."""
+    s = str(text or "")
+    return _merge_spans(find_emails(s) + find_phones(s))
+
+
+def scrub_pii(text):
+    """Thay số điện thoại Việt Nam và email bằng '[đã ẩn]' (dùng chung bộ nhận diện đã gia cố)."""
+    s = str(text or "")
+    spans = find_pii_spans(s)
+    if not spans:
+        return s
+    parts, cursor = [], 0
+    for a, b in spans:
+        parts.append(s[cursor:a])
+        parts.append("[đã ẩn]")
+        cursor = b
+    parts.append(s[cursor:])
+    return "".join(parts)
+
+
+def _is_oos_negated(text, start, end):
+    """True nếu vị trí (start, end) nhắc size/màu hết hàng kèm phủ định rõ ràng ('đã hết', 'hết hàng', 'không còn'…)."""
+    sent_start = 0
+    for m in re.finditer(r"[.!?\n;]", text[:start]):
+        sent_start = m.end()
+    m_end = re.search(r"[.!?\n;]", text[end:])
+    sent_end = end + m_end.start() if m_end else len(text)
+    sent = text[sent_start:sent_end]
+    rel_start, rel_end = start - sent_start, end - sent_start
+
+    before = sent[:rel_start]
+    after = sent[rel_end:]
+
+    b_cut = 0
+    for m in _CLAUSE_BOUNDARY.finditer(before):
+        b_cut = m.end()
+    local_before = before[b_cut:][-60:]
+
+    m_a = _CLAUSE_BOUNDARY.search(after)
+    local_after = (after[:m_a.start()] if m_a else after)[:60]
+    local_clause = local_before + sent[rel_start:rel_end] + local_after
+
+    if _OOS_ANTI_NEG.search(local_clause) or _OOS_AFFIRM.search(local_clause):
+        return False
+    if _OOS_NEG_PHRASE.search(local_before) or _OOS_NEG_PHRASE.search(local_after):
+        return True
+
+    # Liệt kê nhiều mục cùng hết hàng: 'size M, màu trắng đều đã hết hàng'
+    m_contrast = re.search(
+        r"(?<!\w)(?:nhưng|tuy\s+nhiên|chỉ\s+còn|shop\s+còn|hiện\s+còn|vẫn\s+còn|đang\s+còn)(?!\w)",
+        after,
+        re.I,
+    )
+    tail = (after[:m_contrast.start()] if m_contrast else after)[:65]
+    if re.search(r"(?<!\w)đều(?!\w)", tail, re.I) and _OOS_NEG_PHRASE.search(tail):
+        if not _OOS_ANTI_NEG.search(tail) and not _OOS_AFFIRM.search(tail):
+            return True
+    return False
+
+
+def verify_post(text, allowed, *, is_comment=False):
+    """→ {"block": [...], "warn": [...]} — block thì phải viết lại / đánh dấu.
+    is_comment=True: cho phép nhắc size/màu đã hết khi có phủ định rõ, bỏ cảnh báo 150–1500 ký tự, chặn >2000 ký tự."""
     block, warn = [], []
     t = str(text or "")
     low = t.lower()
@@ -423,22 +606,39 @@ def verify_post(text, allowed):
     if pct and not any(p.replace(" ", "") in allowed["fact_text"].replace(" ", "") for p in pct):
         block.append("có con số phần trăm %s không có trong file" % ", ".join(pct))
     # size
-    for s in SIZE_TOKEN.findall(t):
+    dropped_sizes = set(allowed["dropped_sizes"])
+    for m in SIZE_TOKEN.finditer(t):
+        s = m.group(1)
         got = parse_sizes(s)
-        if got and not set(got) <= set(allowed["sizes"]):
+        if not got:
+            continue
+        got_set = set(got)
+        if not got_set <= set(allowed["sizes"]):
+            if is_comment and got_set <= dropped_sizes and _is_oos_negated(t, m.start(), m.end()):
+                continue
             block.append("nhắc size %s — chỉ được nói %s" % (s, ", ".join(allowed["sizes"]) or "(không có)"))
     for s in allowed["dropped_sizes"]:
-        if s in SIZE_TOKEN.findall(t):
-            block.append("nhắc size %s đã hết hàng" % s)
+        for m in SIZE_TOKEN.finditer(t):
+            if s in parse_sizes(m.group(1)):
+                if is_comment and _is_oos_negated(t, m.start(), m.end()):
+                    continue
+                block.append("nhắc size %s đã hết hàng" % s)
+                break
     # màu
-    for c in colors_in(t):
-        if not allowed["has_color"]:
-            block.append("nhắc màu %s nhưng file không có màu" % c)
-        elif not _color_ok(c, allowed["colors"]):
-            block.append("nhắc màu %s — chỉ được nói %s" % (c, ", ".join(allowed["colors"])))
+    for m in re.finditer(r"màu\s+([^\s,.;!?]+(?:\s+[^\s,.;!?]+)?)", low):
+        for c in colors_in(m.group(1), explicit_only=False):
+            if not allowed["has_color"]:
+                block.append("nhắc màu %s nhưng file không có màu" % c)
+            elif not _color_ok(c, allowed["colors"]):
+                if is_comment and _color_ok(c, allowed["dropped_colors"]) and _is_oos_negated(t, m.start(), m.end()):
+                    continue
+                block.append("nhắc màu %s — chỉ được nói %s" % (c, ", ".join(allowed["colors"])))
     for c in allowed["dropped_colors"]:
-        if _has(c.lower(), low):
+        for m in re.finditer(r"(?<!\w)" + re.escape(c.lower()) + r"(?!\w)", low):
+            if is_comment and _is_oos_negated(t, m.start(), m.end()):
+                continue
             block.append("nhắc màu %s đã hết hàng" % c)
+            break
     # chất liệu — bỏ tên màu trước ('Xanh jean', 'Kaki' là màu, không phải lời nói về chất vải)
     masked = low
     for c in sorted(allowed["colors"] + allowed["dropped_colors"], key=len, reverse=True):
@@ -457,13 +657,18 @@ def verify_post(text, allowed):
     if allowed["low"]:
         for p in _phrase_hits(t, ["sẵn nhiều", "đủ size", "full size", "còn nhiều", "sẵn hàng số lượng lớn"]):
             block.append("hàng sắp hết nhưng bài viết '%s'" % p)
-    if re.search(r"(?<!\d)(0|\+84)\d{9,10}(?!\d)", t.replace(" ", "").replace(".", "")):
+    if find_phones(t):
         block.append("có số điện thoại")
-    if re.search(r"https?://|www\.", low):
+    if find_emails(t):
+        block.append("có địa chỉ email")
+    if find_urls(t):
         block.append("có đường link")
     n_emoji = len(EMOJI.findall(t))
     if n_emoji > allowed["max_emoji"]:
         warn.append("%d emoji (page cho tối đa %d)" % (n_emoji, allowed["max_emoji"]))
-    if not 150 <= len(t) <= 1500:
+    if is_comment:
+        if len(t.strip()) > COMMENT_MAX_CHARS:
+            block.append("độ dài %d ký tự vượt quá giới hạn 2.000 ký tự" % len(t.strip()))
+    elif not 150 <= len(t) <= 1500:
         warn.append("độ dài %d ký tự (nên 150–1.500)" % len(t))
     return {"block": list(dict.fromkeys(block)), "warn": warn}

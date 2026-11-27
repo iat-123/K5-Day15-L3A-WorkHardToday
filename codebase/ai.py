@@ -52,8 +52,13 @@ def call_model(system: str, user: str, schema: dict = None) -> dict:
     """schema (tuỳ chọn): JSON schema — model bắt buộc trả JSON đúng schema (OpenAI structured outputs)."""
     if MODEL_PROVIDER == "fake":
         if schema:  # chế độ giả vẫn trả JSON hợp lệ để luồng chạy hết
-            text = json.dumps({"decision": "write", "flag_reasons": [], "hook": "[bài giả — chưa nối model]",
-                               "body": "", "cta": "", "hashtags": [], "facts_used": []}, ensure_ascii=False)
+            props = schema.get("properties") if isinstance(schema, dict) else None
+            if isinstance(props, dict) and "reply" in props:
+                text = json.dumps({"decision": "reply", "flag_reasons": [],
+                                   "reply": "[trả lời giả — chưa nối model]", "facts_used": []}, ensure_ascii=False)
+            else:
+                text = json.dumps({"decision": "write", "flag_reasons": [], "hook": "[bài giả — chưa nối model]",
+                                   "body": "", "cta": "", "hashtags": [], "facts_used": []}, ensure_ascii=False)
         else:
             text = "[câu trả lời giả — chưa nối model] " + (user.strip().splitlines() or [""])[-1][:60]
         return {"text": text, "model": "fake", "tokens_in": 0, "tokens_out": 0}

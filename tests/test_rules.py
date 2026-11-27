@@ -176,3 +176,116 @@ def test_color_name_with_material_word_not_blocked():
     inv = {"T1": [{"mau": "Xanh jean", "size": s, "ton": 3, "trang_thai": "Còn hàng"} for s in "SML"]}
     a = rules.allowed_facts(r, rules.check_stock(r, inv), PAGE, GLOB)
     assert rules.verify_post("Đầm voan màu xanh jean, size S, M, L. Giá 890.000đ.", a)["block"] == []
+
+
+# ---------------- Regression tests: Findings 3, 6, 13, 14 ----------------
+import pytest  # noqa: E402
+
+
+@pytest.mark.parametrize("raw,secret", [
+    ("84912345678", "84912345678"),
+    ("84 912 345 678", "84 912 345 678"),
+    ("+84(0)912345678", "912345678"),
+    ("+84 (0) 912 345 678", "912 345 678"),
+    ("(024) 3812 3456", "3812 3456"),
+    ("(028)3823-4567", "3823-4567"),
+    ("(0912) 345 678", "345 678"),
+    ("0912 - 345 - 678", "0912 - 345 - 678"),
+    ("0912  345  678", "0912  345  678"),
+    ("0912\u00a0345\u00a0678", "0912\u00a0345\u00a0678"),
+    ("0912–345–678", "0912–345–678"),
+    ("0912/345/678", "0912/345/678"),
+    ("user@gmail.comạ", "user@gmail.com"),
+    ("user@gmail.comnhé", "user@gmail.com"),
+    ("sđtlan@gmail.com", "lan@gmail.com"),
+])
+def test_f03_scrub_pii_vietnamese_phones_and_emails(raw, secret):
+    out = rules.scrub_pii("Liên hệ " + raw + " nha")
+    assert "[đã ẩn]" in out, (raw, out)
+    assert secret not in out, (raw, out)
+
+
+@pytest.mark.parametrize("safe_text", [
+    "Ngày 01.02.2026 14h giao được không?",
+    "Ngày 01.02.2026 2 cái màu đen",
+    "01-02-2026 10",
+    "Mẫu 01 02 03 04 05",
+    "Ngày 02.03.2026 14h giao được không?",
+    "Ngày 09/12/2026 2 cái màu đen",
+    "08-03-2026 10",
+    "Mã SP0912345678 hoặc SKU84912345678 size M",
+    "Đặt 2 cái size S, 3 cái size M, 10 cái màu đen",
+    "Váy giá 890.000đ hoặc 849.000.000đ",
+])
+def test_f03_scrub_pii_preserves_dates_quantities_and_product_codes(safe_text):
+    assert rules.scrub_pii(safe_text) == safe_text
+
+
+@pytest.mark.parametrize("bad_reply", [
+    "Dạ nhắn Zalo 0912-345-678 ạ",
+    "Dạ liên hệ (+84) 912-345-678 nhé",
+    "Dạ gọi 84912345678 để đặt hàng",
+    "Dạ gọi (024) 3812 3456 hoặc 0912/345/678",
+    "Dạ gửi mail về scam@evil.com nhé",
+    "Dạ xem thêm tại bit.ly/scam123 nha",
+    "Dạ vào scam-now.com xem mẫu nhé",
+])
+def test_f06_verify_post_blocks_hardened_phones_emails_urls(bad_reply):
+    assert rules.verify_post(bad_reply, allowed())["block"], bad_reply
+
+
+def test_f06_verify_post_blocks_overlong_comment_and_allows_dates():
+    a = allowed()
+    assert rules.verify_post("Ngày 01.02.2026 14h shop có màu đen size S, M, L giá 890.000đ ạ.", a, is_comment=True)["block"] == []
+    assert rules.verify_post("Đầm đẹp quá.Shop còn màu đen size S, M, L giá 890.000đ ạ.", a, is_comment=True)["block"] == []
+    overlong = "Dạ đầm giá 890.000đ. " + "a" * 2001
+    assert rules.verify_post(overlong, a, is_comment=True)["block"]
+
+
+def test_f13_comment_verify_allows_negated_oos_and_blocks_affirmative():
+    inv_partial = {
+        "T1": [
+            {"mau": "Đen", "size": "S", "ton": 3, "trang_thai": "Còn hàng"},
+            {"mau": "Đen", "size": "M", "ton": 0, "trang_thai": "HẾT HÀNG"},
+            {"mau": "Đen", "size": "L", "ton": 3, "trang_thai": "Còn hàng"},
+            {"mau": "Trắng", "size": "S", "ton": 0, "trang_thai": "HẾT HÀNG"},
+            {"mau": "Trắng", "size": "M", "ton": 0, "trang_thai": "HẾT HÀNG"},
+            {"mau": "Trắng", "size": "L", "ton": 0, "trang_thai": "HẾT HÀNG"},
+        ]
+    }
+    r = row()
+    a = rules.allowed_facts(r, rules.check_stock(r, inv_partial), PAGE, GLOB)
+
+    # Truthful OOS mentions allowed for comment replies
+    for ok_reply in (
+        "Dạ size M đã hết hàng, shop còn size S và L bạn nhé",
+        "Xin lỗi bạn, màu trắng đã hết hàng, hiện shop còn màu đen size S, L giá 890.000đ ạ",
+        "Dạ shop tạm hết size M và không còn màu trắng ạ, chỉ còn màu đen size S, L",
+        "Dạ hiện size M, màu trắng đều đã hết hàng ạ",
+    ):
+        assert rules.verify_post(ok_reply, a, is_comment=True)["block"] == [], ok_reply
+
+    # Affirmative stock claims and non-existent sizes still blocked
+    for bad_reply in (
+        "Dạ váy còn màu đen size M giá 890.000đ ạ",
+        "Dạ màu trắng hết hàng nhưng size M vẫn còn hàng nhé",
+        "Dạ size M chưa hết hàng đâu bạn nhé",
+        "Dạ size XL đã hết hàng ạ",
+    ):
+        assert rules.verify_post(bad_reply, a, is_comment=True)["block"], bad_reply
+
+    # Post captions (is_comment=False) still block dropped size mentions
+    assert rules.verify_post("Dạ size M đã hết hàng, shop còn size S và L bạn nhé", a)["block"]
+
+
+def test_f14_comment_verify_skips_caption_length_warning():
+    a = allowed()
+    short_reply = "Dạ đầm giá 890.000đ, còn màu đen size S, M, L bạn nhé!"
+    assert len(short_reply) < 150
+    res_comment = rules.verify_post(short_reply, a, is_comment=True)
+    assert res_comment["block"] == []
+    assert not any("độ dài" in w for w in res_comment["warn"])
+
+    # Post caption mode keeps the 150-1500 warning
+    res_post = rules.verify_post(short_reply, a)
+    assert any("độ dài" in w for w in res_post["warn"])

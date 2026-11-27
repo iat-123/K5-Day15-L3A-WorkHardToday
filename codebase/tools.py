@@ -99,9 +99,9 @@ def check_stock(row: dict) -> dict:
 
 
 @tool
-def verify_post(text: str, allowed: dict) -> dict:
-    """verify_post · input: bài + dữ kiện được phép · output: {"block": [...], "warn": [...]} · không tác động ra ngoài."""
-    return rules.verify_post(text, allowed)
+def verify_post(text: str, allowed: dict, is_comment: bool = False) -> dict:
+    """verify_post · input: bài/trả lời + dữ kiện được phép + is_comment · output: {"block": [...], "warn": [...]} · không tác động ra ngoài."""
+    return rules.verify_post(text, allowed, is_comment=is_comment)
 
 
 @tool
@@ -190,12 +190,60 @@ def schedule_post(text: str, when_ts, images: list, page=None) -> dict:
 
 
 @tool
-def delete_fb_post(post_id: str, token=None) -> bool:
-    """delete_fb_post · input: id bài trên Fanpage thử · output: True nếu Facebook xoá được
+def delete_fb_post(post_id: str, channel_id: str = None) -> bool:
+    """delete_fb_post · input: id bài trên Facebook + channel_id (tuỳ chọn, mặc định Fanpage thử) · output: True nếu Facebook xoá được
     · CÓ tác động ra ngoài: xoá bài (dùng khi người bấm Huỷ lịch một bài đã hẹn giờ trên Facebook)."""
-    fb = (None, token) if token else fb_page()
+    fb = fb_credentials(channel_id) if channel_id else fb_page()
     if not fb or not post_id:
         return False
     import httpx
-    r = httpx.delete("%s/%s" % (_graph(), post_id), params={"access_token": fb[1]}, timeout=30)
+    r = httpx.delete("%s/%s" % (_graph(), post_id), headers={"Authorization": "Bearer %s" % fb[1]}, timeout=30)
     return r.status_code == 200 and r.json().get("success") is True
+
+
+def fb_credentials(channel_id: str):
+    """(page_id, token) của kênh Facebook thật (Fanpage thử .env hoặc Page nối qua OAuth), hoặc None."""
+    if channel_id == "fb-test":
+        return fb_page()
+    if channel_id and channel_id.startswith("fb-"):
+        import store
+        p = store.fb_page(channel_id[3:])
+        return (p["page_id"], p["page_token"]) if p and p.get("page_token") else None
+    return None
+
+
+def _resolve_fb_token(channel_id: str) -> str:
+    creds = fb_credentials(channel_id)
+    if creds and creds[1]:
+        return creds[1]
+    import facebook
+    raise facebook.FacebookError("TOKEN_INVALID", "Kênh chưa có token Page Facebook — kết nối lại ở mục Kênh.")
+
+
+@tool
+def reply_fb_comment(target_id: str, message: str, channel_id: str) -> str:
+    """reply_fb_comment · input: target_id (parent_id nếu bình luận con, ngược lại comment_id) + message + channel_id
+    · output: fb_reply_id (id bình luận trả lời mới trên Facebook)
+    · CÓ tác động ra ngoài: đăng bình luận trả lời công khai lên Facebook Page. Chỉ gọi từ POST /api/comments/{id}/reply."""
+    import facebook
+    token = _resolve_fb_token(channel_id)
+    return facebook.reply_comment(target_id, message, token)
+
+
+@tool
+def hide_fb_comment(comment_id: str, hidden: bool, channel_id: str) -> bool:
+    """hide_fb_comment · input: comment_id + hidden (True=ẩn, False=hiện) + channel_id
+    · output: True nếu Facebook cập nhật thành công
+    · CÓ tác động ra ngoài: ẩn hoặc hiện bình luận trên Facebook Page. Chỉ gọi từ POST /api/comments/{id}/hide."""
+    import facebook
+    token = _resolve_fb_token(channel_id)
+    return facebook.hide_comment(comment_id, hidden, token)
+
+
+@tool
+def delete_fb_comment(channel_id: str, comment_id: str) -> bool:
+    """delete_fb_comment · input: channel_id + comment_id · output: True nếu đã xoá (hoặc đã không còn trên Facebook)
+    · CÓ tác động ra ngoài: xoá vĩnh viễn bình luận trên Facebook Page (chỉ gọi khi người vận hành xác nhận)."""
+    import facebook
+    token = _resolve_fb_token(channel_id)
+    return facebook.delete_comment(comment_id, token)
