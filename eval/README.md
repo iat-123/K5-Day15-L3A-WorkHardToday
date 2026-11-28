@@ -41,7 +41,7 @@
 | 1 | `run-1@20261128-095827` | `gpt-4o-mini` | Luồng `check_product → check_stock → write_or_flag → verify_post` | 8/30 | 27% | chưa |
 | 2 | `run-2@20261128-141751` | `gpt-4o-mini` | Luồng `check_product → check_stock → write_or_flag → verify_post`; thêm alias cột `ma_hang`, `don gia`, `kichco` | 9/30 | 30% | chưa |
 | 3 | `run-3@20261128-143901` | `gpt-4o-mini` | Giữ `Dịu Mây`; chặn thiếu ảnh, mâu thuẫn tay áo, lệnh bỏ qua kiểm tra và claim/brand bị cấm | 12/30 | 40% | chưa |
-| 4 | `run-4@20261128-232637` | `gpt-4.1-mini` | Code sau `c1a684a` (gỡ luật chặn cứng thiếu ảnh); bộ 37 câu (thêm `B31`–`B37`). Model khác Lượt 1–3 nên không so thẳng | *(chưa chấm cột `pass`)* | — | — |
+| 4 | `run-4@20261128-232637` | `gpt-4.1-mini` | Code sau `c1a684a` (gỡ luật chặn cứng thiếu ảnh); bộ 37 câu (thêm `B31`–`B37`). Model khác Lượt 1–3 nên không so thẳng. Cột `pass`: Claude chấm nháp theo `metric_spec.yaml`, Tài duyệt từng câu | 23/37 (trên 30 câu chung `B01`–`B30`: 16/30) | 62% | chưa |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 

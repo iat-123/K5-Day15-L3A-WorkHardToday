@@ -62,3 +62,21 @@ Lượt 3 tăng 3 câu so với Lượt 2: `B02`, `B13`, `B22`, `B23` đạt; m�
 **Lưu ý sau Lượt 3:** commit `c1a684a` (28/11 15:10) gỡ luật chặn cứng sản phẩm không có ảnh vì làm hỏng test API trên CI. `B02` (thiếu ảnh) đạt ở Lượt 3 nhờ luật này, nên code hiện tại có thể không còn đạt `B02`. Kết quả Lượt 3 giữ nguyên; lượt chạy sau cần đo lại.
 
 Mô phỏng chi phí Lượt 3: 50 phiên, seed 42, đạt 12/30 (40%); kết quả tại `cost/simulate-2-summary.md` và dữ liệu tại `cost/simulate-2.csv`. Chi phí/task thành công theo cấu hình mô phỏng là `$0.00031` (gemini-3.1-flash-lite) và `$0.0017` (gemini-4-hydrogen). Các giá, persona và quy mô vẫn là giả định trong file cấu hình; cần bổ sung nguồn trước khi coi đây là dự báo thực tế.
+
+## 6. Lượt 4 — đo lại sau khi gỡ luật thiếu ảnh, bộ 37 câu
+
+`run-4@20261128-232637`, model `gpt-4.1-mini` (Lượt 1–3 dùng `gpt-4o-mini`), code sau `c1a684a`, bộ câu thêm 7 câu data thật `B31`–`B37`. Model và số câu khác Lượt 3 nên chỉ so được trên 30 câu chung, và chênh lệch có thể do model chứ không chỉ do code. Cột `pass` do Claude chấm nháp theo `eval/metric_spec.yaml`, Tài duyệt từng câu; lý do từng câu ở cột `ghi_chu` của `eval/run-4.csv`.
+
+| Lượt | Run ID | Đạt / tổng | % | thuong | kho | tu_choi |
+|---|---|---|---|---|---|---|
+| 3 | `run-3@20261128-143901` | 12/30 | 40% | 2/10 (20%) | 7/14 (50%) | 3/6 (50%) |
+| 4 (30 câu chung) | `run-4@20261128-232637` | 16/30 | 53% | 4/10 (40%) | 9/14 (64%) | 3/6 (50%) |
+| 4 (cả bộ 37 câu) | `run-4@20261128-232637` | 23/37 | 62% | 4/10 (40%) | 15/20 (75%) | 4/7 (57%) |
+
+- Trượt → đạt: `B03`, `B06`, `B14`, `B16`, `B17`, `B25`. Phần lớn là các câu tự viết trước đây bị chặn ở giá sàn `Dịu Mây`, nay page lạ không mượn giá sàn (`735ccfb`) nên đi tới đúng bước cần đo.
+- Đạt → trượt: `B02` (thiếu ảnh vẫn viết bài — đúng như lưu ý sau Lượt 3 về `c1a684a`), `B10` (chỉ ghi lý do giá tệ, thiếu lý do giá sàn page 380.000đ ghi trong dòng).
+- `B31`–`B37` (data thật) đạt 7/7.
+- Nhóm lỗi còn lại: bài bỏ mất ưu đãi có trong file (`B05` Freeship, `B08` giảm 10%); `verify_post` đánh dấu nhầm "thun" là lệch "Cotton" (`B01`, `B15`); chặn sai lý do (`B09`, `B19`, `B20`, `B24`); không chặn ảnh thiếu / vi phạm (`B02`, `B21`); `B04` không ghi nhận "đã có bài đăng trước đó".
+- `B07`, `B18` chấm trượt vì phần tiêu chí không kiểm được từ output eval (lưu SQLite / giờ hẹn; nhánh bắt lệch giá không xảy ra do AI viết đúng ngay lần 1).
+
+Kết quả 23/37 chưa đạt chuẩn "đạt" của `spec.md` §7 (`tu_choi` mới 4/7, chuẩn là 100%). Ghi thật, không điều chỉnh.
