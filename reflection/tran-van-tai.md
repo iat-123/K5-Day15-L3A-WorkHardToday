@@ -1,0 +1,7 @@
+# Reflection — Trần Văn Tài
+
+1. **Vai trò + phần mình làm:** Đội trưởng. Dựng khung repo, TEAMS.md, canvas Track F (`4445539`, CP1); data card và dữ liệu có seed cho bản chạy thử (`c249941`); luồng workflow theo sơ đồ `spec.md` §4 và chuẩn "đạt" §7 (`578a40b`, CP2); cải tiến lượt 2 — nhận tên cột lệch chuẩn, page lạ không mượn giá sàn, tồn ghi trong dòng (`735ccfb`); slide demo `demo-slides.pdf` (`967b5f0`); sửa test N2 bị gán cứng giờ làm đỏ CI của PR #18 (`98ffa32`).
+
+2. **AI hỗ trợ mình thế nào:** Dùng Claude Code (Claude Opus 5.5) — 7/9 commit của mình có dòng đồng tác giả Claude: dựng khung repo, viết luồng `codebase/agent.py`, dựng slide HTML → PDF, soạn nháp các mục còn trống của spec và chi phí. Phần mình tự chốt và kiểm: hình dạng workflow cố định (không để AI tự gọi công cụ), chỗ chặn rủi ro, chuẩn "đạt"; số trên slide đối chiếu lại với `evidence/` và `eval/`. Chỗ phải sửa: `answer()` bản đầu không nhận tên cột lệch chuẩn và áp giá sàn của page khác cho page lạ, Lượt 1 lộ ra, sửa ở `735ccfb`; test N2 gán cứng giờ nên làm đỏ CI của PR #18, đổi sang giờ thật (`98ffa32`).
+
+3. **Một câu thử trượt và mình học được gì:** `B17` (tên cột lệch chuẩn `Ma_Hang`, `Đơn giá`, `KichCo`). Lượt 1 trượt vì `answer()` không nhận tên cột này nên báo "thiếu giá, thiếu size". Mình thêm alias ở lượt 2, parse đã đúng nhưng câu vẫn trượt: giá 160.000đ dưới giá sàn 540.000đ của page mặc định. Sửa xong một lỗi mới thấy lỗi thật nằm phía sau; phải chạy lại eval để đo, không đoán là cải tiến có tác dụng.

@@ -1,0 +1,7 @@
+# Reflection — Nguyễn Thế Văn
+
+1. **Vai trò + phần mình làm:** Thành viên — bằng chứng (phỏng vấn) và giao diện. Chuyển giao diện sang VPOST (Next.js) gọi backend Python (27/11 tối); màn Bình luận: đồng bộ, nháp AI, duyệt rồi mới trả lời, kiểm duyệt; tự trả lời bình luận hỏi giá / size / màu và gắn "Cần bạn" (`7924b35`, `a661f52`, `6277362`); tư vấn size qua bình luận (`4b94383`); dữ liệu backend sang Postgres, CI/CD deploy lên vpost.vannt.asia; gỡ luật chặn cứng thiếu ảnh vì làm hỏng test API trên CI (`c1a684a`).
+
+2. **AI hỗ trợ mình thế nào:** Dùng Claude Code (Claude Opus 5.5) để viết phần lớn code giao diện VPOST, backend bình luận, test và CI — nhiều commit của mình có dòng đồng tác giả Claude. Mọi thay đổi đi qua PR vào `dev`, CI chạy pytest, vitest, typecheck, build trước khi merge. Chỗ phải sửa (theo git log): CI bị treo (deadlock) khi khởi tạo kiểm duyệt và test route chưa theo FastAPI mới (`cf8eaed`); test onboarding, đường dẫn công khai bị hỏng (`7c3b774`); luật chặn cứng sản phẩm thiếu ảnh làm hỏng test API trên CI nên phải gỡ (`c1a684a`).
+
+3. **Một câu thử trượt và mình học được gì:** `B02` (thiếu ảnh sản phẩm). Câu này trượt ở lượt 1–2, đạt ở lượt 3 nhờ luật chặn cứng thiếu ảnh. Sau đó luật bị gỡ (`c1a684a`) để CI xanh, nên ở Lượt 4 (`run-4@20261128-232637`) `B02` lại được viết bài dù thiếu ảnh. Một thay đổi để sửa CI có thể làm mất một cải tiến đã đo được; sửa guardrail xong nên chạy lại bộ câu thử, không chỉ chạy test.
