@@ -46,4 +46,4 @@ Bản đầu (Tài, 27/11) dựng 40 sản phẩm synthetic, 8 Page, luật bài
 
 ## Bộ câu thử — `eval/benchmark.csv`
 
-Mô tả ở `eval/README.md`. Hiện 24 câu đều `tu_viet` → cần thay / thêm câu từ lời nhân viên mysp (`nguoi_dung: …`) để đạt ≥ 1/3.
+Mô tả ở `eval/README.md`. Hiện 37 câu: 24 `tu_viet`, 12 `data_that` (`B25`–`B28`, `B30`–`B37`, lấy từ `demo_products.csv`), 1 `nguoi_dung` (`B29`, khảo sát câu 9b) → 13/37 từ người dùng / data thật, đạt ≥ 1/3.

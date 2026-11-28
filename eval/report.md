@@ -46,7 +46,7 @@ So sánh: tăng 1 câu (từ 8 lên 9). Thay đổi thuộc `thuong` (`B25` 0→
   2. `B25` (AI đôi lúc bỏ sót trường chất liệu `Polyester` khi viết bài) — dễ làm thiếu thông số sản phẩm trên Fanpage nếu người duyệt không đọc kỹ.
   3. Nhóm 19 câu ở hàng đầu bảng mục 2 dùng giá dưới giá sàn mặc định và/hoặc tên page không khớp `data/pages.json`; cần giữ nguyên bộ câu khi so sánh Lượt 1–2, đồng thời ghi rõ giới hạn này khi diễn giải kết quả. Không sửa `expected` để làm cho output hiện tại đạt.
 - Kết luận: cải tiến alias đúng về mặt kỹ thuật nhưng không đủ để tăng đáng kể tỉ lệ đạt (8/30 → 9/30, trong đó 1 câu tăng do biến thiên LLM). Phần lớn lỗi nằm ở nhóm 19 câu bị chặn bởi giá sàn page và ở ánh xạ page trong bộ câu.
-- Mô phỏng chi phí (≥50 phiên, `python run.py simulate --rate-from eval/run-2.csv`, seed 42): 50 phiên, tỉ lệ đạt 30% lấy từ Lượt 2. Kết quả trong `cost/simulate-1-summary.md`. Token đo trên `gpt-4o-mini`; giá tính theo `gemini-3.1-flash-lite` ($0.00041/task thành công) và `gemini-4-hydrogen` ($0.0023/task thành công). Lưu ý: `cost/personas.yaml` vẫn còn chữ "(ví dụ)", cần thay bằng số và nguồn của nhóm trước khi dùng số này làm kết luận.
+- Mô phỏng chi phí (≥50 phiên, `python run.py simulate --rate-from eval/run-2.csv`, seed 42): 50 phiên, tỉ lệ đạt 30% lấy từ Lượt 2. Kết quả trong `cost/simulate-1-summary.md`. Token đo trên `gpt-4o-mini`; giá tính theo `gemini-3.1-flash-lite` ($0.00041/task thành công) và `gemini-4-hydrogen` ($0.0023/task thành công). Hai lượt `simulate-1`, `simulate-2` chạy khi `cost/personas.yaml` còn persona mẫu. Lượt dùng làm kết luận: `cost/simulate-3.csv` (`simulate-3@20261128-225022`, 50 phiên, persona theo khảo sát, tỉ lệ đạt 12/30 từ Lượt 3): $0.0018 / task thành công (`gpt-4o-mini`) · $0.0261 (`gpt-6.2-sol`) — xem `cost/cost-estimate.md`.
 
 ## 5. Cải tiến tiếp theo — Lượt 3
 
@@ -57,6 +57,8 @@ Giữ nguyên cấu hình Page `Dịu Mây` (giá sàn `540.000đ`), benchmark, 
 | 2 | `run-2@20261128-141751` | 9/30 | 30% | 2/10 (20%) | 6/14 (43%) | 1/6 (17%) |
 | 3 | `run-3@20261128-143901` | 12/30 | 40% | 2/10 (20%) | 7/14 (50%) | 3/6 (50%) |
 
-Lượt 3 tăng 3 câu so với Lượt 2: `B02`, `B13`, `B22`, `B23` đạt; một câu trước đó đạt (`B25`) trượt do model bỏ sót chất liệu. Kết quả thực tế là 12/30, chưa đạt chuẩn 90%/100%. Output và chấm từng câu lưu tại `eval/run-3.csv`, trace tại `traces/run-3.jsonl`.
+Lượt 3 tăng 3 câu so với Lượt 2: `B02`, `B13`, `B22`, `B23` đạt; một câu trước đó đạt (`B25`) trượt do model bỏ sót chất liệu. Kết quả thực tế là 12/30, chưa đạt chuẩn "đạt" của `spec.md` §7 (≥80% câu qua, 100% câu `tu_choi`, ≥90% từng metric `khop_du_lieu_san_pham` và `chan_dung_loi_va_ton_kho`). Output và chấm từng câu lưu tại `eval/run-3.csv`, trace tại `traces/run-3.jsonl`.
+
+**Lưu ý sau Lượt 3:** commit `c1a684a` (28/11 15:10) gỡ luật chặn cứng sản phẩm không có ảnh vì làm hỏng test API trên CI. `B02` (thiếu ảnh) đạt ở Lượt 3 nhờ luật này, nên code hiện tại có thể không còn đạt `B02`. Kết quả Lượt 3 giữ nguyên; lượt chạy sau cần đo lại.
 
 Mô phỏng chi phí Lượt 3: 50 phiên, seed 42, đạt 12/30 (40%); kết quả tại `cost/simulate-2-summary.md` và dữ liệu tại `cost/simulate-2.csv`. Chi phí/task thành công theo cấu hình mô phỏng là `$0.00031` (gemini-3.1-flash-lite) và `$0.0017` (gemini-4-hydrogen). Các giá, persona và quy mô vẫn là giả định trong file cấu hình; cần bổ sung nguồn trước khi coi đây là dự báo thực tế.

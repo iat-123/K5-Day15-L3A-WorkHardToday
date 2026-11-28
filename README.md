@@ -130,7 +130,7 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: `gpt-5.6-luna` (OpenAI), 1 lần gọi / dòng, viết lại ≤1 lần |
+| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: 3 lượt eval đo trên `gpt-4o-mini` (OpenAI, cột `model` trong `eval/run-*.csv`); `.env` máy demo đặt `gpt-5.6-luna`. 1 lần gọi / dòng, viết lại ≤1 lần |
 | Dữ liệu sản phẩm demo (`data/demo_products.xlsx`) | **Thật**, có sửa | 30 dòng váy lấy từ catalog hàng order của shop (mã, giá, size, màu, chất liệu, ảnh thật). ~1/2 số dòng được sửa có chủ đích để cài lỗi — xem `data/demo_products_answer_key.csv` |
 | Ảnh sản phẩm | **Thật** | Link ảnh công khai của shop (Google Drive). Ảnh không tải được bị bỏ khi dựng data và khi xử lý từng dòng |
 | Tồn kho (`data/inventory.csv`) | **Giả** (dựng, seed 42) | Thay POS thật; người dùng tải file tồn mới được trong app |
@@ -141,7 +141,9 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
-____
+- **Viết code:** Claude Code (Claude Opus 5.5) viết phần lớn backend Python, giao diện VPOST, test và CI/CD (56/94 commit không phải merge có dòng đồng tác giả Claude). Mọi thay đổi đi qua PR; CI chạy pytest, vitest, typecheck, build trước khi merge.
+- **Trong sản phẩm:** `gpt-4o-mini` (OpenAI) viết bài nháp, 1 lần gọi / dòng, viết lại tối đa 1 lần. Giá, tồn kho, luật đăng bài do code kiểm; người duyệt mọi bài trước khi lên lịch.
+- **Không dùng AI** để tạo người phỏng vấn, trích dẫn, câu trả lời khảo sát, hay chấm cột `pass`.
 
 ## File mẫu — điền ở bước nào
 
@@ -173,5 +175,5 @@ ____
 | 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
-| 7 | Slide + demo + video dự phòng | slide trong repo (PDF, PPTX, HTML…) hoặc link slide ở form CP4 · link video: ____ |
+| 7 | Slide + demo + video dự phòng | slide trong repo (PDF, PPTX, HTML…) hoặc link slide ở form CP4 · link video: https://drive.google.com/file/d/1bTSnd8KoYQg3TI0iX4NzLPjZLVlMVJDs/view?usp=drive_link |
 | + | *Bonus:* người dùng thử | `validation/log.md` |

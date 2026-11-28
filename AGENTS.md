@@ -40,7 +40,7 @@ Khung chỉ dùng thư viện chuẩn của Python. Thêm thư viện thì ghi v
 
 ## Quy ước của nhóm
 
-- Ngôn ngữ trả lời người dùng: __
-- Phong cách code / đặt tên: __
-- Ai duyệt thay đổi do agent tạo trước khi commit: __
+- Ngôn ngữ trả lời người dùng: tiếng Việt (giao diện, bài đăng, tài liệu, commit message).
+- Phong cách code / đặt tên: Python chỉ dùng thư viện chuẩn, tên hàm / biến `snake_case`, tên trường theo cột data (`ma_sp`, `gia_ban`…); giao diện `vpost/` TypeScript + Next.js, theo lint và typecheck của repo.
+- Ai duyệt thay đổi do agent tạo trước khi commit: người giao việc cho agent đọc diff trước khi commit; mọi thay đổi vào `dev` / `main` đi qua PR, CI (pytest, vitest, typecheck, build) phải xanh, Tài hoặc Văn merge.
 - Ngoại lệ luật "chỉ tạo bản nháp" (quyết định của chủ shop): tự trả lời bình luận (hỏi giá / size / màu + tư vấn size) và bộ lọc ngôn từ / tự kiểm duyệt (`spam`, `scam`, `abusive`, `pii`; khiếu nại `complaint` KHÔNG BAO GIỜ bị tự ẩn) luôn chạy thẳng chế độ thật (`live`) mặc định cho mọi Fanpage đã kết nối, không có công tắc bật/tắt theo từng Page; chỉ giữ công tắc khẩn cấp toàn hệ thống (`VPOST_AUTO_REPLY_DISABLED=1`, `VPOST_AUTO_MODERATION_DISABLED=1`). Trần tự trả lời mặc định ở mức tối đa cho phép (200/giờ, 2000/ngày). Câu trả lời ghép từ dữ liệu sản phẩm và bảng size, không do AI viết; trường hợp khác gắn "Cần bạn" chờ người xử lý.
